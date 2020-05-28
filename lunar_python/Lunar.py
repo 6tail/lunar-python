@@ -243,13 +243,30 @@ class Lunar:
 
     def __computeDay(self):
         addDays = (self.__dayOffset + LunarUtil.BASE_DAY_GAN_ZHI_INDEX) % 60
-        self.__dayGanIndex = addDays % 10
-        self.__dayZhiIndex = addDays % 12
+        dayGanIndex = addDays % 10
+        dayZhiIndex = addDays % 12
+
+        self.__dayGanIndex = dayGanIndex
+        self.__dayZhiIndex = dayZhiIndex
+
+        dayGanExact = dayGanIndex
+        dayZhiExact = dayZhiIndex
+
+        hm = ("0" if self.__hour < 10 else "") + str(self.__hour) + ":" + ("0" if self.__minute < 10 else "") + str(self.__minute)
+        if "23:00" <= hm <= "23:59":
+            dayGanExact += 1
+            if dayGanExact >= 10:
+                dayGanExact -= 10
+            dayZhiExact += 1
+            if dayZhiExact >= 12:
+                dayZhiExact -= 12
+        self.__dayGanIndexExact = dayGanExact
+        self.__dayZhiIndexExact = dayZhiExact
 
     def __computeTime(self):
         timeZhiIndex = LunarUtil.getTimeZhiIndex(("0" if self.__hour < 10 else "") + str(self.__hour) + ":" + ("0" if self.__minute < 10 else "") + str(self.__minute))
         self.__timeZhiIndex = timeZhiIndex
-        self.__timeGanIndex = timeZhiIndex % 10
+        self.__timeGanIndex = (self.__dayGanIndexExact % 5 * 2 + timeZhiIndex) % 10
 
     def __computeWeek(self):
         self.__weekIndex = (self.__dayOffset + LunarUtil.BASE_WEEK_INDEX) % 7
@@ -373,11 +390,20 @@ class Lunar:
     def getDayGan(self):
         return LunarUtil.GAN[self.__dayGanIndex + 1]
 
+    def getDayGanExact(self):
+        return LunarUtil.GAN[self.__dayGanIndexExact+1]
+
     def getDayZhi(self):
         return LunarUtil.ZHI[self.__dayZhiIndex + 1]
 
+    def getDayZhiExact(self):
+        return LunarUtil.ZHI[self.__dayZhiIndexExact+1]
+
     def getDayInGanZhi(self):
         return self.getDayGan() + self.getDayZhi()
+
+    def getDayInGanZhiExact(self):
+        return self.getDayGanExact() + self.getDayZhiExact()
 
     def getTimeGan(self):
         return LunarUtil.GAN[self.__timeGanIndex + 1]
@@ -556,12 +582,11 @@ class Lunar:
         return l
 
     def getBaZi(self):
-        timeGan = LunarUtil.GAN[(self.__dayGanIndex % 5 * 12 + self.__timeZhiIndex) % 10 + 1]
         l = []
         l.append(self.getYearInGanZhiExact())
         l.append(self.getMonthInGanZhiExact())
-        l.append(self.getDayInGanZhi())
-        l.append(timeGan + self.getTimeZhi())
+        l.append(self.getDayInGanZhiExact())
+        l.append(self.getTimeInGanZhi())
         return l
 
     def getBaZiWuXing(self):
@@ -633,6 +658,34 @@ class Lunar:
         if m < 0:
             return ""
         return LunarUtil.POSITION_TAI_MONTH[m - 1]
+
+    def getDayYi(self):
+        """
+        获取每日宜
+        :return: 宜
+        """
+        return LunarUtil.getDayYi(self.getMonthInGanZhiExact(), self.getDayInGanZhi())
+
+    def getDayJi(self):
+        """
+        获取每日忌
+        :return: 忌
+        """
+        return LunarUtil.getDayJi(self.getMonthInGanZhiExact(), self.getDayInGanZhi())
+
+    def getDayJiShen(self):
+        """
+        获取日吉神（宜趋）
+        :return: 日吉神
+        """
+        return LunarUtil.getDayJiShen(self.getMonth(), self.getDayInGanZhi())
+
+    def getDayXiongSha(self):
+        """
+        获取日凶煞（宜忌）
+        :return: 日凶煞
+        """
+        return LunarUtil.getDayXiongSha(self.getMonth(), self.getDayInGanZhi())
 
     def getJieQiTable(self):
         return self.__jieQi
