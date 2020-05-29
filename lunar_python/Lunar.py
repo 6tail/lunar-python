@@ -391,13 +391,13 @@ class Lunar:
         return LunarUtil.GAN[self.__dayGanIndex + 1]
 
     def getDayGanExact(self):
-        return LunarUtil.GAN[self.__dayGanIndexExact+1]
+        return LunarUtil.GAN[self.__dayGanIndexExact + 1]
 
     def getDayZhi(self):
         return LunarUtil.ZHI[self.__dayZhiIndex + 1]
 
     def getDayZhiExact(self):
-        return LunarUtil.ZHI[self.__dayZhiIndexExact+1]
+        return LunarUtil.ZHI[self.__dayZhiIndexExact + 1]
 
     def getDayInGanZhi(self):
         return self.getDayGan() + self.getDayZhi()
@@ -486,26 +486,66 @@ class Lunar:
         return LunarUtil.POSITION_DESC[self.getPositionCai()]
 
     def getChong(self):
+        return self.getDayChong()
+
+    def getDayChong(self):
         return LunarUtil.CHONG[self.__dayZhiIndex + 1]
 
+    def getTimeChong(self):
+        return LunarUtil.CHONG[self.__timeZhiIndex + 1]
+
     def getChongGan(self):
+        return self.getDayChongGan()
+
+    def getDayChongGan(self):
         return LunarUtil.CHONG_GAN[self.__dayGanIndex + 1]
 
+    def getTimeChongGan(self):
+        return LunarUtil.CHONG_GAN[self.__timeGanIndex + 1]
+
     def getChongGanTie(self):
+        return self.getDayChongGanTie()
+
+    def getDayChongGanTie(self):
         return LunarUtil.CHONG_GAN_TIE[self.getDayGan()]
 
+    def getTimeChongGanTie(self):
+        return LunarUtil.CHONG_GAN_TIE[self.getTimeGan()]
+
     def getChongShengXiao(self):
-        chong = self.getChong()
+        return self.getDayChongShengXiao()
+
+    def getDayChongShengXiao(self):
+        chong = self.getDayChong()
+        for i in range(0, len(LunarUtil.ZHI)):
+            if LunarUtil.ZHI[i] == chong:
+                return LunarUtil.SHENGXIAO[i]
+        return ""
+
+    def getTimeChongShengXiao(self):
+        chong = self.getTimeChong()
         for i in range(0, len(LunarUtil.ZHI)):
             if LunarUtil.ZHI[i] == chong:
                 return LunarUtil.SHENGXIAO[i]
         return ""
 
     def getChongDesc(self):
-        return '(' + self.getChongGan() + self.getChong() + ')' + self.getChongShengXiao()
+        return self.getDayChongDesc()
+
+    def getDayChongDesc(self):
+        return '(' + self.getDayChongGan() + self.getDayChong() + ')' + self.getDayChongShengXiao()
+
+    def getTimeChongDesc(self):
+        return '(' + self.getTimeChongGan() + self.getTimeChong() + ')' + self.getTimeChongShengXiao()
 
     def getSha(self):
+        return self.getDaySha()
+
+    def getDaySha(self):
         return LunarUtil.SHA[self.getDayZhi()]
+
+    def getTimeSha(self):
+        return LunarUtil.SHA[self.getTimeZhi()]
 
     def getYearNaYin(self):
         return LunarUtil.NAYIN[self.getYearInGanZhi()]
@@ -672,6 +712,20 @@ class Lunar:
         :return: 忌
         """
         return LunarUtil.getDayJi(self.getMonthInGanZhiExact(), self.getDayInGanZhi())
+
+    def getTimeYi(self):
+        """
+        获取时宜
+        :return: 宜
+        """
+        return LunarUtil.getTimeYi(self.getDayInGanZhiExact(), self.getTimeInGanZhi())
+
+    def getTimeJi(self):
+        """
+        获取时忌
+        :return: 忌
+        """
+        return LunarUtil.getTimeJi(self.getDayInGanZhiExact(), self.getTimeInGanZhi())
 
     def getDayJiShen(self):
         """
