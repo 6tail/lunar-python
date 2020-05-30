@@ -678,14 +678,25 @@ class Lunar:
 
     def getDayTianShen(self):
         monthZhi = self.getMonthZhi()
-        offset = LunarUtil.MONTH_ZHI_TIAN_SHEN_OFFSET[monthZhi]
+        offset = LunarUtil.ZHI_TIAN_SHEN_OFFSET[monthZhi]
         return LunarUtil.TIAN_SHEN[(self.__dayZhiIndex + offset) % 12 + 1]
+
+    def getTimeTianShen(self):
+        dayZhi = self.getDayZhiExact()
+        offset = LunarUtil.ZHI_TIAN_SHEN_OFFSET[dayZhi]
+        return LunarUtil.TIAN_SHEN[(self.__timeZhiIndex + offset) % 12 + 1]
 
     def getDayTianShenType(self):
         return LunarUtil.TIAN_SHEN_TYPE[self.getDayTianShen()]
 
+    def getTimeTianShenType(self):
+        return LunarUtil.TIAN_SHEN_TYPE[self.getTimeTianShen()]
+
     def getDayTianShenLuck(self):
         return LunarUtil.TIAN_SHEN_TYPE_LUCK[self.getDayTianShenType()]
+
+    def getTimeTianShenLuck(self):
+        return LunarUtil.TIAN_SHEN_TYPE_LUCK[self.getTimeTianShenType()]
 
     def getDayPositionTai(self):
         offset = self.__dayGanIndex - self.__dayZhiIndex
