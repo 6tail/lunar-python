@@ -10,6 +10,7 @@ class LunarUtil:
     BASE_MONTH = 11
     BASE_DAY = 11
     BASE_INDEX = 0
+    BASE_YEAR_JIU_XING_INDEX = 0
     BASE_YEAR_GAN_ZHI_INDEX = -4
     BASE_DAY_GAN_ZHI_INDEX = 15
     BASE_MONTH_ZHI_INDEX = 2
@@ -84,7 +85,7 @@ class LunarUtil:
     QI = ("大寒", "雨水", "春分", "谷雨", "小满", "夏至", "大暑", "处暑", "秋分", "霜降", "小雪", "冬至")
     JIE = ("小寒", "立春", "惊蛰", "清明", "立夏", "芒种", "小暑", "立秋", "白露", "寒露", "立冬", "大雪")
     DAY = ("", "初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十")
-
+    YUE_XIANG = ("", "朔", "既朔", "蛾眉新", "蛾眉新", "蛾眉", "夕月", "上弦", "上弦", "九夜", "宵", "宵", "宵", "渐盈凸", "小望", "望", "既望", "立待", "居待", "寝待", "更待", "渐亏凸", "下弦", "下弦", "有明", "有明", "蛾眉残", "蛾眉残", "残", "晓", "晦")
     FESTIVAL = {
         "1-1": "春节",
         "1-15": "元宵节",
@@ -392,7 +393,8 @@ class LunarUtil:
         "离": "正南",
         "坤": "西南",
         "兑": "正西",
-        "乾": "西北"
+        "乾": "西北",
+        "中": "中宫"
     }
 
     GONG = {
@@ -1110,7 +1112,7 @@ class LunarUtil:
         return s
 
     @staticmethod
-    def __getJiaZiIndex(ganZhi):
+    def getJiaZiIndex(ganZhi):
         """
         获取干支对应的甲子序号
         :param ganZhi: 干支
@@ -1130,8 +1132,8 @@ class LunarUtil:
         :return: 宜
         """
         l = []
-        day = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(dayGanZhi))
-        month = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(monthGanZhi))
+        day = LunarUtil.__hex(LunarUtil.getJiaZiIndex(dayGanZhi))
+        month = LunarUtil.__hex(LunarUtil.getJiaZiIndex(monthGanZhi))
         right = LunarUtil.__DAY_YI_JI
         index = right.find(day + "=")
         while index > -1:
@@ -1166,8 +1168,8 @@ class LunarUtil:
         :return: 忌
         """
         l = []
-        day = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(dayGanZhi))
-        month = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(monthGanZhi))
+        day = LunarUtil.__hex(LunarUtil.getJiaZiIndex(dayGanZhi))
+        month = LunarUtil.__hex(LunarUtil.getJiaZiIndex(monthGanZhi))
         right = LunarUtil.__DAY_YI_JI
         index = right.find(day + "=")
         while index > -1:
@@ -1202,7 +1204,7 @@ class LunarUtil:
         :return: 日吉神
         """
         l = []
-        day = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(dayGanZhi))
+        day = LunarUtil.__hex(LunarUtil.getJiaZiIndex(dayGanZhi))
         month = hex(abs(lunarMonth)).replace("0x", "").upper()
         index = LunarUtil.__DAY_SHEN_SHA.find(month + day + "=")
         if index > -1:
@@ -1226,7 +1228,7 @@ class LunarUtil:
         :return: 日凶煞
         """
         l = []
-        day = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(dayGanZhi))
+        day = LunarUtil.__hex(LunarUtil.getJiaZiIndex(dayGanZhi))
         month = hex(abs(lunarMonth)).replace("0x", "").upper()
         index = LunarUtil.__DAY_SHEN_SHA.find(month + day + "=")
         if index > -1:
@@ -1250,8 +1252,8 @@ class LunarUtil:
         :return: 宜
         """
         l = []
-        day = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(dayGanZhi))
-        time = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(timeGanZhi))
+        day = LunarUtil.__hex(LunarUtil.getJiaZiIndex(dayGanZhi))
+        time = LunarUtil.__hex(LunarUtil.getJiaZiIndex(timeGanZhi))
         index = LunarUtil.__TIME_YI_JI.find(day + time + "=")
         if index > -1:
             left = LunarUtil.__TIME_YI_JI[index + 5:]
@@ -1274,8 +1276,8 @@ class LunarUtil:
         :return: 忌
         """
         l = []
-        day = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(dayGanZhi))
-        time = LunarUtil.__hex(LunarUtil.__getJiaZiIndex(timeGanZhi))
+        day = LunarUtil.__hex(LunarUtil.getJiaZiIndex(dayGanZhi))
+        time = LunarUtil.__hex(LunarUtil.getJiaZiIndex(timeGanZhi))
         index = LunarUtil.__TIME_YI_JI.find(day + time + "=")
         if index > -1:
             left = LunarUtil.__TIME_YI_JI[index + 5:]

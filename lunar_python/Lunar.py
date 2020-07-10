@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from math import pi, cos, sin
+
+from . import NineStar
 from .util import LunarUtil, SolarUtil
 
 
@@ -751,6 +753,83 @@ class Lunar:
         :return: 日凶煞
         """
         return LunarUtil.getDayXiongSha(self.getMonth(), self.getDayInGanZhi())
+
+    def getYueXiang(self):
+        """
+        获取月相
+        :return: 月相
+        """
+        return LunarUtil.YUE_XIANG[self.__day]
+
+    def getYearNineStar(self):
+        index = LunarUtil.BASE_YEAR_JIU_XING_INDEX - (self.__year - LunarUtil.BASE_YEAR) % 9
+        if index < 0:
+            index += 9
+        return NineStar.fromIndex(index)
+
+    def getMonthNineStar(self):
+        start = 2
+        yearZhi = self.getYearZhi()
+        if yearZhi in "子午卯酉":
+            start = 8
+        elif yearZhi in "辰戌丑未":
+            start = 5
+        monthIndex = self.__monthZhiIndex - 2
+        index = start - monthIndex - 1
+        if index < 0:
+            index += 9
+        return NineStar.fromIndex(index)
+
+    def getDayNineStar(self):
+        solarYmd = self.__solar.toYmd()
+        yuShui = self.__jieQi["雨水"].toYmd()
+        guYu = self.__jieQi["谷雨"].toYmd()
+        xiaZhi = self.__jieQi["夏至"].toYmd()
+        chuShu = self.__jieQi["处暑"].toYmd()
+        shuangJiang = self.__jieQi["霜降"].toYmd()
+
+        start = 6
+        asc = False
+        if self.__jieQi["冬至"].toYmd() <= solarYmd < yuShui:
+            asc = True
+            start = 1
+        elif yuShui <= solarYmd < guYu:
+            asc = True
+            start = 7
+        elif guYu <= solarYmd < xiaZhi:
+            asc = True
+            start = 4
+        elif xiaZhi <= solarYmd < chuShu:
+            start = 9
+        elif chuShu <= solarYmd < shuangJiang:
+            start = 3
+        ganZhiIndex = LunarUtil.getJiaZiIndex(self.getDayInGanZhi()) % 9
+        index = start + ganZhiIndex - 1 if asc else start - ganZhiIndex - 1
+
+        if index > 8:
+            index -= 9
+        if index < 0:
+            index += 9
+        return NineStar.fromIndex(index)
+
+    def getTimeNineStar(self):
+        solarYmd = self.__solar.toYmd()
+        asc = False
+        if self.__jieQi["冬至"] <= solarYmd < self.__jieQi["夏至"]:
+            asc = True
+        start = 7 if asc else 3
+        dayZhi = self.getDayZhi()
+        if dayZhi in "子午卯酉":
+            start = 1 if asc else 9
+        elif dayZhi in "辰戌丑未":
+            start = 4 if asc else 6
+        index = start + self.__timeZhiIndex - 1 if asc else start - self.__timeZhiIndex - 1
+
+        if index > 8:
+            index -= 9
+        if index < 0:
+            index += 9
+        return NineStar.fromIndex(index)
 
     def getJieQiTable(self):
         return self.__jieQi

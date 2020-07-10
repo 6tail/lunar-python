@@ -137,7 +137,7 @@ class SolarUtil:
         if year % 100 == 0:
             leap = False
         if year % 400 == 0:
-            leap = True;
+            leap = True
         return leap
 
     @staticmethod
