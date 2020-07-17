@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-from math import ceil, floor
+from math import ceil
 from .util import SolarUtil
 
 
@@ -22,50 +22,40 @@ class Solar:
         self.__calendar = datetime(year, month, day, hour, minute, second)
 
     @staticmethod
-    def __int2(v):
-        v = int(floor(v))
-        return v + 1 if v < 0 else v
-
-    @staticmethod
     def fromDate(date):
         return Solar(date.year, date.month, date.day, date.hour, date.minute, date.second)
 
     @staticmethod
     def fromJulianDay(julianDay):
-        julianDay += 0.5
-        # 日数的整数部份
-        a = Solar.__int2(julianDay)
-        # 日数的小数部分
-        f = julianDay - a
-        if a > 2299161:
-            dd = Solar.__int2((a - 1867216.25) / 36524.25)
-            a += 1 + dd - Solar.__int2(dd / 4)
-        # 向前移4年零2个月
-        a += 1524
-        y = Solar.__int2((a - 122.1) / 365.25)
-        # 去除整年日数后余下日数
-        dd = a - Solar.__int2(365.25 * y)
-        m = int(Solar.__int2(dd / 30.6001))
-        # 去除整月日数后余下日数
-        d = int(Solar.__int2(dd - Solar.__int2(m * 30.6001)))
-        y -= 4716
-        m -= 1
-        if m > 12:
-            m -= 12
-        if m <= 2:
-            y += 1
-        # 日的小数转为时分秒
+        d = int(julianDay + 0.5)
+        f = julianDay + 0.5 - d
+        if d >= 2299161:
+            c = int((d - 1867216.25) / 36524.25)
+            d += 1 + c - int(c / 4)
+        d += 1524
+        year = int((d - 122.1) / 365.25)
+        d -= int(365.25 * year)
+        month = int(d / 30.601)
+        d -= int(30.601 * month)
+        day = d
+        if month > 13:
+            month -= 13
+            year -= 4715
+        else:
+            month -= 1
+            year -= 4716
         f *= 24
-        h = int(Solar.__int2(f))
+        hour = int(f)
 
-        f -= h
+        f -= hour
         f *= 60
-        mi = Solar.__int2(f)
+        minute = int(f)
 
-        f -= mi
+        f -= minute
         f *= 60
-        s = Solar.__int2(f)
-        return Solar(y, m, d, h, mi, s)
+        second = int(round(f))
+
+        return Solar(year, month, day, hour, minute, second)
 
     @staticmethod
     def fromYmdHms(year, month, day, hour, minute, second):
@@ -167,31 +157,25 @@ class Solar:
         """
         y = self.__year
         m = self.__month
+        d = self.__day + ((self.__second / 60 + self.__minute) / 60 + self.__hour) / 24
         n = 0
-
+        g = False
+        if y * 372 + m * 31 + int(d) >= 588829:
+            g = True
         if m <= 2:
             m += 12
             y -= 1
-
-        # 判断是否为UTC日1582 * 372 + 10 * 31 + 15
-        if self.__year * 372 + self.__month * 31 + self.__day >= 588829:
-            n = Solar.__int2(y / 100)
-            # 加百年闰
-            n = 2 - n + Solar.__int2(n / 4)
-
-        # 加上年引起的偏移日数
-        n += Solar.__int2(365.2500001 * (y + 4716))
-        # 加上月引起的偏移日数及日偏移数
-        n += Solar.__int2(30.6 * (m + 1)) + self.__day
-        n += ((self.__second * 1.0 / 60 + self.__minute) / 60 + self.__hour) / 24 - 1524.5
-        return n
+        if g:
+            n = int(y / 100)
+            n = 2 - n + int(n / 4)
+        return int(365.25 * (y + 4716)) + int(30.6001 * (m + 1)) + d + n - 1524.5
 
     def getLunar(self):
         """
         获取农历
         :return: 农历
         """
-        from lunar_python import Lunar
+        from .Lunar import Lunar
         return Lunar.fromDate(self.__calendar)
 
     def next(self, days):

@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md')) as f:
 
 setup(
     name='lunar_python',
-    version='1.0.6',
+    version='1.0.7',
     packages=['lunar_python', 'lunar_python.util'],
     url='https://github.com/6tail/lunar-python',
     license='MIT',
