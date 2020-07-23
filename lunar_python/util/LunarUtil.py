@@ -994,18 +994,19 @@ class LunarUtil:
         :param day: 农历日
         :return: 距离天数
         """
+        if LunarUtil.BASE_YEAR == year and LunarUtil.BASE_MONTH == month:
+            return day - LunarUtil.BASE_DAY
         y = LunarUtil.BASE_YEAR
         m = LunarUtil.BASE_MONTH
         diff = LunarUtil.getDaysOfMonth(y, m) - LunarUtil.BASE_DAY
-        m = LunarUtil.nextMonth(y, m)
-        while True:
-            diff += LunarUtil.getDaysOfMonth(y, m)
+        while y != year or m != month:
             m = LunarUtil.nextMonth(y, m)
             if m == 1:
                 y += 1
             if y == year and m == month:
                 diff += day
-                break
+            else:
+                diff += LunarUtil.getDaysOfMonth(y, m)
         return diff
 
     @staticmethod

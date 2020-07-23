@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from math import ceil
-from .util import SolarUtil
+from .util import SolarUtil, LunarUtil
 
 
 class Solar:
@@ -54,7 +54,8 @@ class Solar:
         f -= minute
         f *= 60
         second = int(round(f))
-
+        if second == 60:
+            second = 59
         return Solar(year, month, day, hour, minute, second)
 
     @staticmethod
@@ -64,6 +65,60 @@ class Solar:
     @staticmethod
     def fromYmd(year, month, day):
         return Solar(year, month, day, 0, 0, 0)
+
+    @staticmethod
+    def fromBaZi(yearGanZhi, monthGanZhi, dayGanZhi, timeGanZhi):
+        l = []
+        today = Solar.fromDate(datetime.now())
+        lunar = today.getLunar()
+        offsetYear = LunarUtil.getJiaZiIndex(lunar.getYearInGanZhiExact()) - LunarUtil.getJiaZiIndex(yearGanZhi)
+        if offsetYear < 0:
+            offsetYear = offsetYear + 60
+        startYear = today.getYear() - offsetYear
+        hour = 0
+        timeZhi = timeGanZhi[len(timeGanZhi) / 2:]
+        for i in range(0, len(LunarUtil.ZHI)):
+            if LunarUtil.ZHI[i] == timeZhi:
+                hour = (i - 1) * 2
+        while startYear >= SolarUtil.BASE_YEAR - 1:
+            year = startYear - 1
+            counter = 0
+            month = 12
+            found = False
+            while counter < 15:
+                if year >= SolarUtil.BASE_YEAR:
+                    day = 1
+                    if year == SolarUtil.BASE_YEAR and month == SolarUtil.BASE_MONTH:
+                        day = SolarUtil.BASE_DAY
+                    solar = Solar.fromYmdHms(year, month, day, hour, 0, 0)
+                    lunar = solar.getLunar()
+                    if lunar.getYearInGanZhiExact() == yearGanZhi and lunar.getMonthInGanZhiExact() == monthGanZhi:
+                        found = True
+                        break
+                month += 1
+                if month > 12:
+                    month = 1
+                    year += 1
+                counter += 1
+            if found:
+                counter = 0
+                month -= 1
+                if month < 1:
+                    month = 12
+                    year -= 1
+                day = 1
+                if year == SolarUtil.BASE_YEAR and month == SolarUtil.BASE_MONTH:
+                    day = SolarUtil.BASE_DAY
+                solar = Solar.fromYmdHms(year, month, day, hour, 0, 0)
+                while counter < 61:
+                    lunar = solar.getLunar()
+                    if lunar.getYearInGanZhiExact() == yearGanZhi and lunar.getMonthInGanZhiExact() == monthGanZhi and lunar.getDayInGanZhiExact() == dayGanZhi and lunar.getTimeInGanZhi() == timeGanZhi:
+                        l.append(solar)
+                        break
+                    solar = solar.next(1)
+                    counter += 1
+            startYear -= 60
+        return l
 
     def isLeapYear(self):
         """

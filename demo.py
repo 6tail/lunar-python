@@ -26,3 +26,8 @@ print solar.getJulianDay()
 
 solar = Solar.fromJulianDay(2459045.5)
 print solar.toYmdHms()
+
+# 八字转阳历
+l = Solar.fromBaZi("庚子", "戊子", "己卯", "庚午")
+for d in l:
+    print d.toFullString()
