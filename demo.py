@@ -8,6 +8,22 @@ jieQi = lunar.getJieQiTable()
 for k in lunar.getJieQiList():
     print k + ' = ' + jieQi[k].toYmdHms()
 
+# 遍历八字
+for v in lunar.getBaZi():
+    print v
+
+# 遍历八字五行
+for v in lunar.getBaZiWuXing():
+    print v
+
+# 遍历八字天干十神
+for v in lunar.getBaZiShiShenGan():
+    print v
+
+# 遍历八字地支十神
+for v in lunar.getBaZiShiShenZhi():
+    print v
+
 # 通过指定年月日初始化阴历
 lunar = Lunar.fromYmd(1986, 4, 21)
 

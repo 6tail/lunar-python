@@ -788,8 +788,9 @@ class Lunar:
         l = []
         for i in range(0, len(baZi)):
             ganZhi = baZi[i]
-            gan = ganZhi[0:1]
-            zhi = ganZhi[1:]
+            size = len(ganZhi)/2
+            gan = ganZhi[0:size]
+            zhi = ganZhi[size:]
             l.append(LunarUtil.WU_XING_GAN[gan] + LunarUtil.WU_XING_ZHI[zhi])
         return l
 
@@ -803,10 +804,10 @@ class Lunar:
 
     def getBaZiShiShenGan(self):
         baZi = self.getBaZi()
-        yearGan = baZi[0][0:1]
-        monthGan = baZi[1][0:1]
-        dayGan = baZi[2][0:1]
-        timeGan = baZi[3][0:1]
+        yearGan = baZi[0][0:len(baZi[0])/2]
+        monthGan = baZi[1][0:len(baZi[1])/2]
+        dayGan = baZi[2][0:len(baZi[2])/2]
+        timeGan = baZi[3][0:len(baZi[3])/2]
         l = []
         l.append(LunarUtil.SHI_SHEN_GAN[dayGan + yearGan])
         l.append(LunarUtil.SHI_SHEN_GAN[dayGan + monthGan])
@@ -816,11 +817,11 @@ class Lunar:
 
     def getBaZiShiShenZhi(self):
         baZi = self.getBaZi()
-        dayGan = baZi[2][0:1]
+        dayGan = baZi[2][0:len(baZi[2])/2]
         l = []
         for i in range(0, len(baZi)):
             ganZhi = baZi[i]
-            zhi = ganZhi[1:]
+            zhi = ganZhi[len(ganZhi)/2:]
             l.append(LunarUtil.SHI_SHEN_ZHI[dayGan + zhi + LunarUtil.ZHI_HIDE_GAN[zhi][0]])
         return l
 
