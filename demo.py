@@ -9,43 +9,36 @@ for k in lunar.getJieQiList():
     print k + ' = ' + jieQi[k].toYmdHms()
 print ''
 
-# 遍历八字
-for v in lunar.getBaZi():
-    print v
-print ''
+# 八字
+baZi = lunar.getEightChar()
+print baZi.getYear()+' '+baZi.getMonth()+' '+baZi.getDay()+' '+baZi.getTime()
 
-# 遍历八字五行
-for v in lunar.getBaZiWuXing():
-    print v
-print ''
+# 八字五行
+print baZi.getYearWuXing()+' '+baZi.getMonthWuXing()+' '+baZi.getDayWuXing()+' '+baZi.getTimeWuXing()
 
-# 遍历八字天干十神
-for v in lunar.getBaZiShiShenGan():
-    print v
-print ''
+# 八字天干十神
+print baZi.getYearShiShenGan()+' '+baZi.getMonthShiShenGan()+' '+baZi.getDayShiShenGan()+' '+baZi.getTimeShiShenGan()
 
-# 遍历八字地支十神
-for v in lunar.getBaZiShiShenZhi():
-    print v
-print ''
+# 八字地支十神
+print baZi.getYearShiShenZhi()[0]+' '+baZi.getMonthShiShenZhi()[0]+' '+baZi.getDayShiShenZhi()[0]+' '+baZi.getTimeShiShenZhi()[0]
 
 # 遍历八字年支十神
-for v in lunar.getBaZiShiShenYearZhi():
+for v in baZi.getYearShiShenZhi():
     print v
 print ''
 
 # 遍历八字月支十神
-for v in lunar.getBaZiShiShenMonthZhi():
+for v in baZi.getMonthShiShenZhi():
     print v
 print ''
 
 # 遍历八字日支十神
-for v in lunar.getBaZiShiShenDayZhi():
+for v in baZi.getDayShiShenZhi():
     print v
 print ''
 
 # 遍历八字时支十神
-for v in lunar.getBaZiShiShenTimeZhi():
+for v in baZi.getTimeShiShenZhi():
     print v
 print ''
 

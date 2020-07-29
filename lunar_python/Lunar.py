@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from math import cos, sin, floor
 
 from . import NineStar
+from . import EightChar
 from .Solar import Solar
 from .util import LunarUtil, SolarUtil
 
@@ -73,6 +74,7 @@ class Lunar:
         self.__solar = self.__toSolar()
         self.__jieQi = {}
         self.__jieQiList = []
+        self.__eightChar = None
         self.__compute()
 
     def __toSolar(self):
@@ -790,84 +792,46 @@ class Lunar:
                 l.append(f)
         return l
 
+    def getEightChar(self):
+        if self.__eightChar is None:
+            self.__eightChar = EightChar.fromLunar(self)
+        return self.__eightChar
+
     def getBaZi(self):
-        l = []
-        l.append(self.getYearInGanZhiExact())
-        l.append(self.getMonthInGanZhiExact())
-        l.append(self.getDayInGanZhiExact())
-        l.append(self.getTimeInGanZhi())
-        return l
+        baZi = self.getEightChar()
+        return [baZi.getYear(), baZi.getMonth(), baZi.getDay(), baZi.getTime()]
 
     def getBaZiWuXing(self):
-        baZi = self.getBaZi()
-        l = []
-        for i in range(0, len(baZi)):
-            ganZhi = baZi[i]
-            size = len(ganZhi) / 2
-            gan = ganZhi[0:size]
-            zhi = ganZhi[size:]
-            l.append(LunarUtil.WU_XING_GAN[gan] + LunarUtil.WU_XING_ZHI[zhi])
-        return l
+        baZi = self.getEightChar()
+        return [baZi.getYearWuXing(), baZi.getMonthWuXing(), baZi.getDayWuXing(), baZi.getTimeWuXing()]
 
     def getBaZiNaYin(self):
-        baZi = self.getBaZi()
-        l = []
-        for i in range(0, len(baZi)):
-            ganZhi = baZi[i]
-            l.append(LunarUtil.NAYIN[ganZhi])
-        return l
+        baZi = self.getEightChar()
+        return [baZi.getYearNaYin(), baZi.getMonthNaYin(), baZi.getDayNaYin(), baZi.getTimeNaYin()]
 
     def getBaZiShiShenGan(self):
-        baZi = self.getBaZi()
-        yearGan = baZi[0][0:len(baZi[0]) / 2]
-        monthGan = baZi[1][0:len(baZi[1]) / 2]
-        dayGan = baZi[2][0:len(baZi[2]) / 2]
-        timeGan = baZi[3][0:len(baZi[3]) / 2]
-        l = []
-        l.append(LunarUtil.SHI_SHEN_GAN[dayGan + yearGan])
-        l.append(LunarUtil.SHI_SHEN_GAN[dayGan + monthGan])
-        l.append('日主')
-        l.append(LunarUtil.SHI_SHEN_GAN[dayGan + timeGan])
-        return l
+        baZi = self.getEightChar()
+        return [baZi.getYearShiShenGan(), baZi.getMonthShiShenGan(), baZi.getDayShiShenGan(), baZi.getTimeShiShenGan()]
 
     def getBaZiShiShenZhi(self):
-        baZi = self.getBaZi()
-        dayGan = baZi[2][0:len(baZi[2]) / 2]
-        l = []
-        for i in range(0, len(baZi)):
-            ganZhi = baZi[i]
-            zhi = ganZhi[len(ganZhi) / 2:]
-            l.append(LunarUtil.SHI_SHEN_ZHI[dayGan + zhi + LunarUtil.ZHI_HIDE_GAN[zhi][0]])
-        return l
-
-    def __getBaZiShiShenZhi(self, zhi):
-        baZi = self.getBaZi()
-        dayGan = baZi[2][0:len(baZi[2]) / 2]
-        hideGan = LunarUtil.ZHI_HIDE_GAN[zhi]
-        l = []
-        for i in range(0, len(hideGan)):
-            l.append(LunarUtil.SHI_SHEN_ZHI[dayGan + zhi + hideGan[i]])
-        return l
+        baZi = self.getEightChar()
+        return [baZi.getYearShiShenZhi()[0], baZi.getMonthShiShenZhi()[0], baZi.getDayShiShenZhi()[0], baZi.getTimeShiShenZhi()[0]]
 
     def getBaZiShiShenYearZhi(self):
-        baZi = self.getBaZi()
-        zhi = baZi[0][len(baZi[0]) / 2:]
-        return self.__getBaZiShiShenZhi(zhi)
+        baZi = self.getEightChar()
+        return baZi.getYearShiShenZhi()
 
     def getBaZiShiShenMonthZhi(self):
-        baZi = self.getBaZi()
-        zhi = baZi[1][len(baZi[1]) / 2:]
-        return self.__getBaZiShiShenZhi(zhi)
+        baZi = self.getEightChar()
+        return baZi.getMonthShiShenZhi()
 
     def getBaZiShiShenDayZhi(self):
-        baZi = self.getBaZi()
-        zhi = baZi[2][len(baZi[2]) / 2:]
-        return self.__getBaZiShiShenZhi(zhi)
+        baZi = self.getEightChar()
+        return baZi.getDayShiShenZhi()
 
     def getBaZiShiShenTimeZhi(self):
-        baZi = self.getBaZi()
-        zhi = baZi[3][len(baZi[3]) / 2:]
-        return self.__getBaZiShiShenZhi(zhi)
+        baZi = self.getEightChar()
+        return baZi.getTimeShiShenZhi()
 
     def getZhiXing(self):
         offset = self.__dayZhiIndex - self.__monthZhiIndex
@@ -1033,6 +997,30 @@ class Lunar:
 
     def getJieQiList(self):
         return self.__jieQiList
+
+    def getTimeGanIndex(self):
+        return self.__timeGanIndex
+
+    def getTimeZhiIndex(self):
+        return self.__timeZhiIndex
+
+    def getDayGanIndexExact(self):
+        return self.__dayGanIndexExact
+
+    def getDayZhiIndexExact(self):
+        return self.__dayZhiIndexExact
+
+    def getMonthGanIndexExact(self):
+        return self.__monthGanIndexExact
+
+    def getMonthZhiIndexExact(self):
+        return self.__monthZhiIndexExact
+
+    def getYearGanIndexExact(self):
+        return self.__yearGanIndexExact
+
+    def getYearZhiIndexExact(self):
+        return self.__yearZhiIndexExact
 
     def __str__(self):
         return self.toString()
