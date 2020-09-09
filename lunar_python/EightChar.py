@@ -386,3 +386,15 @@ class EightChar:
         :return: 纳音
         """
         return LunarUtil.NAYIN.get(self.getShenGong())
+
+    def getLunar(self):
+        return self.__lunar
+
+    def getYun(self, gender):
+        """
+        获取运
+        :param gender: 性别：1男，0女
+        :return: 运
+        """
+        from .eightchar import Yun
+        return Yun(self, gender)

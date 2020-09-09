@@ -2,9 +2,7 @@
 from datetime import datetime, timedelta
 from math import cos, sin, floor
 
-from . import NineStar
-from . import EightChar
-from .Solar import Solar
+from . import Solar, NineStar, EightChar, JieQi
 from .util import LunarUtil, SolarUtil
 
 
@@ -1021,6 +1019,73 @@ class Lunar:
 
     def getYearZhiIndexExact(self):
         return self.__yearZhiIndexExact
+
+    def getNextJie(self):
+        """
+        获取下一节（顺推的第一个节）
+        :return: 节气
+        """
+        return self.__getNearJieQi(True, LunarUtil.JIE)
+
+    def getPrevJie(self):
+        """
+        获取上一节（逆推的第一个节）
+        :return: 节气
+        """
+        return self.__getNearJieQi(False, LunarUtil.JIE)
+
+    def getNextJieQi(self):
+        """
+        获取下一节气（顺推的第一个节气）
+        :return: 节气
+        """
+        return self.__getNearJieQi(True, None)
+
+    def getPrevJieQi(self):
+        """
+        获取上一节气（逆推的第一个节气）
+        :return: 节气
+        """
+        return self.__getNearJieQi(False, None)
+
+    def __getNearJieQi(self, forward, conditions):
+        """
+        获取最近的节气，如果未找到匹配的，返回null
+        :param forward: 是否顺推，true为顺推，false为逆推
+        :param conditions: 过滤条件，如果设置过滤条件，仅返回匹配该名称的
+        :return: 节气
+        """
+        name = None
+        near = None
+        filters = set()
+        if conditions is not None:
+            for cond in conditions:
+                filters.add(cond)
+        is_filter = len(filters) > 0
+        today = self.__solar.toYmdHms()
+        for jq in self.__jieQi:
+            if "DONG_ZHI" == jq:
+                jq = "冬至"
+            if is_filter:
+                if not filters.__contains__(jq):
+                    continue
+            solar = self.__jieQi[jq]
+            day = solar.toYmdHms()
+            if forward:
+                if day < today:
+                    continue
+                if near is None or day < near.toYmdHms():
+                    name = jq
+                    near = solar
+            else:
+                if day > today:
+                    continue
+                if near is None or day > near.toYmdHms():
+                    name = jq
+                    near = solar
+        if near is None:
+            return None
+        return JieQi(name, near)
 
     def __str__(self):
         return self.toString()

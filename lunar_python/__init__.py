@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .JieQi import JieQi
 from .NineStar import NineStar
 from .EightChar import EightChar
 from .Solar import Solar
