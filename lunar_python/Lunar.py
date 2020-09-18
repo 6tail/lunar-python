@@ -10,6 +10,10 @@ class Lunar:
     """
     阴历日期
     """
+    JIE_QI_PREPEND = "DA_XUE"
+    JIE_QI_APPEND = "DONG_ZHI"
+    JIE_QI_FIRST = "冬至"
+    JIE_QI_LAST = "大雪"
     __PI = 3.141592653589793
     __SECOND_PER_RAD = 180 * 3600 / __PI
     __JIE_QI = ("冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪")
@@ -250,18 +254,25 @@ class Lunar:
         w = floor((jd - 355 + 183) / 365.2422) * 365.2422 + 355
         if self.__calcJieQi(w) > jd:
             w -= 365.2422
+        jie_qi_list = []
+
+        name = Lunar.JIE_QI_PREPEND
+        q = self.__calcJieQi(w - 15.2184)
+        self.__jieQi[name] = Solar.fromJulianDay(self.__qiAccurate2(q) + Solar.J2000)
+        jie_qi_list.append(name)
+
         size = len(Lunar.__JIE_QI)
-        jieQiList = []
         for i in range(0, size):
             name = Lunar.__JIE_QI[i]
             q = self.__calcJieQi(w + 15.2184 * i)
             self.__jieQi[name] = Solar.fromJulianDay(self.__qiAccurate2(q) + Solar.J2000)
-            jieQiList.append(name)
-        name = "DONG_ZHI"
+            jie_qi_list.append(name)
+
+        name = Lunar.JIE_QI_APPEND
         q = self.__calcJieQi(w + 15.2184 * size)
         self.__jieQi[name] = Solar.fromJulianDay(self.__qiAccurate2(q) + Solar.J2000)
-        jieQiList.append(name)
-        self.__jieQiList = jieQiList
+        jie_qi_list.append(name)
+        self.__jieQiList = jie_qi_list
 
     def __computeYear(self):
         yearGanIndex = (self.__year + LunarUtil.BASE_YEAR_GAN_ZHI_INDEX) % 10
@@ -734,6 +745,9 @@ class Lunar:
             d = self.__jieQi[jie]
             if d.getYear() == self.__solar.getYear() and d.getMonth() == self.__solar.getMonth() and d.getDay() == self.__solar.getDay():
                 return jie
+        d = self.__jieQi[Lunar.JIE_QI_PREPEND]
+        if d.getYear() == self.__solar.getYear() and d.getMonth() == self.__solar.getMonth() and d.getDay() == self.__solar.getDay():
+            return Lunar.JIE_QI_LAST
         return ""
 
     def getQi(self):
@@ -742,9 +756,9 @@ class Lunar:
             d = self.__jieQi[qi]
             if d.getYear() == self.__solar.getYear() and d.getMonth() == self.__solar.getMonth() and d.getDay() == self.__solar.getDay():
                 return qi
-        d = self.__jieQi["DONG_ZHI"]
+        d = self.__jieQi[Lunar.JIE_QI_APPEND]
         if d.getYear() == self.__solar.getYear() and d.getMonth() == self.__solar.getMonth() and d.getDay() == self.__solar.getDay():
-            return "冬至"
+            return Lunar.JIE_QI_FIRST
         return ""
 
     def getWeek(self):
@@ -1064,12 +1078,14 @@ class Lunar:
         is_filter = len(filters) > 0
         today = self.__solar.toYmdHms()
         for jq in self.__jieQi:
-            if "DONG_ZHI" == jq:
-                jq = "冬至"
+            solar = self.__jieQi[jq]
+            if Lunar.JIE_QI_APPEND == jq:
+                jq = Lunar.JIE_QI_FIRST
+            if Lunar.JIE_QI_PREPEND == jq:
+                jq = Lunar.JIE_QI_LAST
             if is_filter:
                 if not filters.__contains__(jq):
                     continue
-            solar = self.__jieQi[jq]
             day = solar.toYmdHms()
             if forward:
                 if day < today:
