@@ -16,10 +16,10 @@ lunar是一款无第三方依赖的公历(阳历)和农历(阴历、老黄历)�
     lunar = Lunar.fromYmd(1986, 4, 21)
      
     # 打印阴历
-    print lunar.toFullString()
+    print(lunar.toFullString())
      
     # 阴历转阳历并打印
-    print lunar.getSolar().toFullString()
+    print(lunar.getSolar().toFullString())
 
 输出结果：
 

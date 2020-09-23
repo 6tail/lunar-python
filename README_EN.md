@@ -16,10 +16,10 @@ lunar is a calendar library for Solar and Chinese Lunar.
     lunar = Lunar.fromYmd(1986, 4, 21)
      
     # print lunar
-    print lunar.toFullString()
+    print(lunar.toFullString())
      
     # convert to solar and print
-    print lunar.getSolar().toFullString()
+    print(lunar.getSolar().toFullString())
 
 Output:
 
