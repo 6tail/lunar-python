@@ -1048,6 +1048,20 @@ class Lunar:
         """
         return self.__getNearJieQi(False, LunarUtil.JIE)
 
+    def getNextQi(self):
+        """
+        获取下一气令（顺推的第一个气令）
+        :return: 节气
+        """
+        return self.__getNearJieQi(True, LunarUtil.QI)
+
+    def getPrevQi(self):
+        """
+        获取上一气令（逆推的第一个气令）
+        :return: 节气
+        """
+        return self.__getNearJieQi(False, LunarUtil.QI)
+
     def getNextJieQi(self):
         """
         获取下一节气（顺推的第一个节气）
@@ -1103,6 +1117,47 @@ class Lunar:
             return None
         return JieQi(name, near)
 
+    def getJieQi(self):
+        """
+        获取节气名称，如果无节气，返回空字符串
+        :return: 节气名称
+        """
+        name = ""
+        for jq in self.__jieQi:
+            d = self.__jieQi[jq]
+            if d.getYear() == self.__solar.getYear() and d.getMonth() == self.__solar.getMonth() and d.getDay() == self.__solar.getDay():
+                name = jq
+                break
+        if Lunar.JIE_QI_APPEND == name:
+            name = Lunar.JIE_QI_FIRST
+        elif Lunar.JIE_QI_PREPEND == name:
+            name = Lunar.JIE_QI_LAST
+        return name
+
+    def getCurrentJieQi(self):
+        """
+        获取当天节气对象，如果无节气，返回None
+        :return: 节气对象
+        """
+        name = self.getJieQi()
+        return JieQi(name, self.__solar) if name.length() > 0 else None
+
+    def getCurrentJie(self):
+        """
+        获取当天节令对象，如果无节令，返回None
+        :return: 节气对象
+        """
+        name = self.getJie()
+        return JieQi(name, self.__solar) if name.length() > 0 else None
+
+    def getCurrentQi(self):
+        """
+        获取当天气令对象，如果无气令，返回None
+        :return: 节气对象
+        """
+        name = self.getQi()
+        return JieQi(name, self.__solar) if name.length() > 0 else None
+
     def __str__(self):
         return self.toString()
 
@@ -1121,7 +1176,7 @@ class Lunar:
             s += ' (' + f + ')'
         for f in self.getOtherFestivals():
             s += ' (' + f + ')'
-        jq = self.getJie() + self.getQi()
+        jq = self.getJieQi()
         if len(jq) > 0:
             s += ' [' + jq + ']'
         s += ' ' + self.getGong() + '方' + self.getShou()

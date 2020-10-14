@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from .util import LunarUtil
 
 
 class JieQi:
@@ -7,7 +8,7 @@ class JieQi:
     """
 
     def __init__(self, name, solar):
-        self.__name = name
+        self.setName(name)
         self.__solar = solar
 
     def getName(self):
@@ -23,6 +24,15 @@ class JieQi:
         :param name: 名称
         """
         self.__name = name
+        for key in LunarUtil.JIE:
+            if key == name:
+                self.__jie = True
+                return
+
+        for key in LunarUtil.QI:
+            if key == name:
+                self.__qi = True
+                return
 
     def getSolar(self):
         """
@@ -37,3 +47,20 @@ class JieQi:
         :param solar: 阳历日期
         """
         self.__solar = solar
+
+    def isJie(self):
+        """
+        是否节令
+        :return: true/false
+        """
+        return self.__jie
+
+    def isQi(self):
+        """
+        是否气令
+        :return: true/false
+        """
+        return self.__qi
+
+    def __str__(self):
+        return self.__name
