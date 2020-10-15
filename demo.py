@@ -42,6 +42,11 @@ for v in baZi.getTimeShiShenZhi():
     print v
 print ''
 
+solar = Solar(1988, 2, 15, 23, 30, 0)
+lunar = solar.getLunar()
+baZi = lunar.getEightChar()
+print baZi.getYear() + ' ' + baZi.getMonth() + ' ' + baZi.getDay() + ' ' + baZi.getTime()
+
 solar = Solar(1983, 2, 15, 20, 0, 0)
 lunar = solar.getLunar()
 baZi = lunar.getEightChar()

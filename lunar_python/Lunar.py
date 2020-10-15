@@ -275,6 +275,7 @@ class Lunar:
         self.__jieQiList = jie_qi_list
 
     def __computeYear(self):
+        # 以正月初一开始
         yearGanIndex = (self.__year + LunarUtil.BASE_YEAR_GAN_ZHI_INDEX) % 10
         yearZhiIndex = (self.__year + LunarUtil.BASE_YEAR_GAN_ZHI_INDEX) % 12
 
@@ -286,25 +287,43 @@ class Lunar:
         gExact = yearGanIndex
         zExact = yearZhiIndex
 
+        # 获取立春的阳历时刻
+        liChun = self.__jieQi["立春"]
+
+        # 阳历和阴历年份相同代表正月初一及以后
         if self.__year == self.__solar.getYear():
-            # 获取立春的阳历时刻
-            liChun = self.__jieQi["立春"]
             # 立春日期判断
             if self.__solar.toYmd() < liChun.toYmd():
                 g -= 1
-                if g < 0:
-                    g += 10
                 z -= 1
-                if z < 0:
-                    z += 12
             # 立春交接时刻判断
             if self.__solar.toYmdHms() < liChun.toYmdHms():
                 gExact -= 1
-                if gExact < 0:
-                    gExact += 10
                 zExact -= 1
-                if zExact < 0:
-                    zExact += 12
+        else:
+            if self.__solar.toYmd() >= liChun.toYmd():
+                g += 1
+                z += 1
+            if self.__solar.toYmdHms() >= liChun.toYmdHms():
+                gExact += 1
+                zExact += 1
+
+        if g < 0:
+            g += 10
+        if g >= 10:
+            g -= 10
+        if z < 0:
+            z += 12
+        if z >= 12:
+            z -= 12
+        if gExact < 0:
+            gExact += 10
+        if gExact >= 10:
+            gExact -= 10
+        if zExact < 0:
+            zExact += 12
+        if zExact >= 12:
+            zExact -= 12
 
         self.__yearGanIndex = yearGanIndex
         self.__yearZhiIndex = yearZhiIndex
@@ -710,10 +729,10 @@ class Lunar:
         return self.getDayChongDesc()
 
     def getDayChongDesc(self):
-        return '(' + self.getDayChongGan() + self.getDayChong() + ')' + self.getDayChongShengXiao()
+        return "(" + self.getDayChongGan() + self.getDayChong() + ")" + self.getDayChongShengXiao()
 
     def getTimeChongDesc(self):
-        return '(' + self.getTimeChongGan() + self.getTimeChong() + ')' + self.getTimeChongShengXiao()
+        return "(" + self.getTimeChongGan() + self.getTimeChong() + ")" + self.getTimeChongShengXiao()
 
     def getSha(self):
         return self.getDaySha()
@@ -1158,35 +1177,80 @@ class Lunar:
         name = self.getQi()
         return JieQi(name, self.__solar) if name.length() > 0 else None
 
+    def next(self, days):
+        """
+        获取往后推几天的农历日期，如果要往前推，则天数用负数
+        :param days: 天数
+        :return: 农历日期
+        """
+        y = self.__year
+        m = self.__month
+        d = self.__day
+        if days > 0:
+            daysInMonth = LunarUtil.getDaysOfMonth(y, m)
+            rest = self.__day + days
+            while daysInMonth < rest:
+                if m > 0:
+                    if LunarUtil.getLeapMonth(y) != m:
+                        m += 1
+                    else:
+                        m = -m
+                else:
+                    m = 1 - m
+                if 13 == m:
+                    y += 1
+                    m = 1
+                rest -= daysInMonth
+                daysInMonth = LunarUtil.getDaysOfMonth(y, m)
+            d = rest
+        elif days < 0:
+            daysInMonth = self.__day
+            rest = -days
+            while daysInMonth <= rest:
+                if m > 0:
+                    m -= 1
+                    if 0 == m:
+                        y -= 1
+                        if LunarUtil.getLeapMonth(y) != 12:
+                            m = 12
+                        else:
+                            m = -12
+                else:
+                    m = -m
+                rest -= daysInMonth
+                daysInMonth = LunarUtil.getDaysOfMonth(y, m)
+            d = daysInMonth - rest
+        return Lunar(y, m, d, self.__hour, self.__minute, self.__second)
+
     def __str__(self):
         return self.toString()
 
     def toString(self):
-        return self.getYearInChinese() + '年' + self.getMonthInChinese() + '月' + self.getDayInChinese()
+        return self.getYearInChinese() + "年" + self.getMonthInChinese() + "月" + self.getDayInChinese()
 
     def toFullString(self):
         s = self.toString()
-        s += ' ' + self.getYearInGanZhi() + '(' + self.getYearShengXiao() + ')年'
-        s += ' ' + self.getMonthInGanZhi() + '(' + self.getMonthShengXiao() + ')月'
-        s += ' ' + self.getDayInGanZhi() + '(' + self.getDayShengXiao() + ')日'
-        s += ' ' + self.getTimeZhi() + '(' + self.getTimeShengXiao() + ')时'
-        s += ' 纳音[' + self.getYearNaYin() + ' ' + self.getMonthNaYin() + ' ' + self.getDayNaYin() + ' ' + self.getTimeNaYin() + ']'
-        s += ' 星期' + self.getWeekInChinese()
+        s += " " + self.getYearInGanZhi() + "(" + self.getYearShengXiao() + ")年"
+        s += " " + self.getMonthInGanZhi() + "(" + self.getMonthShengXiao() + ")月"
+        s += " " + self.getDayInGanZhi() + "(" + self.getDayShengXiao() + ")日"
+        s += " " + self.getTimeZhi() + "(" + self.getTimeShengXiao() + ")时"
+        s += " 纳音[" + self.getYearNaYin() + " " + self.getMonthNaYin() + " " + self.getDayNaYin() + " " + self.getTimeNaYin() + "]"
+        s += " 星期" + self.getWeekInChinese()
         for f in self.getFestivals():
-            s += ' (' + f + ')'
+            s += " (" + f + ")"
         for f in self.getOtherFestivals():
-            s += ' (' + f + ')'
+            s += " (" + f + ")"
         jq = self.getJieQi()
         if len(jq) > 0:
-            s += ' [' + jq + ']'
-        s += ' ' + self.getGong() + '方' + self.getShou()
-        s += ' 星宿[' + self.getXiu() + self.getZheng() + self.getAnimal() + '](' + self.getXiuLuck() + ')'
-        s += ' 彭祖百忌[' + self.getPengZuGan() + ' ' + self.getPengZuZhi() + ']'
-        s += ' 喜神方位[' + self.getDayPositionXi() + '](' + self.getDayPositionXiDesc() + ')'
-        s += ' 阳贵神方位[' + self.getDayPositionYangGui() + '](' + self.getDayPositionYangGuiDesc() + ')'
-        s += ' 阴贵神方位[' + self.getDayPositionYinGui() + '](' + self.getDayPositionYinGuiDesc() + ')'
-        s += ' 福神方位[' + self.getDayPositionFu() + '](' + self.getDayPositionFuDesc() + ')'
-        s += ' 财神方位[' + self.getDayPositionCai() + '](' + self.getDayPositionCaiDesc() + ')'
-        s += ' 冲[' + self.getChongDesc() + ']'
-        s += ' 煞[' + self.getSha() + ']'
+            s += " [" + jq + "]"
+        s += " " + self.getGong() + "方" + self.getShou()
+        s += " 星宿[" + self.getXiu() + self.getZheng() + self.getAnimal() + "](" + self.getXiuLuck() + ")"
+        s += " 彭祖百忌[" + self.getPengZuGan() + " " + self.getPengZuZhi() + "]"
+        s += " 喜神方位[" + self.getDayPositionXi() + "](" + self.getDayPositionXiDesc() + ")"
+        s += " 阳贵神方位[" + self.getDayPositionYangGui() + "](" + self.getDayPositionYangGuiDesc() + ")"
+        s += " 阴贵神方位[" + self.getDayPositionYinGui() + "](" + self.getDayPositionYinGuiDesc() + ")"
+        s += " 福神方位[" + self.getDayPositionFu() + "](" + self.getDayPositionFuDesc() + ")"
+        s += " 财神方位[" + self.getDayPositionCai() + "](" + self.getDayPositionCaiDesc() + ")"
+        s += " 冲[" + self.getChongDesc() + "]"
+        s += " 煞[" + self.getSha() + "]"
         return s

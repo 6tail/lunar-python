@@ -1031,10 +1031,7 @@ class LunarUtil:
         """
         n = abs(m) + 1
         if m > 0:
-            index = y - LunarUtil.BASE_YEAR + LunarUtil.BASE_INDEX
-            v = LunarUtil.LUNAR_MONTH[2 * index + 1]
-            v = (v >> 4) & 0x0F
-            if v == m:
+            if m == LunarUtil.getLeapMonth(y):
                 n = -m
         if n == 13:
             n = 1
