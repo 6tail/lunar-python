@@ -990,8 +990,10 @@ class Lunar:
         elif yearZhi in "辰戌丑未":
             start = 5
         monthIndex = self.__monthZhiIndex - 2
+        if monthIndex < 0:
+            monthIndex += 12
         index = start - monthIndex - 1
-        if index < 0:
+        while index < 0:
             index += 9
         return NineStar.fromIndex(index)
 
