@@ -13,16 +13,17 @@ class DaYun:
         self.__yun = yun
         self.__lunar = yun.getLunar()
         self.__index = index
+        birth_year = yun.getLunar().getSolar().getYear()
         year = yun.getStartSolar().getYear()
         if index < 1:
-            self.__startYear = self.__lunar.getSolar().getYear()
+            self.__startYear = birth_year
             self.__startAge = 1
             self.__endYear = year - 1
-            self.__endAge = yun.getStartYear()
+            self.__endAge = year - birth_year
         else:
             add = (index - 1) * 10
             self.__startYear = year + add
-            self.__startAge = yun.getStartYear() + add + 1
+            self.__startAge = self.__startYear - birth_year + 1
             self.__endYear = self.__startYear + 9
             self.__endAge = self.__startAge + 9
 
