@@ -12,10 +12,10 @@ class Holiday:
         :param work: 是否调休，即是否要上班
         :param target: 关联的节日，YYYY-MM-DD格式
         """
-        self.__day = day
+        self.setDay(day)
         self.__name = name
         self.__work = work
-        self.__target = target
+        self.setTarget(target)
 
     def __ymd(self, s):
         return s if "-" in s else (s[0:4] + "-" + s[4:6] + "-" + s[6:])

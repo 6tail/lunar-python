@@ -110,3 +110,62 @@ print ''
 l = Solar.fromBaZi("庚子", "戊子", "己卯", "庚午")
 for d in l:
     print d.toFullString()
+
+date = Solar.fromYmd(2020, 1, 23)
+print("2020-01-24" == date.next(1).toString())
+# 仅工作日，跨越春节假期
+print("2020-02-03" == date.nextWorkday(1).toString())
+
+date = Solar.fromYmd(2020, 2, 3)
+print("2020-01-31" == date.next(-3).toString())
+# 仅工作日，跨越春节假期
+print("2020-01-21" == date.nextWorkday(-3).toString())
+
+date = Solar.fromYmd(2020, 2, 9)
+print("2020-02-15" == date.next(6).toString())
+# 仅工作日，跨越周末
+print("2020-02-17" == date.nextWorkday(6).toString())
+
+date = Solar.fromYmd(2020, 1, 17)
+print("2020-01-18" == date.next(1).toString())
+# 仅工作日，周日调休按上班算
+print("2020-01-19" == date.nextWorkday(1).toString())
+
+print("2020-01-01 元旦节 2020-01-01" == HolidayUtil.getHoliday("2020-01-01").toString())
+
+# 将2020-01-01修改为春节
+HolidayUtil.fix(None, "202001011120200101")
+print("2020-01-01 春节 2020-01-01" == HolidayUtil.getHoliday("2020-01-01").toString())
+
+# 追加2099-01-01为元旦节
+HolidayUtil.fix(None, "209901010120990101")
+print("2099-01-01 元旦节 2099-01-01" == HolidayUtil.getHoliday("2099-01-01").toString())
+
+# 将2020-01-01修改为春节，并追加2099-01-01为元旦节
+HolidayUtil.fix(None, "202001011120200101209901010120990101")
+print("2020-01-01 春节 2020-01-01" == HolidayUtil.getHoliday("2020-01-01").toString())
+print("2099-01-01 元旦节 2099-01-01" == HolidayUtil.getHoliday("2099-01-01").toString())
+
+# 更改节假日名称
+names = []
+for i in range(0, len(HolidayUtil.NAMES)):
+    names.append(HolidayUtil.NAMES[i])
+names[0] = "元旦"
+names[1] = "大年初一"
+
+HolidayUtil.fix(names, None)
+print("2020-01-01 大年初一 2020-01-01" == HolidayUtil.getHoliday("2020-01-01").toString())
+print("2099-01-01 元旦 2099-01-01" == HolidayUtil.getHoliday("2099-01-01").toString())
+
+# 追加节假日名称和数据
+names = []
+for i in range(0, len(HolidayUtil.NAMES)):
+    names.append(HolidayUtil.NAMES[i])
+names.append("我的生日")
+names.append("结婚纪念日")
+names.append("她的生日")
+
+HolidayUtil.fix(names, "20210529912021052920211111:12021111120211201;120211201")
+print("2021-05-29 我的生日 2021-05-29" == HolidayUtil.getHoliday("2021-05-29").toString())
+print("2021-11-11 结婚纪念日 2021-11-11" == HolidayUtil.getHoliday("2021-11-11").toString())
+print("2021-12-01 她的生日 2021-12-01" == HolidayUtil.getHoliday("2021-12-01").toString())

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from math import ceil
-from .util import SolarUtil, LunarUtil
+from .util import SolarUtil, LunarUtil, HolidayUtil
 
 
 class Solar:
@@ -240,7 +240,34 @@ class Solar:
         :return: 阳历日期
         """
         c = datetime(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
-        c = c + timedelta(days=days)
+        if days != 0:
+            c = c + timedelta(days=days)
+        return Solar.fromDate(c)
+
+    def nextWorkday(self, days):
+        """
+        获取往后推几个工作日的阳历日期，如果要往前推，则天数用负数
+        :param days: 天数
+        :return: 阳历日期
+        """
+        c = datetime(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
+        if days != 0:
+            rest = abs(days)
+            add = 1
+            if days < 1:
+                add = -1
+            while rest > 0:
+                c = c + timedelta(days=add)
+                work = True
+                holiday = HolidayUtil.getHoliday(c.year, c.month, c.day)
+                if holiday is None:
+                    week = int(c.strftime("%w"))
+                    if week == 0 or week == 6:
+                        work = False
+                else:
+                    work = holiday.isWork()
+                if work:
+                    rest -= 1
         return Solar.fromDate(c)
 
     def getYear(self):
