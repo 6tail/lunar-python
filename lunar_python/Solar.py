@@ -146,31 +146,29 @@ class Solar:
         获取节日，有可能一天会有多个节日
         :return: 劳动节等
         """
-        l = []
+        festivals = []
         md = str(self.__month) + "-" + str(self.__day)
         if md in SolarUtil.FESTIVAL:
-            l.append(SolarUtil.FESTIVAL[md])
+            festivals.append(SolarUtil.FESTIVAL[md])
+        weeks = int(ceil(self.__day / 7.0))
         week = self.getWeek()
-        weekInMonth = int(ceil((self.__day - week) / 7))
-        if week > 0:
-            weekInMonth += 1
-        me = str(self.__month) + "-" + str(weekInMonth) + "-" + str(week)
+        me = str(self.__month) + "-" + str(weeks) + "-" + str(week)
         if me in SolarUtil.WEEK_FESTIVAL:
-            l.append(SolarUtil.WEEK_FESTIVAL[me])
-        return l
+            festivals.append(SolarUtil.WEEK_FESTIVAL[me])
+        return festivals
 
     def getOtherFestivals(self):
         """
         获取非正式的节日，有可能一天会有多个节日
         :return: 非正式的节日列表，如中元节
         """
-        l = []
+        festivals = []
         md = str(self.__month) + "-" + str(self.__day)
         if md in SolarUtil.OTHER_FESTIVAL:
             fs = SolarUtil.OTHER_FESTIVAL[md]
             for f in fs:
-                l.append(f)
-        return l
+                festivals.append(f)
+        return festivals
 
     def getXingZuo(self):
         """

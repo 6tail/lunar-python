@@ -169,3 +169,55 @@ HolidayUtil.fix(names, "20210529912021052920211111:12021111120211201;120211201")
 print("2021-05-29 我的生日 2021-05-29" == HolidayUtil.getHoliday("2021-05-29").toString())
 print("2021-11-11 结婚纪念日 2021-11-11" == HolidayUtil.getHoliday("2021-11-11").toString())
 print("2021-12-01 她的生日 2021-12-01" == HolidayUtil.getHoliday("2021-12-01").toString())
+
+# 节日
+solar = Solar.fromYmd(2020, 11, 26)
+festivals = solar.getFestivals()
+for i in range(0, len(festivals)):
+    print(festivals[i])
+
+solar = Solar.fromYmd(2020, 6, 21)
+festivals = solar.getFestivals()
+for i in range(0, len(festivals)):
+    print(festivals[i])
+
+solar = Solar.fromYmd(2021, 5, 9)
+festivals = solar.getFestivals()
+for i in range(0, len(festivals)):
+    print(festivals[i])
+
+solar = Solar.fromYmd(1986, 11, 27)
+festivals = solar.getFestivals()
+for i in range(0, len(festivals)):
+    print(festivals[i])
+
+solar = Solar.fromYmd(1985, 6, 16)
+festivals = solar.getFestivals()
+for i in range(0, len(festivals)):
+    print(festivals[i])
+
+solar = Solar.fromYmd(1984, 5, 13)
+festivals = solar.getFestivals()
+for i in range(0, len(festivals)):
+    print(festivals[i])
+
+# 旬
+solar = Solar.fromYmdHms(2020, 11, 19, 0, 0, 0)
+lunar = solar.getLunar()
+# 甲午
+print(lunar.getYearXun())
+
+# 旬空(空亡)
+# 辰巳
+print(lunar.getYearXunKong())
+# 午未
+print(lunar.getMonthXunKong())
+# 戌亥
+print(lunar.getDayXunKong())
+
+# 八字日柱旬空(空亡)
+solar = Solar.fromYmdHms(1990, 12, 23, 8, 37, 0)
+lunar = solar.getLunar()
+eightChar = lunar.getEightChar()
+# 子丑
+print(eightChar.getDayXunKong())

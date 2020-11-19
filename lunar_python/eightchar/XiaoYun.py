@@ -7,12 +7,12 @@ class XiaoYun:
     小运
     """
 
-    def __init__(self, daYun, index, forward):
-        self.__daYun = daYun
-        self.__lunar = daYun.getLunar()
+    def __init__(self, da_yun, index, forward):
+        self.__daYun = da_yun
+        self.__lunar = da_yun.getLunar()
         self.__index = index
-        self.__year = daYun.getStartYear() + index
-        self.__age = daYun.getStartAge() + index
+        self.__year = da_yun.getStartYear() + index
+        self.__age = da_yun.getStartAge() + index
         self.__forward = forward
 
     def getIndex(self):
@@ -39,3 +39,17 @@ class XiaoYun:
             offset += size
         offset %= size
         return LunarUtil.JIA_ZI[offset]
+
+    def getXun(self):
+        """
+        获取所在旬
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getGanZhi())
+
+    def getXunKong(self):
+        """
+        获取旬空(空亡)
+        :return: 旬空(空亡)
+        """
+        return LunarUtil.getXunKong(self.getGanZhi())

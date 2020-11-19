@@ -35,6 +35,20 @@ class LiuNian:
         offset %= len(LunarUtil.JIA_ZI)
         return LunarUtil.JIA_ZI[offset]
 
+    def getXun(self):
+        """
+        获取所在旬
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getGanZhi())
+
+    def getXunKong(self):
+        """
+        获取旬空(空亡)
+        :return: 旬空(空亡)
+        """
+        return LunarUtil.getXunKong(self.getGanZhi())
+
     def getLiuYue(self):
         """
         获取流月

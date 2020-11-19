@@ -7,8 +7,8 @@ class LiuYue:
     流月
     """
 
-    def __init__(self, liuNian, index):
-        self.__liuNian = liuNian
+    def __init__(self, liu_nian, index):
+        self.__liuNian = liu_nian
         self.__index = index
 
     def getIndex(self):
@@ -35,16 +35,30 @@ class LiuYue:
         :return: 干支
         """
         offset = 0
-        yearGanZhi = self.__liuNian.getGanZhi()
-        yearGan = yearGanZhi[0: len(yearGanZhi) / 2]
-        if "甲" == yearGan or "己" == yearGan:
+        year_gan_zhi = self.__liuNian.getGanZhi()
+        year_gan = year_gan_zhi[: len(year_gan_zhi) / 2]
+        if "甲" == year_gan or "己" == year_gan:
             offset = 2
-        elif "乙" == yearGan or "庚" == yearGan:
+        elif "乙" == year_gan or "庚" == year_gan:
             offset = 4
-        elif "丙" == yearGan or "辛" == yearGan:
+        elif "丙" == year_gan or "辛" == year_gan:
             offset = 6
-        elif "丁" == yearGan or "壬" == yearGan:
+        elif "丁" == year_gan or "壬" == year_gan:
             offset = 8
         gan = LunarUtil.GAN[(self.__index + offset) % 10 + 1]
         zhi = LunarUtil.ZHI[(self.__index + LunarUtil.BASE_MONTH_ZHI_INDEX) % 12 + 1]
         return gan + zhi
+
+    def getXun(self):
+        """
+        获取所在旬
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getGanZhi())
+
+    def getXunKong(self):
+        """
+        获取旬空(空亡)
+        :return: 旬空(空亡)
+        """
+        return LunarUtil.getXunKong(self.getGanZhi())

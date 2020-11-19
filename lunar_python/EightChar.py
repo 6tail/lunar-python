@@ -398,3 +398,59 @@ class EightChar:
         """
         from .eightchar import Yun
         return Yun(self, gender)
+
+    def getYearXun(self):
+        """
+        获取年柱所在旬
+        :return: 旬
+        """
+        return self.__lunar.getYearXunExact()
+
+    def getYearXunKong(self):
+        """
+        获取年柱旬空(空亡)
+        :return: 旬空(空亡)
+        """
+        return self.__lunar.getYearXunKongExact()
+
+    def getMonthXun(self):
+        """
+        获取月柱所在旬
+        :return: 旬
+        """
+        return self.__lunar.getMonthXunExact()
+
+    def getMonthXunKong(self):
+        """
+        获取月柱旬空(空亡)
+        :return: 旬空(空亡)
+        """
+        return self.__lunar.getMonthXunKongExact()
+
+    def getDayXun(self):
+        """
+        获取日柱所在旬
+        :return: 旬
+        """
+        return self.__lunar.getDayXunExact()
+
+    def getDayXunKong(self):
+        """
+        获取日柱旬空(空亡)
+        :return: 旬空(空亡)
+        """
+        return self.__lunar.getDayXunKongExact()
+
+    def getTimeXun(self):
+        """
+        获取时柱所在旬
+        :return: 旬
+        """
+        return self.__lunar.getTimeXun()
+
+    def getTimeXunKong(self):
+        """
+        获取时柱旬空(空亡)
+        :return: 旬空(空亡)
+        """
+        return self.__lunar.getTimeXunKong()

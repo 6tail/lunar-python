@@ -1287,3 +1287,115 @@ class Lunar:
         s += " 冲[" + self.getChongDesc() + "]"
         s += " 煞[" + self.getSha() + "]"
         return s
+
+    def getYearXun(self):
+        """
+        获取年所在旬（以正月初一作为新年的开始）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getYearInGanZhi())
+
+    def getYearXunByLiChun(self):
+        """
+        获取年所在旬（以立春当天作为新年的开始）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getYearInGanZhiByLiChun())
+
+    def getYearXunExact(self):
+        """
+        获取年所在旬（以立春交接时刻作为新年的开始）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getYearInGanZhiExact())
+
+    def getYearXunKong(self):
+        """
+        获取值年空亡（以正月初一作为新年的开始）
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getYearInGanZhi())
+
+    def getYearXunKongByLiChun(self):
+        """
+        获取值年空亡（以立春当天作为新年的开始）
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getYearInGanZhiByLiChun())
+
+    def getYearXunKongExact(self):
+        """
+        获取值年空亡（以立春交接时刻作为新年的开始）
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getYearInGanZhiExact())
+
+    def getMonthXun(self):
+        """
+        获取月所在旬（以节交接当天起算）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getMonthInGanZhi())
+
+    def getMonthXunExact(self):
+        """
+        获取月所在旬（以节交接时刻起算）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getMonthInGanZhiExact())
+
+    def getMonthXunKong(self):
+        """
+        获取值月空亡（以节交接当天起算）
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getMonthInGanZhi())
+
+    def getMonthXunKongExact(self):
+        """
+        获取值月空亡（以节交接时刻起算）
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getMonthInGanZhiExact())
+
+    def getDayXun(self):
+        """
+        获取日所在旬（以节交接当天起算）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getDayInGanZhi())
+
+    def getDayXunExact(self):
+        """
+        获取日所在旬（晚子时算第二天）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getDayInGanZhiExact())
+
+    def getDayXunKong(self):
+        """
+        获取值日空亡
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getDayInGanZhi())
+
+    def getDayXunKongExact(self):
+        """
+        获取值日空亡（晚子时算第二天）
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getDayInGanZhiExact())
+
+    def getTimeXun(self):
+        """
+        获取时辰所在旬
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getTimeInGanZhi())
+
+    def getTimeXunKong(self):
+        """
+        获取值时空亡
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getTimeInGanZhi())
