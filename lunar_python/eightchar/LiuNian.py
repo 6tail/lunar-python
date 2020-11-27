@@ -29,7 +29,7 @@ class LiuNian:
         获取干支
         :return: 干支
         """
-        offset = LunarUtil.getJiaZiIndex(self.__lunar.getYearInGanZhiExact()) + self.__index
+        offset = LunarUtil.getJiaZiIndex(self.__lunar.getJieQiTable()["立春"].getLunar().getYearInGanZhiExact()) + self.__index
         if self.__daYun.getIndex() > 0:
             offset += self.__daYun.getStartAge() - 1
         offset %= len(LunarUtil.JIA_ZI)
