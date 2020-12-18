@@ -406,6 +406,9 @@ class Lunar:
         dayGanExact = dayGanIndex
         dayZhiExact = dayZhiIndex
 
+        self.__dayGanIndexExact2 = dayGanExact
+        self.__dayZhiIndexExact2 = dayZhiExact
+
         hm = ("0" if self.__hour < 10 else "") + str(self.__hour) + ":" + ("0" if self.__minute < 10 else "") + str(self.__minute)
         if "23:00" <= hm <= "23:59":
             dayGanExact += 1
@@ -546,17 +549,26 @@ class Lunar:
     def getDayGanExact(self):
         return LunarUtil.GAN[self.__dayGanIndexExact + 1]
 
+    def getDayGanExact2(self):
+        return LunarUtil.GAN[self.__dayGanIndexExact2 + 1]
+
     def getDayZhi(self):
         return LunarUtil.ZHI[self.__dayZhiIndex + 1]
 
     def getDayZhiExact(self):
         return LunarUtil.ZHI[self.__dayZhiIndexExact + 1]
 
+    def getDayZhiExact2(self):
+        return LunarUtil.ZHI[self.__dayZhiIndexExact2 + 1]
+
     def getDayInGanZhi(self):
         return self.getDayGan() + self.getDayZhi()
 
     def getDayInGanZhiExact(self):
         return self.getDayGanExact() + self.getDayZhiExact()
+
+    def getDayInGanZhiExact2(self):
+        return self.getDayGanExact2() + self.getDayZhiExact2()
 
     def getTimeGan(self):
         return LunarUtil.GAN[self.__timeGanIndex + 1]
@@ -1063,8 +1075,14 @@ class Lunar:
     def getDayGanIndexExact(self):
         return self.__dayGanIndexExact
 
+    def getDayGanIndexExact2(self):
+        return self.__dayGanIndexExact2
+
     def getDayZhiIndexExact(self):
         return self.__dayZhiIndexExact
+
+    def getDayZhiIndexExact2(self):
+        return self.__dayZhiIndexExact2
 
     def getMonthGanIndexExact(self):
         return self.__monthGanIndexExact
@@ -1367,10 +1385,17 @@ class Lunar:
 
     def getDayXunExact(self):
         """
-        获取日所在旬（晚子时算第二天）
+        获取日所在旬（晚子时日柱算明天）
         :return: 旬
         """
         return LunarUtil.getXun(self.getDayInGanZhiExact())
+
+    def getDayXunExact2(self):
+        """
+        获取日所在旬（晚子时日柱算当天）
+        :return: 旬
+        """
+        return LunarUtil.getXun(self.getDayInGanZhiExact2())
 
     def getDayXunKong(self):
         """
@@ -1381,10 +1406,17 @@ class Lunar:
 
     def getDayXunKongExact(self):
         """
-        获取值日空亡（晚子时算第二天）
+        获取值日空亡（晚子时日柱算明天）
         :return: 空亡(旬空)
         """
         return LunarUtil.getXunKong(self.getDayInGanZhiExact())
+
+    def getDayXunKongExact2(self):
+        """
+        获取值日空亡（晚子时日柱算当天）
+        :return: 空亡(旬空)
+        """
+        return LunarUtil.getXunKong(self.getDayInGanZhiExact2())
 
     def getTimeXun(self):
         """

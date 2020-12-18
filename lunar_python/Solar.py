@@ -67,7 +67,8 @@ class Solar:
         return Solar(year, month, day, 0, 0, 0)
 
     @staticmethod
-    def fromBaZi(yearGanZhi, monthGanZhi, dayGanZhi, timeGanZhi):
+    def fromBaZi(yearGanZhi, monthGanZhi, dayGanZhi, timeGanZhi, sect=2):
+        sect = 1 if 1 == sect else 2
         l = []
         today = Solar.fromDate(datetime.now())
         lunar = today.getLunar()
@@ -112,7 +113,8 @@ class Solar:
                 solar = Solar.fromYmdHms(year, month, day, hour, 0, 0)
                 while counter < 61:
                     lunar = solar.getLunar()
-                    if lunar.getYearInGanZhiExact() == yearGanZhi and lunar.getMonthInGanZhiExact() == monthGanZhi and lunar.getDayInGanZhiExact() == dayGanZhi and lunar.getTimeInGanZhi() == timeGanZhi:
+                    dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
+                    if lunar.getYearInGanZhiExact() == yearGanZhi and lunar.getMonthInGanZhiExact() == monthGanZhi and dgz == dayGanZhi and lunar.getTimeInGanZhi() == timeGanZhi:
                         l.append(solar)
                         break
                     solar = solar.next(1)
