@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from lunar_python import Lunar, Solar
 from lunar_python.util import HolidayUtil
+from datetime import datetime
 
 # 节气表
 lunar = Solar.fromYmd(2022, 7, 15).getLunar()
@@ -221,3 +222,12 @@ lunar = solar.getLunar()
 eightChar = lunar.getEightChar()
 # 子丑
 print(eightChar.getDayXunKong())
+
+# 数九
+lunar = Lunar.fromDate(datetime.now())
+print(lunar.getShuJiu())
+
+# 三伏
+solar = Solar.fromYmd(2020, 8, 24)
+lunar = solar.getLunar()
+print(lunar.getFu().toFullString())

@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from math import cos, sin, floor
 
-from . import Solar, NineStar, EightChar, JieQi
+from . import Solar, NineStar, EightChar, JieQi, ShuJiu, Fu
 from .util import LunarUtil, SolarUtil
 
 
@@ -1072,6 +1072,12 @@ class Lunar:
     def getTimeZhiIndex(self):
         return self.__timeZhiIndex
 
+    def getDayGanIndex(self):
+        return self.__dayGanIndex
+
+    def getDayZhiIndex(self):
+        return self.__dayZhiIndex
+
     def getDayGanIndexExact(self):
         return self.__dayGanIndexExact
 
@@ -1084,11 +1090,29 @@ class Lunar:
     def getDayZhiIndexExact2(self):
         return self.__dayZhiIndexExact2
 
+    def getMonthGanIndex(self):
+        return self.__monthGanIndex
+
+    def getMonthZhiIndex(self):
+        return self.__monthZhiIndex
+
     def getMonthGanIndexExact(self):
         return self.__monthGanIndexExact
 
     def getMonthZhiIndexExact(self):
         return self.__monthZhiIndexExact
+
+    def getYearGanIndex(self):
+        return self.__yearGanIndex
+
+    def getYearZhiIndex(self):
+        return self.__yearZhiIndex
+
+    def getYearGanIndexByLiChun(self):
+        return self.__yearGanIndexByLiChun
+
+    def getYearZhiIndexByLiChun(self):
+        return self.__yearZhiIndexByLiChun
 
     def getYearGanIndexExact(self):
         return self.__yearGanIndexExact
@@ -1431,3 +1455,58 @@ class Lunar:
         :return: 空亡(旬空)
         """
         return LunarUtil.getXunKong(self.getTimeInGanZhi())
+
+    def getShuJiu(self):
+        """
+        获取数九
+        :return: 数九，如果不是数九天，返回None
+        """
+        current_calendar = datetime(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay(), 0, 0, 0, 0)
+        start = self.__jieQi[Lunar.JIE_QI_APPEND]
+        start_calendar = datetime(start.getYear(), start.getMonth(), start.getDay(), 0, 0, 0, 0)
+        if current_calendar < start_calendar:
+            start = self.__jieQi[Lunar.JIE_QI_FIRST]
+            start_calendar = datetime(start.getYear(), start.getMonth(), start.getDay(), 0, 0, 0, 0)
+        end_calendar = start_calendar + timedelta(days=81)
+        if current_calendar < start_calendar or current_calendar >= end_calendar:
+            return None
+        days = (current_calendar - start_calendar).days
+        return ShuJiu(LunarUtil.NUMBER[days / 9 + 1] + "九", days % 9 + 1)
+
+    def getFu(self):
+        """
+        获取三伏
+        :return: 三伏，如果不是伏天，返回None
+        """
+        current_calendar = datetime(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay(), 0, 0, 0, 0)
+        xia_zhi = self.__jieQi["夏至"]
+        li_qiu = self.__jieQi["立秋"]
+        start_calendar = datetime(xia_zhi.getYear(), xia_zhi.getMonth(), xia_zhi.getDay(), 0, 0, 0, 0)
+        add = 6 - xia_zhi.getLunar().getDayGanIndex()
+        if add < 0:
+            add += 10
+        add += 20
+        start_calendar = start_calendar + timedelta(days=add)
+        if current_calendar < start_calendar:
+            return None
+        days = (current_calendar - start_calendar).days
+        if days < 10:
+            return Fu("初伏", days + 1)
+        start_calendar = start_calendar + timedelta(days=10)
+        days = (current_calendar - start_calendar).days
+        if days < 10:
+            return Fu("中伏", days + 1)
+        start_calendar = start_calendar + timedelta(days=10)
+        days = (current_calendar - start_calendar).days
+        li_qiu_calendar = datetime(li_qiu.getYear(), li_qiu.getMonth(), li_qiu.getDay(), 0, 0, 0, 0)
+        if li_qiu_calendar <= start_calendar:
+            if days < 10:
+                return Fu("末伏", days + 1)
+        else:
+            if days < 10:
+                return Fu("中伏", days + 11)
+            start_calendar = start_calendar + timedelta(days=10)
+            days = (current_calendar - start_calendar).days
+            if days < 10:
+                return Fu("末伏", days + 1)
+        return None

@@ -178,26 +178,24 @@ class Solar:
         :return: 星座
         """
         index = 11
-        m = self.__month
-        d = self.__day
-        y = m * 100 + d
+        y = self.__month * 100 + self.__day
         if 321 <= y <= 419:
             index = 0
         elif 420 <= y <= 520:
             index = 1
-        elif 521 <= y <= 620:
+        elif 521 <= y <= 621:
             index = 2
-        elif 621 <= y <= 722:
+        elif 622 <= y <= 722:
             index = 3
         elif 723 <= y <= 822:
             index = 4
         elif 823 <= y <= 922:
             index = 5
-        elif 923 <= y <= 1022:
+        elif 923 <= y <= 1023:
             index = 6
-        elif 1023 <= y <= 1121:
+        elif 1024 <= y <= 1122:
             index = 7
-        elif 1122 <= y <= 1221:
+        elif 1123 <= y <= 1221:
             index = 8
         elif y >= 1222 or y <= 119:
             index = 9
