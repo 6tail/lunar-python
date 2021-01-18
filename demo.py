@@ -231,3 +231,10 @@ print(lunar.getShuJiu())
 solar = Solar.fromYmd(2020, 8, 24)
 lunar = solar.getLunar()
 print(lunar.getFu().toFullString())
+
+# 六曜
+lunar = Lunar.fromDate(datetime.now())
+print(lunar.getLiuYao())
+
+# 物候
+print(lunar.getWuHou())

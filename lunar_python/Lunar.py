@@ -1510,3 +1510,28 @@ class Lunar:
             if days < 10:
                 return Fu("末伏", days + 1)
         return None
+
+    def getLiuYao(self):
+        """
+        获取六曜
+        :return: 六曜
+        """
+        return LunarUtil.LIU_YAO[(abs(self.__month) + self.__day - 2) % 6]
+
+    def getWuHou(self):
+        """
+        获取物候
+        :return: 物候
+        """
+        jie_qi = self.getPrevJieQi()
+        name = jie_qi.getName()
+        offset = 0
+        for i in range(0, len(Lunar.__JIE_QI)):
+            if name == Lunar.__JIE_QI[i]:
+                offset = i
+                break
+        current_calendar = datetime(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay(), 0, 0, 0, 0)
+        start_solar = jie_qi.getSolar()
+        start_calendar = datetime(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay(), 0, 0, 0, 0)
+        days = (current_calendar - start_calendar).days
+        return LunarUtil.WU_HOU[offset * 3 + int(days / 5)]
