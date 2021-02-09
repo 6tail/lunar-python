@@ -54,7 +54,7 @@ class DaYun:
         if self.__index < 1:
             return ""
         offset = LunarUtil.getJiaZiIndex(self.__lunar.getMonthInGanZhiExact())
-        offset += self.__index if self.__yun.isForward() else self.__index
+        offset += self.__index if self.__yun.isForward() else -self.__index
         size = len(LunarUtil.JIA_ZI)
         if offset >= size:
             offset -= size
