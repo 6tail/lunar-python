@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-
-from .. import Solar
+from .. import ExactDate, Solar
 from . import DaYun
 from ..util import LunarUtil, SolarUtil
 
@@ -28,9 +26,13 @@ class Yun:
         current = self.__lunar.getSolar()
         start = current if self.__forward else prev_jie.getSolar()
         end = next_jie.getSolar() if self.__forward else current
-        hour_diff = LunarUtil.getTimeZhiIndex(end.toYmdHms()[11: 16]) - LunarUtil.getTimeZhiIndex(start.toYmdHms()[11: 16])
-        end_calendar = datetime(end.getYear(), end.getMonth(), end.getDay(), 0, 0, 0, 0)
-        start_calendar = datetime(start.getYear(), start.getMonth(), start.getDay(), 0, 0, 0, 0)
+
+        end_time_zhi_index = 11 if end.getHour() == 23 else LunarUtil.getTimeZhiIndex(end.toYmdHms()[11: 16])
+        start_time_zhi_index = 11 if start.getHour() == 23 else LunarUtil.getTimeZhiIndex(start.toYmdHms()[11: 16])
+        # 时辰差
+        hour_diff = end_time_zhi_index - start_time_zhi_index
+        end_calendar = ExactDate.fromYmd(end.getYear(), end.getMonth(), end.getDay())
+        start_calendar = ExactDate.fromYmd(start.getYear(), start.getMonth(), start.getDay())
         day_diff = (end_calendar - start_calendar).days
         if hour_diff < 0:
             hour_diff += 12

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from math import ceil
+
+from . import ExactDate
 from .util import SolarUtil, LunarUtil, HolidayUtil
 
 
@@ -13,22 +15,36 @@ class Solar:
     J2000 = 2451545
 
     def __init__(self, year, month, day, hour, minute, second):
+        ymd = "%04d-%02d-%02d" % (year, month, day)
+        if year > 9999 or year < 1:
+            raise Exception("not support solar %s" % ymd)
+        if year == 1582 and month == 10:
+            if day >= 15:
+                day -= 10
+        if month == 2:
+            leap = SolarUtil.isLeapYear(year)
+            if day > 28 and not leap:
+                month += int(day / 28)
+                day = day % 28
+            if day > 29 and not leap:
+                month += int(day / 29)
+                day = day % 29
         self.__year = year
         self.__month = month
         self.__day = day
         self.__hour = hour
         self.__minute = minute
         self.__second = second
-        self.__calendar = datetime(year, month, day, hour, minute, second)
+        self.__calendar = ExactDate.fromYmdHms(year, month, day, hour, minute, second)
 
     @staticmethod
     def fromDate(date):
         return Solar(date.year, date.month, date.day, date.hour, date.minute, date.second)
 
     @staticmethod
-    def fromJulianDay(julianDay):
-        d = int(julianDay + 0.5)
-        f = julianDay + 0.5 - d
+    def fromJulianDay(julian_day):
+        d = int(julian_day + 0.5)
+        f = julian_day + 0.5 - d
         if d >= 2299161:
             c = int((d - 1867216.25) / 36524.25)
             d += 1 + c - int(c / 4)
@@ -67,33 +83,31 @@ class Solar:
         return Solar(year, month, day, 0, 0, 0)
 
     @staticmethod
-    def fromBaZi(yearGanZhi, monthGanZhi, dayGanZhi, timeGanZhi, sect=2):
+    def fromBaZi(year_gan_zhi, month_gan_zhi, day_gan_zhi, time_gan_zhi, sect=2, base_year=1900):
         sect = 1 if 1 == sect else 2
-        l = []
+        solars = []
         today = Solar.fromDate(datetime.now())
         lunar = today.getLunar()
-        offsetYear = LunarUtil.getJiaZiIndex(lunar.getYearInGanZhiExact()) - LunarUtil.getJiaZiIndex(yearGanZhi)
-        if offsetYear < 0:
-            offsetYear = offsetYear + 60
-        startYear = today.getYear() - offsetYear
+        offset_year = LunarUtil.getJiaZiIndex(lunar.getYearInGanZhiExact()) - LunarUtil.getJiaZiIndex(year_gan_zhi)
+        if offset_year < 0:
+            offset_year = offset_year + 60
+        start_year = today.getYear() - offset_year
         hour = 0
-        timeZhi = timeGanZhi[len(timeGanZhi) / 2:]
+        time_zhi = time_gan_zhi[len(time_gan_zhi) / 2:]
         for i in range(0, len(LunarUtil.ZHI)):
-            if LunarUtil.ZHI[i] == timeZhi:
+            if LunarUtil.ZHI[i] == time_zhi:
                 hour = (i - 1) * 2
-        while startYear >= SolarUtil.BASE_YEAR - 1:
-            year = startYear - 1
+        while start_year >= base_year:
+            year = start_year - 1
             counter = 0
             month = 12
             found = False
             while counter < 15:
-                if year >= SolarUtil.BASE_YEAR:
+                if year >= base_year:
                     day = 1
-                    if year == SolarUtil.BASE_YEAR and month == SolarUtil.BASE_MONTH:
-                        day = SolarUtil.BASE_DAY
                     solar = Solar.fromYmdHms(year, month, day, hour, 0, 0)
                     lunar = solar.getLunar()
-                    if lunar.getYearInGanZhiExact() == yearGanZhi and lunar.getMonthInGanZhiExact() == monthGanZhi:
+                    if lunar.getYearInGanZhiExact() == year_gan_zhi and lunar.getMonthInGanZhiExact() == month_gan_zhi:
                         found = True
                         break
                 month += 1
@@ -108,19 +122,17 @@ class Solar:
                     month = 12
                     year -= 1
                 day = 1
-                if year == SolarUtil.BASE_YEAR and month == SolarUtil.BASE_MONTH:
-                    day = SolarUtil.BASE_DAY
                 solar = Solar.fromYmdHms(year, month, day, hour, 0, 0)
                 while counter < 61:
                     lunar = solar.getLunar()
                     dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
-                    if lunar.getYearInGanZhiExact() == yearGanZhi and lunar.getMonthInGanZhiExact() == monthGanZhi and dgz == dayGanZhi and lunar.getTimeInGanZhi() == timeGanZhi:
-                        l.append(solar)
+                    if lunar.getYearInGanZhiExact() == year_gan_zhi and lunar.getMonthInGanZhiExact() == month_gan_zhi and dgz == day_gan_zhi and lunar.getTimeInGanZhi() == time_gan_zhi:
+                        solars.append(solar)
                         break
                     solar = solar.next(1)
                     counter += 1
-            startYear -= 60
-        return l
+            start_year -= 60
+        return solars
 
     def isLeapYear(self):
         """
@@ -134,7 +146,10 @@ class Solar:
         获取星期，0代表周日，1代表周一
         :return: 0123456
         """
-        return int(self.__calendar.strftime("%w"))
+        week = self.__calendar.isoweekday()
+        if week == 7:
+            week = 0
+        return week
 
     def getWeekInChinese(self):
         """
@@ -210,7 +225,7 @@ class Solar:
         """
         y = self.__year
         m = self.__month
-        d = self.__day + ((self.__second / 60 + self.__minute) / 60 + self.__hour) / 24
+        d = self.__day + ((self.__second / 60.0 + self.__minute) / 60 + self.__hour) / 24
         n = 0
         g = False
         if y * 372 + m * 31 + int(d) >= 588829:
@@ -231,13 +246,16 @@ class Solar:
         from .Lunar import Lunar
         return Lunar.fromDate(self.__calendar)
 
-    def next(self, days):
+    def next(self, days, only_work_day=False):
         """
         获取往后推几天的阳历日期，如果要往前推，则天数用负数
         :param days: 天数
+        :param only_work_day: 是否仅工作日
         :return: 阳历日期
         """
-        c = datetime(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
+        if only_work_day:
+            return self.nextWorkday(days)
+        c = ExactDate.fromYmdHms(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
         if days != 0:
             c = c + timedelta(days=days)
         return Solar.fromDate(c)
@@ -248,7 +266,7 @@ class Solar:
         :param days: 天数
         :return: 阳历日期
         """
-        c = datetime(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
+        c = ExactDate.fromYmdHms(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
         if days != 0:
             rest = abs(days)
             add = 1
@@ -259,8 +277,8 @@ class Solar:
                 work = True
                 holiday = HolidayUtil.getHoliday(c.year, c.month, c.day)
                 if holiday is None:
-                    week = int(c.strftime("%w"))
-                    if week == 0 or week == 6:
+                    week = c.isoweekday()
+                    if week == 7 or week == 6:
                         work = False
                 else:
                     work = holiday.isWork()
@@ -290,10 +308,14 @@ class Solar:
         return self.__calendar
 
     def toYmd(self):
-        return str(self.__year) + "-" + ("0" if self.__month < 10 else "") + str(self.__month) + "-" + ("0" if self.__day < 10 else "") + str(self.__day)
+        d = self.__day
+        if self.__year == 1582 and self.__month == 10:
+            if d >= 5:
+                d += 10
+        return "%04d-%02d-%02d" % (self.__year, self.__month, d)
 
     def toYmdHms(self):
-        return self.toYmd() + " " + ("0" if self.__hour < 10 else "") + str(self.__hour) + ":" + ("0" if self.__minute < 10 else "") + str(self.__minute) + ":" + ("0" if self.__second < 10 else "") + str(self.__second)
+        return "%s %02d:%02d:%02d" % (self.toYmd(), self.__hour, self.__minute, self.__second)
 
     def toFullString(self):
         s = self.toYmdHms()

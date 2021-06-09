@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .SolarMonth import SolarMonth
+from . import SolarMonth
 
 
 class SolarYear:
@@ -28,7 +28,7 @@ class SolarYear:
         return str(self.__year)
 
     def toFullString(self):
-        return str(self.__year) + "年"
+        return "%d年" % self.__year
 
     def __str__(self):
         return self.toString()
@@ -38,12 +38,12 @@ class SolarYear:
         获取本年的阳历月列表
         :return: 阳历月列表
         """
-        l = []
+        months = []
         m = SolarMonth.fromYm(self.__year, 1)
-        l.append(m)
+        months.append(m)
         for i in range(1, SolarYear.MONTH_COUNT):
-            l.append(m.next(i))
-        return l
+            months.append(m.next(i))
+        return months
 
     def next(self, years):
         """

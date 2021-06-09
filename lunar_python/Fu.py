@@ -30,4 +30,4 @@ class Fu:
         return self.__name
 
     def toFullString(self):
-        return self.__name + "第" + str(self.__index) + "天"
+        return "%s第%d天" % (self.__name, self.__index)

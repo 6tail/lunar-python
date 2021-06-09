@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from math import ceil
 
-from .SolarMonth import SolarMonth
+from . import SolarMonth
 
 
 class SolarSeason:
@@ -30,10 +30,10 @@ class SolarSeason:
         return self.__month
 
     def toString(self):
-        return str(self.__year) + "." + str(self.getIndex())
+        return "%d.%d" % (self.__year, self.getIndex())
 
     def toFullString(self):
-        return str(self.__year) + "年" + str(self.getIndex()) + "季度"
+        return "%d年%d季度" % (self.__year, self.getIndex())
 
     def __str__(self):
         return self.toString()
@@ -50,11 +50,11 @@ class SolarSeason:
         获取本季度的阳历月列表
         :return: 阳历月列表
         """
-        l = []
+        months = []
         index = self.getIndex() - 1
         for i in range(0, SolarSeason.MONTH_COUNT):
-            l.append(SolarMonth.fromYm(self.__year, SolarSeason.MONTH_COUNT * index + i + 1))
-        return l
+            months.append(SolarMonth.fromYm(self.__year, SolarSeason.MONTH_COUNT * index + i + 1))
+        return months
 
     def next(self, seasons):
         """

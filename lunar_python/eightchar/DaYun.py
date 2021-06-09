@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from . import XiaoYun
-from . import LiuNian
+from . import XiaoYun, LiuNian
 from ..util import LunarUtil
 
 
@@ -46,7 +45,6 @@ class DaYun:
         return self.__lunar
 
     def getGanZhi(self):
-
         """
         获取干支
         :return: 干支
@@ -77,7 +75,6 @@ class DaYun:
         return LunarUtil.getXunKong(self.getGanZhi())
 
     def getLiuNian(self):
-
         """
         获取流年
         :return: 流年
@@ -91,7 +88,6 @@ class DaYun:
         return liu_nian
 
     def getXiaoYun(self):
-
         """
         获取小运
         :return: 小运

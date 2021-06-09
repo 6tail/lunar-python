@@ -108,8 +108,7 @@ print solar.toYmdHms()
 print ''
 
 # 八字转阳历
-l = Solar.fromBaZi("庚子", "戊子", "己卯", "庚午")
-for d in l:
+for d in Solar.fromBaZi("庚子", "戊子", "己卯", "庚午"):
     print d.toFullString()
 
 date = Solar.fromYmd(2020, 1, 23)

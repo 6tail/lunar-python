@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .Solar import Solar
+from . import Solar
 from .util import SolarUtil
 
 
@@ -28,10 +28,10 @@ class SolarMonth:
         return self.__month
 
     def toString(self):
-        return str(self.__year) + "-" + str(self.__month)
+        return "%d-%d" % (self.__year, self.__month)
 
     def toFullString(self):
-        return str(self.__year) + "年" + str(self.__month) + "月"
+        return "%d年%d月" % (self.__year, self.__month)
 
     def __str__(self):
         return self.toString()
@@ -41,13 +41,12 @@ class SolarMonth:
         获取本月的阳历日期列表
         :return: 阳历日期列表
         """
-        l = []
+        days = []
         d = Solar.fromYmd(self.__year, self.__month, 1)
-        l.append(d)
-        days = SolarUtil.getDaysOfMonth(self.__year, self.__month)
-        for i in range(1, days):
-            l.append(d.next(i))
-        return l
+        days.append(d)
+        for i in range(1, SolarUtil.getDaysOfMonth(self.__year, self.__month)):
+            days.append(d.next(i))
+        return days
 
     def next(self, months):
         """

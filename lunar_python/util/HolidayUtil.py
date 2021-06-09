@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from lunar_python.Holiday import Holiday
+from ..Holiday import Holiday
 
 
 class HolidayUtil:
@@ -57,74 +57,71 @@ class HolidayUtil:
         start = HolidayUtil.__DATA_IN_USE.rfind(key)
         if start < 0:
             return None
-        keySize = len(key)
-        left = HolidayUtil.__DATA_IN_USE[0:start + keySize]
+        key_size = len(key)
+        left = HolidayUtil.__DATA_IN_USE[0:start + key_size]
         size = len(left)
         n = size % HolidayUtil.__SIZE
         if n > 0:
             left = left[0:size - n]
         size = len(left)
-        while size - keySize != left.rfind(key) and size >= HolidayUtil.__SIZE:
+        while size - key_size != left.rfind(key) and size >= HolidayUtil.__SIZE:
             left = left[0:size - HolidayUtil.__SIZE]
             size = len(left)
         return left
 
     @staticmethod
     def __findHolidaysForward(key):
-        l = []
+        arr = []
         s = HolidayUtil.__findForward(key)
         if s is None:
-            return l
+            return arr
         while s.startswith(key):
-            l.append(HolidayUtil.__buildHolidayForward(s))
+            arr.append(HolidayUtil.__buildHolidayForward(s))
             s = s[HolidayUtil.__SIZE:]
-        return l
+        return arr
 
     @staticmethod
     def __findHolidaysBackward(key):
-        l = []
+        arr = []
         s = HolidayUtil.__findBackward(key)
         if s is None:
-            return l
+            return arr
         size = len(s)
-        keySize = len(key)
+        key_size = len(key)
 
-        while size - keySize == s.rfind(key):
-            l.append(HolidayUtil.__buildHolidayBackward(s))
+        while size - key_size == s.rfind(key):
+            arr.append(HolidayUtil.__buildHolidayBackward(s))
             s = s[0:size - HolidayUtil.__SIZE:]
             size = len(s)
-        l.reverse()
-        return l
+        arr.reverse()
+        return arr
 
     @staticmethod
     def __getHoliday(year, month=0, day=0):
         y = str(year)
-        l = []
         if month == 0 or day == 0:
-            l = HolidayUtil.__findHolidaysForward(y.replace("-", ""))
+            arr = HolidayUtil.__findHolidaysForward(y.replace("-", ""))
         else:
-            l = HolidayUtil.__findHolidaysForward(y + HolidayUtil.__padding(month) + HolidayUtil.__padding(day))
-        return None if len(l) < 1 else l[0]
+            arr = HolidayUtil.__findHolidaysForward(y + HolidayUtil.__padding(month) + HolidayUtil.__padding(day))
+        return None if len(arr) < 1 else arr[0]
 
     @staticmethod
     def __getHolidays(year, month=0):
         y = str(year)
-        l = []
         if month == 0:
-            l = HolidayUtil.__findHolidaysForward(y.replace("-", ""))
+            arr = HolidayUtil.__findHolidaysForward(y.replace("-", ""))
         else:
-            l = HolidayUtil.__findHolidaysForward(y + HolidayUtil.__padding(month))
-        return l
+            arr = HolidayUtil.__findHolidaysForward(y + HolidayUtil.__padding(month))
+        return arr
 
     @staticmethod
     def __getHolidaysByTarget(year, month=0, day=0):
         y = str(year)
-        l = []
         if month == 0 or day == 0:
-            l = HolidayUtil.__findHolidaysBackward(y.replace("-", ""))
+            arr = HolidayUtil.__findHolidaysBackward(y.replace("-", ""))
         else:
-            l = HolidayUtil.__findHolidaysBackward(y + HolidayUtil.__padding(month) + HolidayUtil.__padding(day))
-        return l
+            arr = HolidayUtil.__findHolidaysBackward(y + HolidayUtil.__padding(month) + HolidayUtil.__padding(day))
+        return arr
 
     @staticmethod
     def getHoliday(year, month=0, day=0):
@@ -165,13 +162,13 @@ class HolidayUtil:
             if holiday is None:
                 append += segment
             else:
-                nameIndex = -1
+                name_index = -1
                 for i in range(0, len(HolidayUtil.__NAMES_IN_USE)):
                     if HolidayUtil.__NAMES_IN_USE[i] == holiday.getName():
-                        nameIndex = i
+                        name_index = i
                         break
-                if nameIndex > -1:
-                    old = day + chr(nameIndex + HolidayUtil.__ZERO) + ("0" if holiday.isWork() else "1") + holiday.getTarget().replace("-", "")
+                if name_index > -1:
+                    old = day + chr(name_index + HolidayUtil.__ZERO) + ("0" if holiday.isWork() else "1") + holiday.getTarget().replace("-", "")
                     HolidayUtil.__DATA_IN_USE = HolidayUtil.__DATA_IN_USE.replace(old, segment)
             data = data[HolidayUtil.__SIZE:]
         if len(append) > 0:

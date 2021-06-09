@@ -94,11 +94,11 @@ class EightChar:
         return LunarUtil.SHI_SHEN_GAN.get(self.getDayGan() + self.getYearGan())
 
     def __getShiShenZhi(self, zhi):
-        hideGan = LunarUtil.ZHI_HIDE_GAN.get(zhi)
-        l = []
-        for gan in hideGan:
-            l.append(LunarUtil.SHI_SHEN_ZHI.get(self.getDayGan() + zhi + gan))
-        return l
+        hide_gan = LunarUtil.ZHI_HIDE_GAN.get(zhi)
+        arr = []
+        for gan in hide_gan:
+            arr.append(LunarUtil.SHI_SHEN_ZHI.get(self.getDayGan() + zhi + gan))
+        return arr
 
     def getYearShiShenZhi(self):
         """
@@ -113,9 +113,9 @@ class EightChar:
     def getDayZhiIndex(self):
         return self.__lunar.getDayZhiIndexExact2() if 2 == self.__sect else self.__lunar.getDayZhiIndexExact()
 
-    def __getDiShi(self, zhiIndex):
+    def __getDiShi(self, zhi_index):
         offset = self.__CHANG_SHENG_OFFSET.get(self.getDayGan())
-        index = offset + (zhiIndex if self.getDayGanIndex() % 2 == 0 else zhiIndex)
+        index = offset + (zhi_index if self.getDayGanIndex() % 2 == 0 else -zhi_index)
         if index >= 12:
             index -= 12
         if index < 0:
@@ -323,13 +323,13 @@ class EightChar:
         获取胎元
         :return: 胎元
         """
-        ganIndex = self.__lunar.getMonthGanIndexExact() + 1
-        if ganIndex >= 10:
-            ganIndex -= 10
-        zhiIndex = self.__lunar.getMonthZhiIndexExact() + 3
-        if zhiIndex >= 12:
-            zhiIndex -= 12
-        return LunarUtil.GAN[ganIndex + 1] + LunarUtil.ZHI[zhiIndex + 1]
+        gan_index = self.__lunar.getMonthGanIndexExact() + 1
+        if gan_index >= 10:
+            gan_index -= 10
+        zhi_index = self.__lunar.getMonthZhiIndexExact() + 3
+        if zhi_index >= 12:
+            zhi_index -= 12
+        return LunarUtil.GAN[gan_index + 1] + LunarUtil.ZHI[zhi_index + 1]
 
     def getTaiYuanNaYin(self):
         """
@@ -343,25 +343,25 @@ class EightChar:
         获取命宫
         :return: 命宫
         """
-        monthZhiIndex = 0
-        timeZhiIndex = 0
+        month_zhi_index = 0
+        time_zhi_index = 0
         for i in range(0, len(EightChar.MONTH_ZHI)):
             zhi = EightChar.MONTH_ZHI[i]
             if self.__lunar.getMonthZhiExact() == zhi:
-                monthZhiIndex = i
+                month_zhi_index = i
 
             if self.__lunar.getTimeZhi() == zhi:
-                timeZhiIndex = i
+                time_zhi_index = i
 
-        zhiIndex = 26 - (monthZhiIndex + timeZhiIndex)
-        if zhiIndex > 12:
-            zhiIndex -= 12
-        jiaZiIndex = LunarUtil.getJiaZiIndex(self.getMonth()) - (monthZhiIndex - zhiIndex)
-        if jiaZiIndex >= 60:
-            jiaZiIndex -= 60
-        if jiaZiIndex < 0:
-            jiaZiIndex += 60
-        return LunarUtil.JIA_ZI[jiaZiIndex]
+        zhi_index = 26 - (month_zhi_index + time_zhi_index)
+        if zhi_index > 12:
+            zhi_index -= 12
+        jia_zi_index = LunarUtil.getJiaZiIndex(self.getMonth()) - (month_zhi_index - zhi_index)
+        if jia_zi_index >= 60:
+            jia_zi_index -= 60
+        if jia_zi_index < 0:
+            jia_zi_index += 60
+        return LunarUtil.JIA_ZI[jia_zi_index]
 
     def getMingGongNaYin(self):
         """
@@ -375,23 +375,23 @@ class EightChar:
         获取身宫
         :return: 身宫
         """
-        monthZhiIndex = 0
-        timeZhiIndex = 0
+        month_zhi_index = 0
+        time_zhi_index = 0
         for i in range(0, len(EightChar.MONTH_ZHI)):
             zhi = EightChar.MONTH_ZHI[i]
             if self.__lunar.getMonthZhiExact() == zhi:
-                monthZhiIndex = i
+                month_zhi_index = i
 
             if self.__lunar.getTimeZhi() == zhi:
-                timeZhiIndex = i
+                time_zhi_index = i
 
-        zhiIndex = (2 + (monthZhiIndex + timeZhiIndex)) % 12
-        jiaZiIndex = LunarUtil.getJiaZiIndex(self.getMonth()) - (monthZhiIndex - zhiIndex)
-        if jiaZiIndex >= 60:
-            jiaZiIndex -= 60
-        if jiaZiIndex < 0:
-            jiaZiIndex += 60
-        return LunarUtil.JIA_ZI[jiaZiIndex]
+        zhi_index = (2 + (month_zhi_index + time_zhi_index)) % 12
+        jia_zi_index = LunarUtil.getJiaZiIndex(self.getMonth()) - (month_zhi_index - zhi_index)
+        if jia_zi_index >= 60:
+            jia_zi_index -= 60
+        if jia_zi_index < 0:
+            jia_zi_index += 60
+        return LunarUtil.JIA_ZI[jia_zi_index]
 
     def getShenGongNaYin(self):
         """

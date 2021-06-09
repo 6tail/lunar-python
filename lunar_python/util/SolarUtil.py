@@ -1,21 +1,13 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 from math import ceil
+
+from .. import ExactDate
 
 
 class SolarUtil:
     """
-    阳历工具，基准日期为1901年1月1日，对应农历1900年十一月十一
+    阳历工具
     """
-
-    # 阳历基准年
-    BASE_YEAR = 1901
-
-    # 阳历基准月
-    BASE_MONTH = 1
-
-    # 阳历基准日
-    BASE_DAY = 1
 
     # 星期
     WEEK = ("日", "一", "二", "三", "四", "五", "六")
@@ -86,7 +78,6 @@ class SolarUtil:
         "5-5": ["马克思诞辰纪念日"],
         "5-8": ["世界红十字日"],
         "5-11": ["世界肥胖日"],
-        "5-23": ["世界读书日"],
         "5-27": ["上海解放日"],
         "5-31": ["世界无烟日"],
         "6-5": ["世界环境日"],
@@ -132,14 +123,7 @@ class SolarUtil:
         :param year: 年
         :return: True/False 闰年/非闰年
         """
-        leap = False
-        if year % 4 == 0:
-            leap = True
-        if year % 100 == 0:
-            leap = False
-        if year % 400 == 0:
-            leap = True
-        return leap
+        return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
 
     @staticmethod
     def getDaysOfMonth(year, month):
@@ -165,5 +149,7 @@ class SolarUtil:
         :return: 天数
         """
         days = SolarUtil.getDaysOfMonth(year, month)
-        week = int(datetime(year, month, 1).strftime("%w"))
+        week = ExactDate.fromYmd(year, month, 1).isoweekday()
+        if week == 7:
+            week = 0
         return int(ceil((days + week - start) * 1.0 / len(SolarUtil.WEEK)))

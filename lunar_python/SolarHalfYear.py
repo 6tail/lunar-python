@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from math import ceil
 
-from .SolarMonth import SolarMonth
+from . import SolarMonth
 
 
 class SolarHalfYear:
@@ -30,10 +30,10 @@ class SolarHalfYear:
         return self.__month
 
     def toString(self):
-        return str(self.__year) + "." + str(self.getIndex())
+        return "%d.%d" % (self.__year, self.getIndex())
 
     def toFullString(self):
-        return str(self.__year) + "年" + ("上" if 1 == self.getIndex() else "下") + "半年"
+        return "%d年%s半年" % (self.__year, ("上" if 1 == self.getIndex() else "下"))
 
     def __str__(self):
         return self.toString()
@@ -50,23 +50,23 @@ class SolarHalfYear:
         获取本半年的阳历月列表
         :return: 阳历月列表
         """
-        l = []
+        months = []
         index = self.getIndex() - 1
         for i in range(0, SolarHalfYear.MONTH_COUNT):
-            l.append(SolarMonth.fromYm(self.__year, SolarHalfYear.MONTH_COUNT * index + i + 1))
-        return l
+            months.append(SolarMonth.fromYm(self.__year, SolarHalfYear.MONTH_COUNT * index + i + 1))
+        return months
 
-    def next(self, halfYears):
+    def next(self, half_years):
         """
         半年推移
-        :param halfYears: 推移的半年数，负数为倒推
+        :param half_years: 推移的半年数，负数为倒推
         :return: 推移后的半年
         """
-        if 0 == halfYears:
+        if 0 == half_years:
             return SolarHalfYear.fromYm(self.__year, self.__month)
         year = self.__year
         month = self.__month
-        months = SolarHalfYear.MONTH_COUNT * halfYears
+        months = SolarHalfYear.MONTH_COUNT * half_years
         if months == 0:
             return SolarMonth.fromYm(year, month)
         n = abs(months)

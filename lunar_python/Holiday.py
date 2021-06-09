@@ -12,12 +12,13 @@ class Holiday:
         :param work: 是否调休，即是否要上班
         :param target: 关联的节日，YYYY-MM-DD格式
         """
-        self.setDay(day)
+        self.__day = Holiday.__ymd(day)
         self.__name = name
         self.__work = work
-        self.setTarget(target)
+        self.__target = Holiday.__ymd(target)
 
-    def __ymd(self, s):
+    @staticmethod
+    def __ymd(s):
         return s if "-" in s else (s[0:4] + "-" + s[4:6] + "-" + s[6:])
 
     def getDay(self):
@@ -33,7 +34,7 @@ class Holiday:
         return self.__target
 
     def setDay(self, day):
-        self.__day = self.__ymd(day)
+        self.__day = Holiday.__ymd(day)
 
     def setName(self, name):
         self.__name = name
@@ -42,10 +43,10 @@ class Holiday:
         self.__work = work
 
     def setTarget(self, target):
-        self.__target = self.__ymd(target)
+        self.__target = Holiday.__ymd(target)
 
     def toString(self):
-        return self.__day + " " + self.__name + ("调休" if self.__work else "") + " " + self.__target
+        return "%s %s%s %s" % (self.__day, self.__name, "调休" if self.__work else "", self.__target)
 
     def __str__(self):
         return self.toString()
