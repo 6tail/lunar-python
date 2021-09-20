@@ -74,12 +74,12 @@ class DaYun:
         """
         return LunarUtil.getXunKong(self.getGanZhi())
 
-    def getLiuNian(self):
+    def getLiuNian(self, n=10):
         """
         获取流年
+        :param n: 轮数
         :return: 流年
         """
-        n = 10
         if self.__index < 1:
             n = self.__endYear - self.__startYear + 1
         liu_nian = []
@@ -87,12 +87,12 @@ class DaYun:
             liu_nian.append(LiuNian(self, i))
         return liu_nian
 
-    def getXiaoYun(self):
+    def getXiaoYun(self, n=10):
         """
         获取小运
+        :param n: 轮数
         :return: 小运
         """
-        n = 10
         if self.__index < 1:
             n = self.__endYear - self.__startYear + 1
         xiao_yun = []

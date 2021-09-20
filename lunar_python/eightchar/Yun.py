@@ -109,12 +109,12 @@ class Yun:
             month -= 12
         return Solar(year, month, day, 0, 0, 0)
 
-    def getDaYun(self):
+    def getDaYun(self, n=10):
         """
         获取大运
+        :param n: 轮数
         :return: 大运
         """
-        n = 10
         da_yun = []
         for i in range(0, n):
             da_yun.append(DaYun(self, i))

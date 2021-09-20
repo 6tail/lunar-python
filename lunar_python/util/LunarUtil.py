@@ -1222,9 +1222,9 @@ class LunarUtil:
         :param gan_zhi: 干支
         :return: 旬下标，0-5
         """
-        half = len(gan_zhi) / 2
-        gan = gan_zhi[:half]
-        zhi = gan_zhi[half:]
+        gz = gan_zhi.decode('utf-8')
+        gan = gz[:1].encode('utf-8')
+        zhi = gz[1:].encode('utf-8')
         gan_index = 0
         zhi_index = 0
         for i in range(0, len(LunarUtil.GAN)):

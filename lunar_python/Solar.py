@@ -85,7 +85,7 @@ class Solar:
     @staticmethod
     def fromBaZi(year_gan_zhi, month_gan_zhi, day_gan_zhi, time_gan_zhi, sect=2, base_year=1900):
         sect = 1 if 1 == sect else 2
-        solars = []
+        solar_list = []
         today = Solar.fromDate(datetime.now())
         lunar = today.getLunar()
         offset_year = LunarUtil.getJiaZiIndex(lunar.getYearInGanZhiExact()) - LunarUtil.getJiaZiIndex(year_gan_zhi)
@@ -93,7 +93,7 @@ class Solar:
             offset_year = offset_year + 60
         start_year = today.getYear() - offset_year
         hour = 0
-        time_zhi = time_gan_zhi[len(time_gan_zhi) / 2:]
+        time_zhi = time_gan_zhi.decode('utf-8')[1:].encode('utf-8')
         for i in range(0, len(LunarUtil.ZHI)):
             if LunarUtil.ZHI[i] == time_zhi:
                 hour = (i - 1) * 2
@@ -127,12 +127,12 @@ class Solar:
                     lunar = solar.getLunar()
                     dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
                     if lunar.getYearInGanZhiExact() == year_gan_zhi and lunar.getMonthInGanZhiExact() == month_gan_zhi and dgz == day_gan_zhi and lunar.getTimeInGanZhi() == time_gan_zhi:
-                        solars.append(solar)
+                        solar_list.append(solar)
                         break
                     solar = solar.next(1)
                     counter += 1
             start_year -= 60
-        return solars
+        return solar_list
 
     def isLeapYear(self):
         """

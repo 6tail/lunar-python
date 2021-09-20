@@ -99,8 +99,92 @@ class LunarTest(unittest.TestCase):
         lunar = solar.getLunar()
         self.assertEqual("除夕", lunar.getFestivals()[0])
 
+    def test22(self):
+        lunar = Lunar.fromYmd(2033, -11, 1)
+        self.assertEqual('2033-12-22', lunar.getSolar().toYmd())
+
+    def test23(self):
+        lunar = Lunar.fromYmd(2022, 1, 1)
+        self.assertEqual('五黄土玉衡', lunar.getYearNineStar().toString())
+
+    def test24(self):
+        lunar = Lunar.fromYmd(2033, 1, 1)
+        self.assertEqual('三碧木天玑', lunar.getYearNineStar().toString())
+
+    def test25(self):
+        solar = Solar.fromYmdHms(2021, 6, 7, 21, 18, 0)
+        self.assertEqual('二〇二一年四月廿七', solar.getLunar().toString())
+
+    def test26(self):
+        lunar = Lunar.fromYmdHms(2021, 6, 7, 21, 18, 0)
+        self.assertEqual('2021-07-16', lunar.getSolar().toString())
+
     def testNext(self):
         solar = Solar.fromYmdHms(2020, 1, 10, 12, 0, 0)
         lunar = solar.getLunar()
         for i in range(-1, 1):
             self.assertEqual(solar.next(i).getLunar().toFullString(), lunar.next(i).toFullString())
+
+    def test27(self):
+        solar = Solar.fromYmd(1989, 4, 28)
+        self.assertEqual(23, solar.getLunar().getDay())
+
+    def test28(self):
+        solar = Solar.fromYmd(1990, 10, 8)
+        self.assertEqual("乙酉", solar.getLunar().getMonthInGanZhiExact())
+
+    def test29(self):
+        solar = Solar.fromYmd(1990, 10, 9)
+        self.assertEqual("丙戌", solar.getLunar().getMonthInGanZhiExact())
+
+    def test30(self):
+        solar = Solar.fromYmd(1990, 10, 8)
+        self.assertEqual("丙戌", solar.getLunar().getMonthInGanZhi())
+
+    def test31(self):
+        solar = Solar.fromYmdHms(1987, 4, 17, 9, 0, 0)
+        self.assertEqual("一九八七年三月二十", solar.getLunar().toString())
+
+    def test32(self):
+        lunar = Lunar.fromYmd(2034, 1, 1)
+        self.assertEqual("2034-02-19", lunar.getSolar().toYmd())
+
+    def test33(self):
+        lunar = Lunar.fromYmd(2033, 12, 1)
+        self.assertEqual("2034-01-20", lunar.getSolar().toYmd())
+
+    def test34(self):
+        lunar = Lunar.fromYmd(37, -12, 1)
+        self.assertEqual("闰腊", lunar.getMonthInChinese())
+
+    def test36(self):
+        solar = Solar.fromYmd(5553, 1, 22)
+        self.assertEqual("五五五二年闰腊月初二", solar.getLunar().toString())
+
+    def test37(self):
+        solar = Solar.fromYmd(7013, 12, 24)
+        self.assertEqual("七〇一三年闰冬月初四", solar.getLunar().toString())
+
+    def test38(self):
+        lunar = Lunar.fromYmd(7013, -11, 4)
+        self.assertEqual("7013-12-24", lunar.getSolar().toString())
+
+    def test39(self):
+        solar = Solar.fromYmd(1987, 4, 12)
+        lunar = solar.getLunar()
+        self.assertEqual("一九八七年三月十五", lunar.toString())
+
+    def test40(self):
+        solar = Solar.fromYmd(1987, 4, 13)
+        lunar = solar.getLunar()
+        self.assertEqual("一九八七年三月十六", lunar.toString())
+
+    def test41(self):
+        solar = Solar.fromYmd(4, 2, 10)
+        lunar = solar.getLunar()
+        self.assertEqual("鼠", lunar.getYearShengXiao())
+
+    def test42(self):
+        solar = Solar.fromYmd(4, 2, 9)
+        lunar = solar.getLunar()
+        self.assertEqual("猪", lunar.getYearShengXiao())

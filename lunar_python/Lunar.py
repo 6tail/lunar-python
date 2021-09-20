@@ -10,7 +10,7 @@ class Lunar:
     阴历日期
     """
     JIE_QI = ("冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪")
-    JIE_QI_IN_USE = ("DA_XUE", "冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "DONG_ZHI", "XIAO_HAN", "DA_HAN", "LI_CHUN")
+    JIE_QI_IN_USE = ("DA_XUE", "冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "DONG_ZHI", "XIAO_HAN", "DA_HAN", "LI_CHUN", "YU_SHUI", "JING_ZHE")
 
     def __init__(self, lunar_year, lunar_month, lunar_day, hour, minute, second):
         from . import LunarYear
@@ -56,6 +56,12 @@ class Lunar:
         offset = self.__year - 4
         year_gan_index = offset % 10
         year_zhi_index = offset % 12
+
+        if year_gan_index < 0:
+            year_gan_index += 10
+
+        if year_zhi_index < 0:
+            year_zhi_index += 12
 
         # 以立春作为新一年的开始的干支纪年
         g = year_gan_index
@@ -523,6 +529,10 @@ class Lunar:
             jq = "立春"
         elif "DA_XUE" == jq:
             jq = "大雪"
+        elif "YU_SHUI" == jq:
+            jq = "雨水"
+        elif "JING_ZHE" == jq:
+            jq = "惊蛰"
         return jq
 
     def getJie(self):
@@ -1220,4 +1230,4 @@ class Lunar:
         start_solar = jie_qi.getSolar()
         start_calendar = ExactDate.fromYmd(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay())
         days = (current_calendar - start_calendar).days
-        return LunarUtil.WU_HOU[offset * 3 + int(days / 5)]
+        return LunarUtil.WU_HOU[(offset * 3 + int(days / 5)) % len(LunarUtil.WU_HOU)]

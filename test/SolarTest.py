@@ -2,6 +2,7 @@
 import unittest
 
 from lunar_python import Solar
+from lunar_python.util import SolarUtil
 
 
 class SolarTest(unittest.TestCase):
@@ -52,3 +53,6 @@ class SolarTest(unittest.TestCase):
         self.assertEqual("2020-01-18", date.next(1).toString())
         # 仅工作日，周日调休按上班算
         self.assertEqual("2020-01-19", date.next(1, True).toString())
+
+    def test10(self):
+        self.assertEqual(False, SolarUtil.isLeapYear(1500))
