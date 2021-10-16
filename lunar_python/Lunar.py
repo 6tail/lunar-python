@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 
-from . import ExactDate, Solar, NineStar, EightChar, JieQi, ShuJiu, Fu
+from . import ExactDate, Solar, NineStar, EightChar, JieQi, ShuJiu, Fu, LunarTime
 from .util import LunarUtil, SolarUtil
 
 
@@ -1231,3 +1231,34 @@ class Lunar:
         start_calendar = ExactDate.fromYmd(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay())
         days = (current_calendar - start_calendar).days
         return LunarUtil.WU_HOU[(offset * 3 + int(days / 5)) % len(LunarUtil.WU_HOU)]
+
+    def getDayLu(self):
+        """
+        获取日禄
+        :return: 日禄
+        """
+        gan = LunarUtil.LU[self.getDayGan()]
+        zhi = None
+        if self.getDayZhi() in LunarUtil.LU:
+            zhi = LunarUtil.LU[self.getDayZhi()]
+        lu = gan + "命互禄"
+        if zhi is not None:
+            lu += " " + zhi + "命进禄"
+        return lu
+
+    def getTime(self):
+        """
+        获取时辰
+        :return: 时辰
+        """
+        return LunarTime.fromYmdHms(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
+
+    def getTimes(self):
+        """
+        获取当天的时辰列表
+        :return: 时辰列表
+        """
+        times = [LunarTime.fromYmdHms(self.__year, self.__month, self.__day, 0, 0, 0)]
+        for i in range(0, 12):
+            times.append(LunarTime.fromYmdHms(self.__year, self.__month, self.__day, (i+1) * 2-1, 0, 0))
+        return times

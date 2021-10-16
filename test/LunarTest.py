@@ -188,3 +188,13 @@ class LunarTest(unittest.TestCase):
         solar = Solar.fromYmd(4, 2, 9)
         lunar = solar.getLunar()
         self.assertEqual("猪", lunar.getYearShengXiao())
+
+    def test43(self):
+        solar = Solar.fromYmd(2017, 2, 15)
+        lunar = solar.getLunar()
+        self.assertEqual("子命互禄 辛命进禄", lunar.getDayLu())
+
+    def test44(self):
+        solar = Solar.fromYmd(2017, 2, 16)
+        lunar = solar.getLunar()
+        self.assertEqual("寅命互禄", lunar.getDayLu())

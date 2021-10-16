@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from .util import ShouXingUtil
+from . import Solar
+from .util import ShouXingUtil, LunarUtil
 
 
 class LunarYear:
@@ -144,3 +145,43 @@ class LunarYear:
             if m.getYear() == self.__year and m.getMonth() == lunar_month:
                 return m
         return None
+
+    def getZhiShui(self):
+        """
+        获取治水（正月第一个辰日是初几，就是几龙治水）
+        :return: 治水，如：二龙治水
+        """
+        offset = 4 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayZhiIndex()
+        if offset < 0:
+            offset += 12
+        return LunarUtil.NUMBER[offset + 1] + "龙治水"
+
+    def getFenBing(self):
+        """
+        获取分饼（正月第一个丙日是初几，就是几人分饼）
+        :return: 分饼，如：六人分饼
+        """
+        offset = 2 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayGanIndex()
+        if offset < 0:
+            offset += 10
+        return LunarUtil.NUMBER[offset + 1] + "人分饼"
+
+    def getGengTian(self):
+        """
+        获取耕田（正月第一个丑日是初几，就是几牛耕田）
+        :return: 耕田，如：六牛耕田
+        """
+        offset = 1 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayZhiIndex()
+        if offset < 0:
+            offset += 12
+        return LunarUtil.NUMBER[offset + 1] + "牛耕田"
+
+    def getDeJin(self):
+        """
+        获取得金（正月第一个辛日是初几，就是几日得金）
+        :return: 得金，如：一日得金
+        """
+        offset = 7 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayGanIndex()
+        if offset < 0:
+            offset += 10
+        return LunarUtil.NUMBER[offset + 1] + "日得金"
