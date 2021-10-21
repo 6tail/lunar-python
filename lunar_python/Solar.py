@@ -70,8 +70,12 @@ class Solar:
         f -= minute
         f *= 60
         second = int(round(f))
-        if second == 60:
-            second = 59
+        if second > 59:
+            second -= 60
+            minute += 1
+        if minute > 59:
+            minute -= 60
+            hour += 1
         return Solar(year, month, day, hour, minute, second)
 
     @staticmethod
