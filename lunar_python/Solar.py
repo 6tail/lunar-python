@@ -97,7 +97,7 @@ class Solar:
             offset_year = offset_year + 60
         start_year = today.getYear() - offset_year
         hour = 0
-        time_zhi = time_gan_zhi.decode('utf-8')[1:].encode('utf-8')
+        time_zhi = time_gan_zhi.decode("utf-8")[1:].encode("utf-8")
         for i in range(0, len(LunarUtil.ZHI)):
             if LunarUtil.ZHI[i] == time_zhi:
                 hour = (i - 1) * 2
@@ -168,14 +168,12 @@ class Solar:
         :return: 劳动节等
         """
         festivals = []
-        md = str(self.__month) + "-" + str(self.__day)
-        if md in SolarUtil.FESTIVAL:
-            festivals.append(SolarUtil.FESTIVAL[md])
-        weeks = int(ceil(self.__day / 7.0))
-        week = self.getWeek()
-        me = str(self.__month) + "-" + str(weeks) + "-" + str(week)
-        if me in SolarUtil.WEEK_FESTIVAL:
-            festivals.append(SolarUtil.WEEK_FESTIVAL[me])
+        key = "%d-%d" % (self.__month, self.__day)
+        if key in SolarUtil.FESTIVAL:
+            festivals.append(SolarUtil.FESTIVAL[key])
+        key = "%d-%d-%d" % (self.__month, int(ceil(self.__day / 7.0)), self.getWeek())
+        if key in SolarUtil.WEEK_FESTIVAL:
+            festivals.append(SolarUtil.WEEK_FESTIVAL[key])
         return festivals
 
     def getOtherFestivals(self):
@@ -184,10 +182,9 @@ class Solar:
         :return: 非正式的节日列表，如中元节
         """
         festivals = []
-        md = str(self.__month) + "-" + str(self.__day)
-        if md in SolarUtil.OTHER_FESTIVAL:
-            fs = SolarUtil.OTHER_FESTIVAL[md]
-            for f in fs:
+        key = "%d-%d" % (self.__month, self.__day)
+        if key in SolarUtil.OTHER_FESTIVAL:
+            for f in SolarUtil.OTHER_FESTIVAL[key]:
                 festivals.append(f)
         return festivals
 

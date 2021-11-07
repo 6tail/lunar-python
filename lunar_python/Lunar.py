@@ -17,12 +17,12 @@ class Lunar:
         y = LunarYear.fromYear(lunar_year)
         m = y.getMonth(lunar_month)
         if m is None:
-            raise Exception("wrong lunar year " + str(lunar_year) + " month " + str(lunar_month))
+            raise Exception("wrong lunar year %d  month %d" % (lunar_year, lunar_month))
         if lunar_day < 1:
             raise Exception("lunar day must bigger than 0")
         days = m.getDayCount()
         if lunar_day > days:
-            raise Exception("only " + str(days) + " days in lunar year " + str(lunar_year) + " month " + str(lunar_month))
+            raise Exception("only %d days in lunar year %d month %d" % (days, lunar_year, lunar_month))
         self.__year = lunar_year
         self.__month = lunar_month
         self.__day = lunar_day
@@ -584,7 +584,7 @@ class Lunar:
 
     def getFestivals(self):
         fs = []
-        md = str(self.__month) + "-" + str(self.__day)
+        md = "%d-%d" % (self.__month, self.__day)
         if md in LunarUtil.FESTIVAL:
             fs.append(LunarUtil.FESTIVAL[md])
         if abs(self.__month) == 12 and self.__day >= 29 and self.__year != self.next(1).getYear():
@@ -593,11 +593,13 @@ class Lunar:
 
     def getOtherFestivals(self):
         arr = []
-        md = str(self.__month) + "-" + str(self.__day)
+        md = "%d-%d" % (self.__month, self.__day)
         if md in LunarUtil.OTHER_FESTIVAL:
             fs = LunarUtil.OTHER_FESTIVAL[md]
             for f in fs:
                 arr.append(f)
+        if self.__solar.toYmd() == self.__jieQi["清明"].next(-1).toYmd():
+            arr.append("寒食节")
         return arr
 
     def getEightChar(self):
@@ -1262,3 +1264,7 @@ class Lunar:
         for i in range(0, 12):
             times.append(LunarTime.fromYmdHms(self.__year, self.__month, self.__day, (i+1) * 2-1, 0, 0))
         return times
+
+    def getFoto(self):
+        from . import Foto
+        return Foto.fromLunar(self)
