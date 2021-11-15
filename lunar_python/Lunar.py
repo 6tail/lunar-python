@@ -397,11 +397,11 @@ class Lunar:
     def getDayPositionYinGuiDesc(self):
         return LunarUtil.POSITION_DESC[self.getDayPositionYinGui()]
 
-    def getDayPositionFu(self):
-        return LunarUtil.POSITION_FU[self.__dayGanIndex + 1]
+    def getDayPositionFu(self, sect=2):
+        return (LunarUtil.POSITION_FU if 1 == sect else LunarUtil.POSITION_FU_2)[self.__dayGanIndex + 1]
 
-    def getDayPositionFuDesc(self):
-        return LunarUtil.POSITION_DESC[self.getDayPositionFu()]
+    def getDayPositionFuDesc(self, sect=2):
+        return LunarUtil.POSITION_DESC[self.getDayPositionFu(sect)]
 
     def getDayPositionCai(self):
         return LunarUtil.POSITION_CAI[self.__dayGanIndex + 1]
@@ -427,11 +427,11 @@ class Lunar:
     def getTimePositionYinGuiDesc(self):
         return LunarUtil.POSITION_DESC[self.getTimePositionYinGui()]
 
-    def getTimePositionFu(self):
-        return LunarUtil.POSITION_FU[self.__timeGanIndex + 1]
+    def getTimePositionFu(self, sect=2):
+        return (LunarUtil.POSITION_FU if 1 == sect else LunarUtil.POSITION_FU_2)[self.__timeGanIndex + 1]
 
-    def getTimePositionFuDesc(self):
-        return LunarUtil.POSITION_DESC[self.getTimePositionFu()]
+    def getTimePositionFuDesc(self, sect=2):
+        return LunarUtil.POSITION_DESC[self.getTimePositionFu(sect)]
 
     def getTimePositionCai(self):
         return LunarUtil.POSITION_CAI[self.__timeGanIndex + 1]
@@ -666,10 +666,7 @@ class Lunar:
         return LunarUtil.TIAN_SHEN_TYPE_LUCK[self.getTimeTianShenType()]
 
     def getDayPositionTai(self):
-        offset = self.__dayGanIndex - self.__dayZhiIndex
-        if offset < 0:
-            offset += 12
-        return LunarUtil.POSITION_TAI_DAY[offset * 5 + self.__dayGanIndex]
+        return LunarUtil.POSITION_TAI_DAY[LunarUtil.getJiaZiIndex(self.getDayInGanZhi())]
 
     def getMonthPositionTai(self):
         m = self.__month

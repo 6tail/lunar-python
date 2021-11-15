@@ -48,11 +48,11 @@ class LunarTime:
     def getPositionYinGuiDesc(self):
         return LunarUtil.POSITION_DESC[self.getPositionYinGui()]
 
-    def getPositionFu(self):
-        return LunarUtil.POSITION_FU[self.__ganIndex + 1]
+    def getPositionFu(self, sect=2):
+        return (LunarUtil.POSITION_FU if 1 == sect else LunarUtil.POSITION_FU_2)[self.__ganIndex + 1]
 
-    def getPositionFuDesc(self):
-        return LunarUtil.POSITION_DESC[self.getPositionFu()]
+    def getPositionFuDesc(self, sect=2):
+        return LunarUtil.POSITION_DESC[self.getPositionFu(sect)]
 
     def getPositionCai(self):
         return LunarUtil.POSITION_CAI[self.__ganIndex + 1]
