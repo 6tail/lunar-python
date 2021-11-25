@@ -16,5 +16,7 @@ from .LunarYear import LunarYear
 from .LunarMonth import LunarMonth
 from .LunarTime import LunarTime
 from .Holiday import Holiday
-from .Foto import Foto
 from .FotoFestival import FotoFestival
+from .Foto import Foto
+from .TaoFestival import TaoFestival
+from .Tao import Tao

@@ -18,12 +18,12 @@ class Foto:
         return Foto(lunar)
 
     @staticmethod
-    def fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second):
-        return Foto.fromLunar(Lunar.fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second))
+    def fromYmdHms(year, month, day, hour, minute, second):
+        return Foto.fromLunar(Lunar.fromYmdHms(year + Foto.DEAD_YEAR - 1, month, day, hour, minute, second))
 
     @staticmethod
-    def fromYmd(lunar_year, lunar_month, lunar_day):
-        return Foto.fromYmdHms(lunar_year, lunar_month, lunar_day, 0, 0, 0)
+    def fromYmd(year, month, day):
+        return Foto.fromYmdHms(year, month, day, 0, 0, 0)
 
     def getLunar(self):
         return self.__lunar

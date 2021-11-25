@@ -1263,5 +1263,17 @@ class Lunar:
         return times
 
     def getFoto(self):
+        """
+        获取佛历
+        :return: 佛历
+        """
         from . import Foto
         return Foto.fromLunar(self)
+
+    def getTao(self):
+        """
+        获取道历
+        :return: 道历
+        """
+        from . import Tao
+        return Tao.fromLunar(self)
