@@ -97,6 +97,27 @@ class Foto:
                 return True
         return False
 
+    def getXiu(self):
+        return FotoUtil.getXiu(self.getMonth(), self.getDay())
+
+    def getXiuLuck(self):
+        return LunarUtil.XIU_LUCK[self.getXiu()]
+
+    def getXiuSong(self):
+        return LunarUtil.XIU_SONG[self.getXiu()]
+
+    def getZheng(self):
+        return LunarUtil.ZHENG[self.getXiu()]
+
+    def getAnimal(self):
+        return LunarUtil.ANIMAL[self.getXiu()]
+
+    def getGong(self):
+        return LunarUtil.GONG[self.getXiu()]
+
+    def getShou(self):
+        return LunarUtil.SHOU[self.getGong()]
+
     def __str__(self):
         return self.toString()
 

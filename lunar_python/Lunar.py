@@ -537,8 +537,8 @@ class Lunar:
 
     def getJie(self):
         jie = ""
-        for i in range(1, len(Lunar.JIE_QI), 2):
-            key = Lunar.JIE_QI[i]
+        for i in range(0, len(Lunar.JIE_QI_IN_USE), 2):
+            key = Lunar.JIE_QI_IN_USE[i]
             d = self.__jieQi[key]
             if d.getYear() == self.__solar.getYear() and d.getMonth() == self.__solar.getMonth() and d.getDay() == self.__solar.getDay():
                 jie = key
@@ -547,8 +547,8 @@ class Lunar:
 
     def getQi(self):
         qi = ""
-        for i in range(0, len(Lunar.JIE_QI), 2):
-            key = Lunar.JIE_QI[i]
+        for i in range(1, len(Lunar.JIE_QI_IN_USE), 2):
+            key = Lunar.JIE_QI_IN_USE[i]
             d = self.__jieQi[key]
             if d.getYear() == self.__solar.getYear() and d.getMonth() == self.__solar.getMonth() and d.getDay() == self.__solar.getDay():
                 qi = key
