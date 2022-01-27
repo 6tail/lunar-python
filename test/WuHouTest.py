@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+
 from lunar_python import Solar
 
 
@@ -46,6 +47,26 @@ class WuHouTest(unittest.TestCase):
         self.assertEqual("鹖鴠不鸣", lunar.getWuHou())
 
     def test9(self):
-        solar = Solar.fromYmd(1982,12,22)
+        solar = Solar.fromYmd(1982, 12, 22)
         lunar = solar.getLunar()
         self.assertEqual("蚯蚓结", lunar.getWuHou())
+
+    def test10(self):
+        solar = Solar.fromYmd(2021, 12, 21)
+        lunar = solar.getLunar()
+        self.assertEqual("冬至 初候", lunar.getHou())
+
+    def test11(self):
+        solar = Solar.fromYmd(2021, 12, 26)
+        lunar = solar.getLunar()
+        self.assertEqual("冬至 二候", lunar.getHou())
+
+    def test12(self):
+        solar = Solar.fromYmd(2021, 12, 31)
+        lunar = solar.getLunar()
+        self.assertEqual("冬至 三候", lunar.getHou())
+
+    def test13(self):
+        solar = Solar.fromYmd(2022, 1, 5)
+        lunar = solar.getLunar()
+        self.assertEqual("小寒 初候", lunar.getHou())

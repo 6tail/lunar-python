@@ -126,6 +126,13 @@ class SolarUtil:
         return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
 
     @staticmethod
+    def getDaysOfYear(year):
+        d = 365
+        if SolarUtil.isLeapYear(year):
+            d = 366
+        return d
+
+    @staticmethod
     def getDaysOfMonth(year, month):
         """
         获取某年某月有多少天
@@ -133,11 +140,23 @@ class SolarUtil:
         :param month: 月
         :return: 天数
         """
+        if 1582 == year and 10 == month:
+            return 21
         d = SolarUtil.DAYS_OF_MONTH[month - 1]
         # 公历闰年2月多一天
         if month == 2 and SolarUtil.isLeapYear(year):
             d += 1
         return d
+
+    @staticmethod
+    def getDaysInYear(year, month, day):
+        days = 0
+        for i in range(1, month):
+            days += SolarUtil.getDaysOfMonth(year, i)
+        days += day
+        if 1582 == year and 10 == month and day >= 15:
+            days -= 10
+        return days
 
     @staticmethod
     def getWeeksOfMonth(year, month, start):

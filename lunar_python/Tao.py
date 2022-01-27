@@ -93,6 +93,33 @@ class Tao:
     def isDayBaHui(self):
         return self.__lunar.getDayInGanZhi() in TaoUtil.BA_HUI
 
+    def isDayMingWu(self):
+        return "戊" == self.__lunar.getDayGan()
+
+    def isDayAnWu(self):
+        return self.__lunar.getDayZhi() == TaoUtil.AN_WU[abs(self.getMonth()) - 1]
+
+    def isDayWu(self):
+        return self.isDayMingWu() or self.isDayAnWu()
+
+    def isDayTianShe(self):
+        ret = False
+        mz = self.__lunar.getMonthZhi()
+        dgz = self.__lunar.getDayInGanZhi()
+        if mz in "寅卯辰":
+            if "戊寅" == dgz:
+                ret = True
+        elif mz in "巳午未":
+            if "甲午" == dgz:
+                ret = True
+        elif mz in "申酉戌":
+            if "戊申" == dgz:
+                ret = True
+        elif mz in "亥子丑":
+            if "甲子" == dgz:
+                ret = True
+        return ret
+
     def __str__(self):
         return self.toString()
 

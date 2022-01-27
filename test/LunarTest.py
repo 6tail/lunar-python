@@ -105,11 +105,11 @@ class LunarTest(unittest.TestCase):
 
     def test23(self):
         lunar = Lunar.fromYmd(2022, 1, 1)
-        self.assertEqual('五黄土玉衡', lunar.getYearNineStar().toString())
+        self.assertEqual('六白金开阳', lunar.getYearNineStar().toString())
 
     def test24(self):
         lunar = Lunar.fromYmd(2033, 1, 1)
-        self.assertEqual('三碧木天玑', lunar.getYearNineStar().toString())
+        self.assertEqual('四绿木天权', lunar.getYearNineStar().toString())
 
     def test25(self):
         solar = Solar.fromYmdHms(2021, 6, 7, 21, 18, 0)

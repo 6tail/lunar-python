@@ -31,9 +31,7 @@ class Yun:
         start_time_zhi_index = 11 if start.getHour() == 23 else LunarUtil.getTimeZhiIndex(start.toYmdHms()[11: 16])
         # 时辰差
         hour_diff = end_time_zhi_index - start_time_zhi_index
-        end_calendar = ExactDate.fromYmd(end.getYear(), end.getMonth(), end.getDay())
-        start_calendar = ExactDate.fromYmd(start.getYear(), start.getMonth(), start.getDay())
-        day_diff = (end_calendar - start_calendar).days
+        day_diff = ExactDate.getDaysBetween(start.getYear(), start.getMonth(), start.getDay(), end.getYear(), end.getMonth(), end.getDay())
         if hour_diff < 0:
             hour_diff += 12
             day_diff -= 1

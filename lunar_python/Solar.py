@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import sys
 from datetime import datetime, timedelta
 from math import ceil
 
@@ -95,9 +96,13 @@ class Solar:
         offset_year = LunarUtil.getJiaZiIndex(lunar.getYearInGanZhiExact()) - LunarUtil.getJiaZiIndex(year_gan_zhi)
         if offset_year < 0:
             offset_year = offset_year + 60
-        start_year = today.getYear() - offset_year
+        start_year = lunar.getYear() - offset_year
         hour = 0
-        time_zhi = time_gan_zhi.decode("utf-8")[1:].encode("utf-8")
+        if sys.version_info.major > 2:
+            time_gan_zhi_bytes = time_gan_zhi.encode("utf-8")
+        else:
+            time_gan_zhi_bytes = time_gan_zhi
+        time_zhi = time_gan_zhi_bytes.decode("utf-8")[1:].encode("utf-8")
         for i in range(0, len(LunarUtil.ZHI)):
             if LunarUtil.ZHI[i] == time_zhi:
                 hour = (i - 1) * 2

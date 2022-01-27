@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from . import Solar
+from . import Solar, NineStar
 from .util import ShouXingUtil, LunarUtil
 
 
@@ -7,6 +7,10 @@ class LunarYear:
     """
     农历年
     """
+
+    YUAN = ("下", "上", "中")
+
+    YUN = ("七", "八", "九", "一", "二", "三", "四", "五", "六")
 
     __LEAP_11 = (75, 94, 170, 238, 265, 322, 389, 469, 553, 583, 610, 678, 735, 754, 773, 849, 887, 936, 1050, 1069, 1126, 1145, 1164, 1183, 1259, 1278, 1308, 1373, 1403, 1441, 1460, 1498, 1555, 1593, 1612, 1631, 1642, 2033, 2128, 2147, 2242, 2614, 2728, 2910, 3062, 3244, 3339, 3616, 3711, 3730, 3825, 4007, 4159, 4197, 4322, 4341, 4379, 4417, 4531, 4599, 4694, 4713, 4789, 4808, 4971, 5085, 5104, 5161, 5180, 5199, 5294, 5305, 5476, 5677, 5696, 5772, 5791, 5848, 5886, 6049, 6068, 6144, 6163, 6258, 6402, 6440, 6497, 6516, 6630, 6641, 6660, 6679, 6736, 6774, 6850, 6869, 6899, 6918, 6994, 7013, 7032, 7051, 7070, 7089, 7108, 7127, 7146, 7222, 7271, 7290, 7309, 7366, 7385, 7404, 7442, 7461, 7480, 7491, 7499, 7594, 7624, 7643, 7662, 7681, 7719, 7738, 7814, 7863, 7882, 7901, 7939, 7958, 7977, 7996,
                  8034, 8053, 8072, 8091, 8121, 8159, 8186, 8216, 8235, 8254, 8273, 8311, 8330, 8341, 8349, 8368, 8444, 8463, 8474, 8493, 8531, 8569, 8588, 8626, 8664, 8683, 8694, 8702, 8713, 8721, 8751, 8789, 8808, 8816, 8827, 8846, 8884, 8903, 8922, 8941, 8971, 9036, 9066, 9085, 9104, 9123, 9142, 9161, 9180, 9199, 9218, 9256, 9294, 9313, 9324, 9343, 9362, 9381, 9419, 9438, 9476, 9514, 9533, 9544, 9552, 9563, 9571, 9582, 9601, 9639, 9658, 9666, 9677, 9696, 9734, 9753, 9772, 9791, 9802, 9821, 9886, 9897, 9916, 9935, 9954, 9973, 9992)
@@ -25,6 +29,15 @@ class LunarYear:
 
     def __init__(self, lunar_year):
         self.__year = lunar_year
+        offset = lunar_year - 4
+        year_gan_index = offset % 10
+        year_zhi_index = offset % 12
+        if year_gan_index < 0:
+            year_gan_index += 10
+        if year_zhi_index < 0:
+            year_zhi_index += 12
+        self.__ganIndex = year_gan_index
+        self.__zhiIndex = year_zhi_index
         self.__months = []
         self.__jieQiJulianDays = []
         self.compute()
@@ -108,6 +121,21 @@ class LunarYear:
     def getYear(self):
         return self.__year
 
+    def getGanIndex(self):
+        return self.__ganIndex
+
+    def getZhiIndex(self):
+        return self.__zhiIndex
+
+    def getGan(self):
+        return LunarUtil.GAN[self.__ganIndex + 1]
+
+    def getZhi(self):
+        return LunarUtil.ZHI[self.__zhiIndex + 1]
+
+    def getGanZhi(self):
+        return self.getGan() + self.getZhi()
+
     def toString(self):
         return str(self.__year) + ""
 
@@ -146,42 +174,122 @@ class LunarYear:
                 return m
         return None
 
-    def getZhiShui(self):
-        """
-        获取治水（正月第一个辰日是初几，就是几龙治水）
-        :return: 治水，如：二龙治水
-        """
-        offset = 4 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayZhiIndex()
-        if offset < 0:
-            offset += 12
-        return LunarUtil.NUMBER[offset + 1] + "龙治水"
-
-    def getFenBing(self):
-        """
-        获取分饼（正月第一个丙日是初几，就是几人分饼）
-        :return: 分饼，如：六人分饼
-        """
-        offset = 2 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayGanIndex()
+    def __getZaoByGan(self, index, name):
+        offset = index - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayGanIndex()
         if offset < 0:
             offset += 10
-        return LunarUtil.NUMBER[offset + 1] + "人分饼"
+        return name.replace("几", LunarUtil.NUMBER[offset + 1], 1)
+
+    def __getZaoByZhi(self, index, name):
+        offset = index - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayZhiIndex()
+        if offset < 0:
+            offset += 12
+        return name.replace("几", LunarUtil.NUMBER[offset + 1], 1)
+
+    def getTouLiang(self):
+        return self.__getZaoByZhi(0, "几鼠偷粮")
+
+    def getCaoZi(self):
+        return self.__getZaoByZhi(0, "草子几分")
 
     def getGengTian(self):
         """
         获取耕田（正月第一个丑日是初几，就是几牛耕田）
         :return: 耕田，如：六牛耕田
         """
-        offset = 1 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayZhiIndex()
-        if offset < 0:
-            offset += 12
-        return LunarUtil.NUMBER[offset + 1] + "牛耕田"
+        return self.__getZaoByZhi(1, "几牛耕田")
+
+    def getHuaShou(self):
+        return self.__getZaoByZhi(3, "花收几分")
+
+    def getZhiShui(self):
+        """
+        获取治水（正月第一个辰日是初几，就是几龙治水）
+        :return: 治水，如：二龙治水
+        """
+        return self.__getZaoByZhi(4, "几龙治水")
+
+    def getTuoGu(self):
+        return self.__getZaoByZhi(6, "几马驮谷")
+
+    def getQiangMi(self):
+        return self.__getZaoByZhi(9, "几鸡抢米")
+
+    def getKanCan(self):
+        return self.__getZaoByZhi(9, "几姑看蚕")
+
+    def getGongZhu(self):
+        return self.__getZaoByZhi(11, "几屠共猪")
+
+    def getJiaTian(self):
+        return self.__getZaoByGan(0, "甲田几分")
+
+    def getFenBing(self):
+        """
+        获取分饼（正月第一个丙日是初几，就是几人分饼）
+        :return: 分饼，如：六人分饼
+        """
+        return self.__getZaoByGan(2, "几人分饼")
 
     def getDeJin(self):
         """
         获取得金（正月第一个辛日是初几，就是几日得金）
         :return: 得金，如：一日得金
         """
-        offset = 7 - Solar.fromJulianDay(self.getMonth(1).getFirstJulianDay()).getLunar().getDayGanIndex()
-        if offset < 0:
-            offset += 10
-        return LunarUtil.NUMBER[offset + 1] + "日得金"
+        return self.__getZaoByGan(7, "几日得金")
+
+    def getRenBing(self):
+        return self.__getZaoByGan(2, self.__getZaoByZhi(2, "几人几丙"))
+
+    def getRenChu(self):
+        return self.__getZaoByGan(3, self.__getZaoByZhi(2, "几人几锄"))
+
+    def getYuan(self):
+        return LunarYear.YUAN[int((self.__year + 2696) / 60) % 3] + "元"
+
+    def getYun(self):
+        return LunarYear.YUN[int((self.__year + 2696) / 20) % 9] + "运"
+
+    def getNineStar(self):
+        index = LunarUtil.getJiaZiIndex(self.getGanZhi()) + 1
+        yuan = int((self.__year + 2696) / 60) % 3
+        offset = (62 + yuan * 3 - index) % 9
+        if 0 == offset:
+            offset = 9
+        return NineStar.fromIndex(offset - 1)
+
+    def getPositionXi(self):
+        return LunarUtil.POSITION_XI[self.__ganIndex + 1]
+
+    def getPositionXiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionXi()]
+
+    def getPositionYangGui(self):
+        return LunarUtil.POSITION_YANG_GUI[self.__ganIndex + 1]
+
+    def getPositionYangGuiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionYangGui()]
+
+    def getPositionYinGui(self):
+        return LunarUtil.POSITION_YIN_GUI[self.__ganIndex + 1]
+
+    def getPositionYinGuiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionYinGui()]
+
+    def getPositionFu(self, sect=2):
+        return (LunarUtil.POSITION_FU if 1 == sect else LunarUtil.POSITION_FU_2)[self.__ganIndex + 1]
+
+    def getPositionFuDesc(self, sect=2):
+        return LunarUtil.POSITION_DESC[self.getPositionFu(sect)]
+
+    def getPositionCai(self):
+        return LunarUtil.POSITION_CAI[self.__ganIndex + 1]
+
+    def getPositionCaiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionCai()]
+
+    def getPositionTaiSui(self):
+        return LunarUtil.POSITION_TAI_SUI_YEAR[self.__zhiIndex]
+
+    def getPositionTaiSuiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionTaiSui()]

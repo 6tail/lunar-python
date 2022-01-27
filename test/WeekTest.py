@@ -30,3 +30,43 @@ class WeekTest(unittest.TestCase):
         self.assertEqual("2019-04-28", week.getFirstDay().toString())
         # 当周第一天（本月）
         self.assertEqual("2019-05-01", week.getFirstDayInMonth().toString())
+
+    def test2(self):
+        week = SolarWeek.fromYmd(2022, 5, 1, 0)
+        self.assertEqual(1, week.getIndex())
+
+    def test3(self):
+        week = SolarWeek.fromYmd(2022, 5, 7, 0)
+        self.assertEqual(1, week.getIndex())
+
+    def test4(self):
+        week = SolarWeek.fromYmd(2022, 5, 8, 0)
+        self.assertEqual(2, week.getIndex())
+
+    def test5(self):
+        week = SolarWeek.fromYmd(2022, 5, 1, 1)
+        self.assertEqual(1, week.getIndex())
+
+    def test6(self):
+        week = SolarWeek.fromYmd(2022, 5, 2, 1)
+        self.assertEqual(2, week.getIndex())
+
+    def test7(self):
+        week = SolarWeek.fromYmd(2022, 5, 8, 1)
+        self.assertEqual(2, week.getIndex())
+
+    def test8(self):
+        week = SolarWeek.fromYmd(2021, 11, 1, 0)
+        self.assertEqual(1, week.getIndex())
+
+    def test9(self):
+        week = SolarWeek.fromYmd(2021, 11, 1, 1)
+        self.assertEqual(1, week.getIndex())
+
+    def test10(self):
+        week = SolarWeek.fromYmd(2021, 5, 2, 2)
+        self.assertEqual(1, week.getIndex())
+
+    def test11(self):
+        week = SolarWeek.fromYmd(2021, 5, 4, 2)
+        self.assertEqual(2, week.getIndex())

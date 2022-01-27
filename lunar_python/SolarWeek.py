@@ -60,7 +60,12 @@ class SolarWeek:
         """
         first_day = ExactDate.fromYmd(self.__year, self.__month, 1)
         first_day_week = first_day.isoweekday()
-        return int(ceil((self.__day + first_day_week - self.__start) * 1.0 / 7))
+        if 7 == first_day_week:
+            first_day_week = 0
+        offset = first_day_week - self.__start
+        if offset < 0:
+            offset += 7
+        return int(ceil((self.__day + offset) * 1.0 / 7))
 
     def getFirstDay(self):
         """
