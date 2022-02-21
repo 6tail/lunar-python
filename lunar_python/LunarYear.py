@@ -293,3 +293,11 @@ class LunarYear:
 
     def getPositionTaiSuiDesc(self):
         return LunarUtil.POSITION_DESC[self.getPositionTaiSui()]
+
+    def next(self, n):
+        """
+        获取往后推几年的阴历年，如果要往前推，则年数用负数
+        :param n: 年数
+        :return: 阴历年
+        """
+        return LunarYear.fromYear(self.__year + n)

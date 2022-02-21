@@ -45,7 +45,7 @@ class TaoUtil:
 
     # 日期对应的节日
     FESTIVAL = {
-        "1-1": [TaoFestival("天腊之辰", "天腊，此日五帝会于束方九炁青天")],
+        "1-1": [TaoFestival("天腊之辰", "天腊，此日五帝会于东方九炁青天")],
         "1-3": [TaoFestival("郝真人圣诞"), TaoFestival("孙真人圣诞")],
         "1-5": [TaoFestival("孙祖清静元君诞")],
         "1-7": [TaoFestival("举迁赏会", "此日上元赐福，天官同地水二官考校罪福")],
@@ -80,7 +80,7 @@ class TaoUtil:
         "4-20": [TaoFestival("眼光圣母娘娘诞")],
         "4-28": [TaoFestival("神农先帝诞")],
         "5-1": [TaoFestival("南极长生大帝圣诞")],
-        "5-5": [TaoFestival("地腊之辰", "地腊，此日五帝会於南方三炁丹天"), TaoFestival("南方雷祖圣诞"), TaoFestival("地祗温元帅圣诞"), TaoFestival("雷霆邓天君圣诞")],
+        "5-5": [TaoFestival("地腊之辰", "地腊，此日五帝会于南方三炁丹天"), TaoFestival("南方雷祖圣诞"), TaoFestival("地祗温元帅圣诞"), TaoFestival("雷霆邓天君圣诞")],
         "5-11": [TaoFestival("城隍爷圣诞")],
         "5-13": [TaoFestival("关圣帝君降神"), TaoFestival("关平太子圣诞")],
         "5-18": [TaoFestival("张天师圣诞")],
@@ -122,7 +122,7 @@ class TaoUtil:
         "9-22": [TaoFestival("增福财神诞")],
         "9-23": [TaoFestival("萨翁真君圣诞")],
         "9-28": [TaoFestival("五显灵官马元帅圣诞")],
-        "10-1": [TaoFestival("民岁腊之辰", "民岁腊，此日五帝会於北方五炁黑天"), TaoFestival("东皇大帝圣诞")],
+        "10-1": [TaoFestival("民岁腊之辰", "民岁腊，此日五帝会于北方五炁黑天"), TaoFestival("东皇大帝圣诞")],
         "10-3": [TaoFestival("三茅应化真君圣诞")],
         "10-6": [TaoFestival("天曹诸司五岳五帝圣诞")],
         "10-15": [TaoFestival("下元水官大帝圣诞"), TaoFestival("建生大会", "此日下元解厄，水官同天地二官考校罪福")],
@@ -133,7 +133,7 @@ class TaoUtil:
         "11-9": [TaoFestival("湘子韩祖圣诞")],
         "11-11": [TaoFestival("太乙救苦天尊圣诞")],
         "11-26": [TaoFestival("北方五道圣诞")],
-        "12-8": [TaoFestival("王侯腊之辰", "王侯腊，此日五帝会於上方玄都玉京")],
+        "12-8": [TaoFestival("王侯腊之辰", "王侯腊，此日五帝会于上方玄都玉京")],
         "12-16": [TaoFestival("南岳大帝圣诞"), TaoFestival("福德正神诞")],
         "12-20": [TaoFestival("鲁班先师圣诞")],
         "12-21": [TaoFestival("天猷上帝圣诞")],

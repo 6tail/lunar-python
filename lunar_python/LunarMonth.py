@@ -64,3 +64,59 @@ class LunarMonth:
 
     def __str__(self):
         return self.toString()
+
+    def next(self, n):
+        """
+        获取往后推几个月的阴历月，如果要往前推，则月数用负数
+        :param n: 月数
+        :return: 阴历月
+        """
+        if 0 == n:
+            return LunarMonth.fromYm(self.__year, self.__month)
+        elif n > 0:
+            rest = n
+            ny = self.__year
+            iy = ny
+            im = self.__month
+            index = 0
+            months = LunarYear.fromYear(ny).getMonths()
+            while True:
+                size = len(months)
+                for i in range(0, size):
+                    m = months[i]
+                    if m.getYear() == iy and m.getMonth() == im:
+                        index = i
+                        break
+                more = size - index - 1
+                if rest < more:
+                    break
+                rest -= more
+                last_month = months[size - 1]
+                iy = last_month.getYear()
+                im = last_month.getMonth()
+                ny += 1
+                months = LunarYear.fromYear(ny).getMonths()
+            return months[index + rest]
+        else:
+            rest = -n
+            ny = self.__year
+            iy = ny
+            im = self.__month
+            index = 0
+            months = LunarYear.fromYear(ny).getMonths()
+            while True:
+                size = len(months)
+                for i in range(0, size):
+                    m = months[i]
+                    if m.getYear() == iy and m.getMonth() == im:
+                        index = i
+                        break
+                if rest <= index:
+                    break
+                rest -= index
+                first_month = months[0]
+                iy = first_month.getYear()
+                im = first_month.getMonth()
+                ny -= 1
+                months = LunarYear.fromYear(ny).getMonths()
+            return months[index - rest]

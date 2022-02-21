@@ -1287,7 +1287,11 @@ class Lunar:
         jie_qi = self.getPrevJieQi(True)
         start_solar = jie_qi.getSolar()
         days = ExactDate.getDaysBetween(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay(), self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
-        return "%s %s" % (jie_qi.getName(), LunarUtil.HOU[int(days / 5) % len(LunarUtil.HOU)])
+        size = len(LunarUtil.HOU)
+        offset = int(days / 5)
+        if offset > size:
+            offset = size
+        return "%s %s" % (jie_qi.getName(), LunarUtil.HOU[offset])
 
     def getDayLu(self):
         """
