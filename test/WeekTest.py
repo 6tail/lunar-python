@@ -70,3 +70,7 @@ class WeekTest(unittest.TestCase):
     def test11(self):
         week = SolarWeek.fromYmd(2021, 5, 4, 2)
         self.assertEqual(2, week.getIndex())
+
+    def test12(self):
+        week = SolarWeek.fromYmd(2022, 3, 6, 0)
+        self.assertEqual(11, week.getIndexInYear())

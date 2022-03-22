@@ -403,14 +403,15 @@ class EightChar:
     def getLunar(self):
         return self.__lunar
 
-    def getYun(self, gender):
+    def getYun(self, gender, sect=1):
         """
         获取运
         :param gender: 性别：1男，0女
+        :param sect 流派：1按天数和时辰数计算，3天1年，1天4个月，1时辰10天；2按分钟数计算
         :return: 运
         """
         from .eightchar import Yun
-        return Yun(self, gender)
+        return Yun(self, gender, sect)
 
     def getYearXun(self):
         """

@@ -67,6 +67,20 @@ class SolarWeek:
             offset += 7
         return int(ceil((self.__day + offset) * 1.0 / 7))
 
+    def getIndexInYear(self):
+        """
+        获取当前日期是在当年第几周
+        :return: 周序号，从1开始
+        """
+        first_day = ExactDate.fromYmd(self.__year, 1, 1)
+        first_day_week = first_day.isoweekday()
+        if 7 == first_day_week:
+            first_day_week = 0
+        offset = first_day_week - self.__start
+        if offset < 0:
+            offset += 7
+        return int(ceil((SolarUtil.getDaysInYear(self.__year, self.__month, self.__day) + offset) * 1.0 / 7))
+
     def getFirstDay(self):
         """
         获取本周第一天的阳历日期（可能跨月）
