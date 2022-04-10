@@ -421,6 +421,63 @@ class Lunar:
     def getYearPositionTaiSuiDesc(self, sect=2):
         return LunarUtil.POSITION_DESC[self.getYearPositionTaiSui(sect)]
 
+    def __getMonthPositionTaiSui(self, month_zhi_index, month_gan_index):
+        m = month_zhi_index - LunarUtil.BASE_MONTH_ZHI_INDEX
+        if m < 0:
+            m += 12
+        m = m % 4
+        if 0 == m:
+            p = "艮"
+        elif 2 == m:
+            p = "坤"
+        elif 3 == m:
+            p = "巽"
+        else:
+            p = LunarUtil.POSITION_GAN[month_gan_index]
+        return p
+
+    def getMonthPositionTaiSui(self, sect=2):
+        if 3 == sect:
+            month_zhi_index = self.__monthZhiIndexExact
+            month_gan_index = self.__monthGanIndexExact
+        else:
+            month_zhi_index = self.__monthZhiIndex
+            month_gan_index = self.__monthGanIndex
+        return self.__getMonthPositionTaiSui(month_zhi_index, month_gan_index)
+
+    def getMonthPositionTaiSuiDesc(self, sect=2):
+        return LunarUtil.POSITION_DESC[self.getMonthPositionTaiSui(sect)]
+
+    def __getDayPositionTaiSui(self, day_in_gan_zhi, year_zhi_index):
+        if day_in_gan_zhi in "甲子,乙丑,丙寅,丁卯,戊辰,已巳":
+            p = "震"
+        elif day_in_gan_zhi in "丙子,丁丑,戊寅,已卯,庚辰,辛巳":
+            p = "离"
+        elif day_in_gan_zhi in "戊子,已丑,庚寅,辛卯,壬辰,癸巳":
+            p = "中"
+        elif day_in_gan_zhi in "庚子,辛丑,壬寅,癸卯,甲辰,乙巳":
+            p = "兑"
+        elif day_in_gan_zhi in "壬子,癸丑,甲寅,乙卯,丙辰,丁巳":
+            p = "坎"
+        else:
+            p = LunarUtil.POSITION_TAI_SUI_YEAR[year_zhi_index]
+        return p
+
+    def getDayPositionTaiSui(self, sect=2):
+        if 1 == sect:
+            day_in_gan_zhi = self.getDayInGanZhi()
+            year_zhi_index = self.__yearZhiIndex
+        elif 3 == sect:
+            day_in_gan_zhi = self.getDayInGanZhi()
+            year_zhi_index = self.__yearZhiIndexExact
+        else:
+            day_in_gan_zhi = self.getDayInGanZhiExact2()
+            year_zhi_index = self.__yearZhiIndexByLiChun
+        return self.__getDayPositionTaiSui(day_in_gan_zhi, year_zhi_index)
+
+    def getDayPositionTaiSuiDesc(self, sect=2):
+        return LunarUtil.POSITION_DESC[self.getDayPositionTaiSui(sect)]
+
     def getTimePositionXi(self):
         return LunarUtil.POSITION_XI[self.__timeGanIndex + 1]
 
@@ -606,8 +663,23 @@ class Lunar:
             fs = LunarUtil.OTHER_FESTIVAL[md]
             for f in fs:
                 arr.append(f)
-        if self.__solar.toYmd() == self.__jieQi["清明"].next(-1).toYmd():
+        solar_ymd = self.__solar.toYmd()
+        if solar_ymd == self.__jieQi["清明"].next(-1).toYmd():
             arr.append("寒食节")
+
+        jq = self.__jieQi["立春"]
+        offset = 4 - jq.getLunar().getDayGanIndex()
+        if offset < 0:
+            offset += 10
+        if solar_ymd == jq.next(offset + 40).toYmd():
+            arr.append("春社")
+
+        jq = self.__jieQi["立秋"]
+        offset = 4 - jq.getLunar().getDayGanIndex()
+        if offset < 0:
+            offset += 10
+        if solar_ymd == jq.next(offset + 40).toYmd():
+            arr.append("秋社")
         return arr
 
     def getEightChar(self):
@@ -682,19 +754,27 @@ class Lunar:
             return ""
         return LunarUtil.POSITION_TAI_MONTH[m - 1]
 
-    def getDayYi(self):
+    def getDayYi(self, sect=2):
         """
         获取每日宜
         :return: 宜
         """
-        return LunarUtil.getDayYi(self.getMonthInGanZhiExact(), self.getDayInGanZhi())
+        if 2 == sect:
+            month_gan_zhi = self.getMonthInGanZhiExact()
+        else:
+            month_gan_zhi = self.getMonthInGanZhi()
+        return LunarUtil.getDayYi(month_gan_zhi, self.getDayInGanZhi())
 
-    def getDayJi(self):
+    def getDayJi(self, sect=2):
         """
         获取每日忌
         :return: 忌
         """
-        return LunarUtil.getDayJi(self.getMonthInGanZhiExact(), self.getDayInGanZhi())
+        if 2 == sect:
+            month_gan_zhi = self.getMonthInGanZhiExact()
+        else:
+            month_gan_zhi = self.getMonthInGanZhi()
+        return LunarUtil.getDayJi(month_gan_zhi, self.getDayInGanZhi())
 
     def getTimeYi(self):
         """
@@ -774,9 +854,9 @@ class Lunar:
 
     def getDayNineStar(self):
         solar_ymd = self.__solar.toYmd()
-        dong_zhi = self.__jieQi["冬至"].toYmd()
-        dong_zhi2 = self.__jieQi["DONG_ZHI"].toYmd()
-        xia_zhi = self.__jieQi["夏至"].toYmd()
+        dong_zhi = self.__jieQi["冬至"]
+        dong_zhi2 = self.__jieQi["DONG_ZHI"]
+        xia_zhi = self.__jieQi["夏至"]
 
         dong_zhi_index = LunarUtil.getJiaZiIndex(dong_zhi.getLunar().getDayInGanZhi())
         dong_zhi_index2 = LunarUtil.getJiaZiIndex(dong_zhi2.getLunar().getDayInGanZhi())

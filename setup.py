@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='lunar_python',
-    version='1.2.17',
+    version='1.2.18',
     packages=['lunar_python', 'lunar_python.util', 'lunar_python.eightchar'],
     url='https://github.com/6tail/lunar-python',
     license='MIT',

@@ -237,3 +237,18 @@ print(lunar.getLiuYao())
 
 # 物候
 print(lunar.getWuHou())
+
+# 日九星
+print(lunar.getDayNineStar())
+
+# 年太岁
+print(lunar.getYearPositionTaiSui())
+print(lunar.getYearPositionTaiSuiDesc())
+
+# 月太岁
+print(lunar.getMonthPositionTaiSui())
+print(lunar.getMonthPositionTaiSuiDesc())
+
+# 日太岁
+print(lunar.getDayPositionTaiSui())
+print(lunar.getDayPositionTaiSuiDesc())

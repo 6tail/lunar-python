@@ -223,3 +223,23 @@ class LunarTest(unittest.TestCase):
         solar = Solar.fromYmd(2011, 11, 12)
         lunar = solar.getLunar()
         self.assertEqual("厕灶厨 外西南", lunar.getDayPositionTai())
+
+    def test53(self):
+        solar = Solar.fromYmd(1722, 9, 25)
+        lunar = solar.getLunar()
+        self.assertEqual("秋社", lunar.getOtherFestivals()[0])
+
+    def test54(self):
+        solar = Solar.fromYmd(840, 9, 14)
+        lunar = solar.getLunar()
+        self.assertEqual("秋社", lunar.getOtherFestivals()[0])
+
+    def test55(self):
+        solar = Solar.fromYmd(2022, 3, 16)
+        lunar = solar.getLunar()
+        self.assertEqual("春社", lunar.getOtherFestivals()[0])
+
+    def test56(self):
+        solar = Solar.fromYmd(2021, 3, 21)
+        lunar = solar.getLunar()
+        self.assertEqual("春社", lunar.getOtherFestivals()[0])

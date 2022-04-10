@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+from datetime import datetime
 
 from lunar_python import Solar, Lunar
 
@@ -30,3 +31,28 @@ class EightCharTest(unittest.TestCase):
     def test6(self):
         lunar = Lunar.fromYmd(1986, 12, 27)
         self.assertEqual("1990-04-15", lunar.getEightChar().getYun(1).getStartSolar().toYmd())
+
+    def test7(self):
+        solar = Solar.fromYmdHms(2022, 8, 28, 1, 50, 0)
+        lunar = solar.getLunar()
+        eight_char = lunar.getEightChar()
+        self.assertEqual("壬寅", eight_char.getYear())
+        self.assertEqual("戊申", eight_char.getMonth())
+        self.assertEqual("癸丑", eight_char.getDay())
+        self.assertEqual("癸丑", eight_char.getTime())
+
+    def test8(self):
+        lunar = Lunar.fromYmdHms(2022, 8, 2, 1, 50, 0)
+        eight_char = lunar.getEightChar()
+        self.assertEqual("壬寅", eight_char.getYear())
+        self.assertEqual("戊申", eight_char.getMonth())
+        self.assertEqual("癸丑", eight_char.getDay())
+        self.assertEqual("癸丑", eight_char.getTime())
+
+    def test9(self):
+        lunar = Lunar.fromDate(datetime.strptime('2022-08-28 01:50:00', '%Y-%m-%d %H:%M:%S'))
+        eight_char = lunar.getEightChar()
+        self.assertEqual("壬寅", eight_char.getYear())
+        self.assertEqual("戊申", eight_char.getMonth())
+        self.assertEqual("癸丑", eight_char.getDay())
+        self.assertEqual("癸丑", eight_char.getTime())

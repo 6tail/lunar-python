@@ -56,3 +56,7 @@ class SolarTest(unittest.TestCase):
 
     def test10(self):
         self.assertEqual(False, SolarUtil.isLeapYear(1500))
+
+    def test11(self):
+        solar = Solar.fromYmd(2022, 3, 28)
+        self.assertEqual("全国中小学生安全教育日", solar.getFestivals()[0])
