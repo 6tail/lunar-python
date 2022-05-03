@@ -161,7 +161,7 @@ class LunarTime:
             return "00:00"
         elif hour > 22:
             return "23:00"
-        return "%02d:00", hour - 1 if hour % 2 == 0 else hour
+        return "%02d:00" % (hour - 1 if hour % 2 == 0 else hour)
 
     def getMaxHm(self):
         hour = self.__lunar.getHour()
@@ -169,4 +169,4 @@ class LunarTime:
             return "00:59"
         elif hour > 22:
             return "23:59"
-        return "%02d:59", hour + 1 if hour % 2 != 0 else hour
+        return "%02d:59" % (hour + 1 if hour % 2 != 0 else hour)

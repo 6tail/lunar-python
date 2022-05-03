@@ -252,3 +252,8 @@ print(lunar.getMonthPositionTaiSuiDesc())
 # 日太岁
 print(lunar.getDayPositionTaiSui())
 print(lunar.getDayPositionTaiSuiDesc())
+
+times = lunar.getTimes()
+for i in range(0, len(times)):
+    time = times[i]
+    print("%s - %s : %s" % (time.getMinHm(), time.getMaxHm(), time.toString()))

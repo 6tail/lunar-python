@@ -218,6 +218,9 @@ class Lunar:
     def getDay(self):
         return self.__day
 
+    def getHour(self):
+        return self.__hour
+
     def getMinute(self):
         return self.__minute
 
