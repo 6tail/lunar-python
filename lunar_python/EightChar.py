@@ -338,6 +338,22 @@ class EightChar:
         """
         return LunarUtil.NAYIN.get(self.getTaiYuan())
 
+    def getTaiXi(self):
+        """
+        获取胎息
+        :return: 胎息
+        """
+        gan_index = self.__lunar.getDayGanIndexExact2() if 2 == self.__sect else self.__lunar.getDayGanIndexExact()
+        zhi_index = self.__lunar.getDayZhiIndexExact2() if 2 == self.__sect else self.__lunar.getDayZhiIndexExact()
+        return LunarUtil.HE_GAN_5[gan_index] + LunarUtil.HE_ZHI_6[zhi_index]
+
+    def getTaiXiNaYin(self):
+        """
+        获取胎息纳音
+        :return: 纳音
+        """
+        return LunarUtil.NAYIN.get(self.getTaiXi())
+
     def getMingGong(self):
         """
         获取命宫
@@ -385,7 +401,9 @@ class EightChar:
             if self.__lunar.getTimeZhi() == zhi:
                 time_zhi_index = i
 
-        zhi_index = (2 + (month_zhi_index + time_zhi_index)) % 12
+        zhi_index = 2 + month_zhi_index + time_zhi_index
+        if zhi_index > 12:
+            zhi_index -= 12
         jia_zi_index = LunarUtil.getJiaZiIndex(self.getMonth()) - (month_zhi_index - zhi_index)
         if jia_zi_index >= 60:
             jia_zi_index -= 60

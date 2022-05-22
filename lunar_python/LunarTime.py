@@ -61,13 +61,13 @@ class LunarTime:
         return LunarUtil.POSITION_DESC[self.getPositionCai()]
 
     def getChong(self):
-        return LunarUtil.CHONG[self.__zhiIndex + 1]
+        return LunarUtil.CHONG[self.__zhiIndex]
 
     def getChongGan(self):
-        return LunarUtil.CHONG_GAN[self.__ganIndex + 1]
+        return LunarUtil.CHONG_GAN[self.__ganIndex]
 
     def getChongGanTie(self):
-        return LunarUtil.CHONG_GAN_TIE[self.getGan()]
+        return LunarUtil.CHONG_GAN_TIE[self.__ganIndex]
 
     def getChongShengXiao(self):
         chong = self.getChong()

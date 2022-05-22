@@ -20,6 +20,18 @@ class EightCharTest(unittest.TestCase):
         lunar = Solar.fromYmdHms(1995, 12, 18, 10, 28, 0).getLunar()
         self.assertEqual("壬午", lunar.getEightChar().getShenGong())
 
+    def test_shen_gong1(self):
+        lunar = Solar.fromYmdHms(1994, 12, 6, 2, 0, 0).getLunar()
+        self.assertEqual("丁丑", lunar.getEightChar().getShenGong())
+
+    def test_shen_gong2(self):
+        lunar = Solar.fromYmdHms(1990, 12, 11, 6, 0, 0).getLunar()
+        self.assertEqual("庚辰", lunar.getEightChar().getShenGong())
+
+    def test_shen_gong3(self):
+        lunar = Solar.fromYmdHms(1993, 5, 23, 4, 0, 0).getLunar()
+        self.assertEqual("庚申", lunar.getEightChar().getShenGong())
+
     def test4(self):
         lunar = Lunar.fromYmd(1985, 12, 27)
         self.assertEqual("1995-11-05", lunar.getEightChar().getYun(1).getStartSolar().toYmd())

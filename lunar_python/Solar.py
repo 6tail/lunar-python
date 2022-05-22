@@ -180,7 +180,7 @@ class Solar:
         key = "%d-%d-%d" % (self.__month, int(ceil(self.__day / 7.0)), week)
         if key in SolarUtil.WEEK_FESTIVAL:
             festivals.append(SolarUtil.WEEK_FESTIVAL[key])
-        if self.__day + 7 >= SolarUtil.getDaysOfMonth(self.__year, self.__month):
+        if self.__day + 7 > SolarUtil.getDaysOfMonth(self.__year, self.__month):
             key = "%d-0-%d" % (self.__month, week)
             if key in SolarUtil.WEEK_FESTIVAL:
                 festivals.append(SolarUtil.WEEK_FESTIVAL[key])

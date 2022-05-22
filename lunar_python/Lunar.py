@@ -515,28 +515,28 @@ class Lunar:
         return self.getDayChong()
 
     def getDayChong(self):
-        return LunarUtil.CHONG[self.__dayZhiIndex + 1]
+        return LunarUtil.CHONG[self.__dayZhiIndex]
 
     def getTimeChong(self):
-        return LunarUtil.CHONG[self.__timeZhiIndex + 1]
+        return LunarUtil.CHONG[self.__timeZhiIndex]
 
     def getChongGan(self):
         return self.getDayChongGan()
 
     def getDayChongGan(self):
-        return LunarUtil.CHONG_GAN[self.__dayGanIndex + 1]
+        return LunarUtil.CHONG_GAN[self.__dayGanIndex]
 
     def getTimeChongGan(self):
-        return LunarUtil.CHONG_GAN[self.__timeGanIndex + 1]
+        return LunarUtil.CHONG_GAN[self.__timeGanIndex]
 
     def getChongGanTie(self):
         return self.getDayChongGanTie()
 
     def getDayChongGanTie(self):
-        return LunarUtil.CHONG_GAN_TIE[self.getDayGan()]
+        return LunarUtil.CHONG_GAN_TIE[self.__dayGanIndex]
 
     def getTimeChongGanTie(self):
-        return LunarUtil.CHONG_GAN_TIE[self.getTimeGan()]
+        return LunarUtil.CHONG_GAN_TIE[self.__timeGanIndex]
 
     def getChongShengXiao(self):
         return self.getDayChongShengXiao()
