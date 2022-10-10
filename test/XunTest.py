@@ -16,6 +16,12 @@ class XunTest(unittest.TestCase):
         self.assertEqual("午未", lunar.getMonthXunKong())
         self.assertEqual("戌亥", lunar.getDayXunKong())
 
+    def testXunAndKong(self):
+        solar = Solar.fromYmd(2022, 5, 24)
+        lunar = solar.getLunar()
+        self.assertEqual("甲戌", lunar.getDayXun())
+        self.assertEqual("申酉", lunar.getDayXunKong())
+
     def testBaZiDayXunKong(self):
         solar = Solar.fromYmdHms(1990, 12, 23, 8, 37, 0)
         lunar = solar.getLunar()

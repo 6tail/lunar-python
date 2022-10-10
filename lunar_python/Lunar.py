@@ -1370,7 +1370,7 @@ class Lunar:
         jie_qi = self.getPrevJieQi(True)
         start_solar = jie_qi.getSolar()
         days = ExactDate.getDaysBetween(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay(), self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
-        size = len(LunarUtil.HOU)
+        size = len(LunarUtil.HOU) - 1
         offset = int(days / 5)
         if offset > size:
             offset = size
