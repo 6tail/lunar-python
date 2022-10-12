@@ -25,8 +25,8 @@ class LunarTest(unittest.TestCase):
         self.assertEqual("0005-02-03", lunar.getSolar().toString())
 
     def test4(self):
-        lunar = Lunar.fromYmdHms(9998, 12, 2, 12, 0, 0)
-        self.assertEqual("9999-01-11", lunar.getSolar().toString())
+        lunar = Lunar.fromYmdHms(9997, 12, 21, 12, 0, 0)
+        self.assertEqual("9998-01-11", lunar.getSolar().toString())
 
     def test5(self):
         lunar = Lunar.fromYmdHms(1905, 1, 1, 12, 0, 0)

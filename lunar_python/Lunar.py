@@ -34,6 +34,8 @@ class Lunar:
         self.__eightChar = None
         noon = Solar.fromJulianDay(m.getFirstJulianDay() + lunar_day - 1)
         self.__solar = Solar.fromYmdHms(noon.getYear(), noon.getMonth(), noon.getDay(), hour, minute, second)
+        if noon.getYear() != lunar_year:
+            y = LunarYear.fromYear(noon.getYear())
         self.__compute(y)
 
     def __compute(self, y):

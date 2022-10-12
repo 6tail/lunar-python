@@ -10,7 +10,7 @@ class JieQiTest(unittest.TestCase):
 
     def test8(self):
         lunar = Lunar.fromYmd(2050, 12, 1)
-        self.assertEqual("2050-12-07 06:41:00", lunar.getJieQiTable()["大雪"].toYmdHms())
+        self.assertEqual("2050-12-07 06:41:00", lunar.getJieQiTable()["DA_XUE"].toYmdHms())
 
     def test1(self):
         solar = Solar.fromYmd(2021, 12, 21)
