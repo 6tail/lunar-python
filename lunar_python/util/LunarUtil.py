@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
 
 
 class LunarUtil:
@@ -1164,13 +1163,8 @@ class LunarUtil:
         :param gan_zhi: 干支
         :return: 旬下标，0-5
         """
-        if sys.version_info.major > 2:
-            gz_bytes = gan_zhi.encode("utf-8")
-        else:
-            gz_bytes = gan_zhi
-        gz = gz_bytes.decode("utf-8")
-        gan = gz[:1].encode("utf-8")
-        zhi = gz[1:].encode("utf-8")
+        gan = gan_zhi[:1]
+        zhi = gan_zhi[1:]
         gan_index = 0
         zhi_index = 0
         for i in range(0, len(LunarUtil.GAN)):

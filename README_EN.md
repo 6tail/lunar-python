@@ -2,7 +2,7 @@
 
 lunar is a calendar library for Solar and Chinese Lunar.
 
-> Support since python 2.7，python 3 supported from v1.2.15.
+> Python2 not supported since v1.2.23.
 
 [简体中文](https://github.com/6tail/lunar-python/blob/master/README.md)
 

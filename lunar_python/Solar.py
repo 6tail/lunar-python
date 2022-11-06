@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
 from datetime import datetime, timedelta
 from math import ceil
 
@@ -98,11 +97,7 @@ class Solar:
             offset_year = offset_year + 60
         start_year = lunar.getYear() - offset_year
         hour = 0
-        if sys.version_info.major > 2:
-            time_gan_zhi_bytes = time_gan_zhi.encode("utf-8")
-        else:
-            time_gan_zhi_bytes = time_gan_zhi
-        time_zhi = time_gan_zhi_bytes.decode("utf-8")[1:].encode("utf-8")
+        time_zhi = time_gan_zhi[1:]
         for i in range(0, len(LunarUtil.ZHI)):
             if LunarUtil.ZHI[i] == time_zhi:
                 hour = (i - 1) * 2

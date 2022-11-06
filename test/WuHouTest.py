@@ -70,3 +70,13 @@ class WuHouTest(unittest.TestCase):
         solar = Solar.fromYmd(2022, 1, 5)
         lunar = solar.getLunar()
         self.assertEqual("小寒 初候", lunar.getHou())
+
+    def test15(self):
+        solar = Solar.fromYmd(2022, 8, 22)
+        lunar = solar.getLunar()
+        self.assertEqual("寒蝉鸣", lunar.getWuHou())
+
+    def test16(self):
+        solar = Solar.fromYmd(2022, 8, 23)
+        lunar = solar.getLunar()
+        self.assertEqual("鹰乃祭鸟", lunar.getWuHou())

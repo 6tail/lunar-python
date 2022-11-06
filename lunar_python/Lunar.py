@@ -1366,7 +1366,10 @@ class Lunar:
                 break
         start_solar = jie_qi.getSolar()
         days = ExactDate.getDaysBetween(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay(), self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
-        return LunarUtil.WU_HOU[(offset * 3 + int(days / 5)) % len(LunarUtil.WU_HOU)]
+        index = int(days / 5)
+        if index > 2:
+            index = 2
+        return LunarUtil.WU_HOU[(offset * 3 + index) % len(LunarUtil.WU_HOU)]
 
     def getHou(self):
         jie_qi = self.getPrevJieQi(True)
