@@ -817,12 +817,15 @@ class Lunar:
         return LunarUtil.YUE_XIANG[self.__day]
 
     def __getYearNineStar(self, year_in_gan_zhi):
-        index = LunarUtil.getJiaZiIndex(year_in_gan_zhi) + 1
-        year_offset = 0
-        if index != LunarUtil.getJiaZiIndex(self.getYearInGanZhi()) + 1:
-            year_offset = -1
+        index_exact = LunarUtil.getJiaZiIndex(year_in_gan_zhi) + 1
+        index = LunarUtil.getJiaZiIndex(self.getYearInGanZhi()) + 1
+        year_offset = index_exact - index
+        if year_offset > 1:
+            year_offset -= 60
+        elif year_offset < -1:
+            year_offset += 60
         yuan = int((self.__year + year_offset + 2696) / 60) % 3
-        offset = (62 + yuan * 3 - index) % 9
+        offset = (62 + yuan * 3 - index_exact) % 9
         if 0 == offset:
             offset = 9
         return NineStar.fromIndex(offset - 1)

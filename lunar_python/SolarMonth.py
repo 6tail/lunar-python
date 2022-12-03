@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from . import Solar
+from . import Solar, SolarWeek
 from .util import SolarUtil
 
 
@@ -47,6 +47,22 @@ class SolarMonth:
         for i in range(1, SolarUtil.getDaysOfMonth(self.__year, self.__month)):
             days.append(d.next(i))
         return days
+
+    def getWeeks(self, start):
+        """
+        获取本月的阳历日期列表
+        :param start: 星期几作为一周的开始，1234560分别代表星期一至星期天
+        :return: 阳历日期列表
+        """
+        weeks = []
+        week = SolarWeek.fromYmd(self.__year, self.__month, 1, start)
+        while True:
+            weeks.append(week)
+            week = week.next(1, False)
+            first_day = week.getFirstDay()
+            if first_day.getYear() > self.__year or first_day.getMonth() > self.__month:
+                break
+        return weeks
 
     def next(self, months):
         """

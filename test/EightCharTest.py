@@ -85,18 +85,14 @@ class EightCharTest(unittest.TestCase):
         self.assertEqual("庚子", eight_char.getDay())
         self.assertEqual("戊子", eight_char.getTime())
 
-    def test10(self):
-        lunar = Solar.fromYmdHms(1988, 2, 15, 23, 30, 0).getLunar()
-        eight_char = lunar.getEightChar()
-        self.assertEqual("戊辰", eight_char.getYear())
-        self.assertEqual("甲寅", eight_char.getMonth())
-        self.assertEqual("庚子", eight_char.getDay())
-        self.assertEqual("戊子", eight_char.getTime())
+    def test12(self):
+        solar_list = Solar.fromBaZi("己卯", "辛未", "甲戌", "癸酉")
+        self.assertLess(1, len(solar_list))
 
-    def test11(self):
-        lunar = Lunar.fromYmdHms(1987, 12, 28, 23, 30, 0)
+    def test13(self):
+        lunar = Lunar.fromYmdHms(1991, 4, 5, 3, 37, 0)
         eight_char = lunar.getEightChar()
-        self.assertEqual("戊辰", eight_char.getYear())
-        self.assertEqual("甲寅", eight_char.getMonth())
-        self.assertEqual("庚子", eight_char.getDay())
-        self.assertEqual("戊子", eight_char.getTime())
+        self.assertEqual("辛未", eight_char.getYear())
+        self.assertEqual("癸巳", eight_char.getMonth())
+        self.assertEqual("戊子", eight_char.getDay())
+        self.assertEqual("甲寅", eight_char.getTime())
