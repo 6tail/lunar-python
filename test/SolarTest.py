@@ -60,3 +60,15 @@ class SolarTest(unittest.TestCase):
     def test11(self):
         solar = Solar.fromYmd(2022, 3, 28)
         self.assertEqual("全国中小学生安全教育日", solar.getFestivals()[0])
+
+    def test12(self):
+        self.assertEqual("壬午", Solar.fromYmd(1991, 5, 12).getLunar().getDayInGanZhi())
+
+    def test13(self):
+        self.assertEqual("1582-09-30", Solar.fromYmd(1582, 10, 15).next(-5).toYmd())
+
+    def test14(self):
+        self.assertEqual("1582-10-04", Solar.fromYmd(1582, 10, 15).next(-1).toYmd())
+
+    def test15(self):
+        self.assertEqual("1582-09-29", Solar.fromYmd(1582, 10, 15).next(-6).toYmd())

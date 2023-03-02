@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from .ExactDate import ExactDate
 from .JieQi import JieQi
 from .NineStar import NineStar
 from .EightChar import EightChar

@@ -235,3 +235,9 @@ class LunarTest(unittest.TestCase):
         solar = Solar.fromYmd(2021, 3, 21)
         lunar = solar.getLunar()
         self.assertEqual("春社", lunar.getOtherFestivals()[0])
+
+    def test57(self):
+        self.assertEqual("1582-10-04", Lunar.fromYmd(1582, 9, 18).getSolar().toYmd())
+
+    def test58(self):
+        self.assertEqual("1582-10-15", Lunar.fromYmd(1582, 9, 19).getSolar().toYmd())

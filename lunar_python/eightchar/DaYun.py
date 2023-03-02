@@ -8,7 +8,7 @@ class DaYun:
     大运
     """
 
-    def __init__(self, yun, index):
+    def __init__(self, yun, index: int):
         self.__yun = yun
         self.__lunar = yun.getLunar()
         self.__index = index

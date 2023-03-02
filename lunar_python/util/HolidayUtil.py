@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from ..Holiday import Holiday
 
 
 class HolidayUtil:
@@ -29,6 +28,7 @@ class HolidayUtil:
         name = HolidayUtil.__NAMES_IN_USE[ord(s[8:9]) - HolidayUtil.__ZERO]
         work = ord(s[9:10]) == HolidayUtil.__ZERO
         target = s[10:18]
+        from .. import Holiday
         return Holiday(day, name, work, target)
 
     @staticmethod
@@ -38,6 +38,7 @@ class HolidayUtil:
         name = HolidayUtil.__NAMES_IN_USE[ord(s[size - 10:size - 9]) - HolidayUtil.__ZERO]
         work = ord(s[size - 9:size - 8]) == HolidayUtil.__ZERO
         target = s[size - 8:]
+        from .. import Holiday
         return Holiday(day, name, work, target)
 
     @staticmethod

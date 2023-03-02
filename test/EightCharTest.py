@@ -96,3 +96,13 @@ class EightCharTest(unittest.TestCase):
         self.assertEqual("癸巳", eight_char.getMonth())
         self.assertEqual("戊子", eight_char.getDay())
         self.assertEqual("甲寅", eight_char.getTime())
+
+    def test14(self):
+        solar_list = Solar.fromBaZi("己卯", "辛未", "甲戌", "壬申")
+        print(*solar_list)
+        self.assertLess(1, len(solar_list))
+
+    def test15(self):
+        solar_list = Solar.fromBaZi("庚子", "戊子", "己卯", "庚午")
+        print(*solar_list)
+        self.assertLess(1, len(solar_list))

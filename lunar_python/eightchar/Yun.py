@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from .. import ExactDate, Solar
 from . import DaYun
-from ..util import LunarUtil, SolarUtil
+from ..util import LunarUtil
 
 
 class Yun:
@@ -30,7 +29,7 @@ class Yun:
         hour = 0
 
         if 2 == sect:
-            minutes = int((end.getCalendar() - start.getCalendar()).total_seconds() / 60)
+            minutes = end.subtractMinute(start)
             year = int(minutes / 4320)
             minutes -= year * 4320
             month = int(minutes / 360)
@@ -43,7 +42,7 @@ class Yun:
             start_time_zhi_index = 11 if start.getHour() == 23 else LunarUtil.getTimeZhiIndex(start.toYmdHms()[11: 16])
             # 时辰差
             hour_diff = end_time_zhi_index - start_time_zhi_index
-            day_diff = ExactDate.getDaysBetween(start.getYear(), start.getMonth(), start.getDay(), end.getYear(), end.getMonth(), end.getDay())
+            day_diff = end.subtract(start)
             if hour_diff < 0:
                 hour_diff += 12
                 day_diff -= 1
@@ -107,32 +106,13 @@ class Yun:
         获取起运的阳历日期
         :return: 阳历日期
         """
-        birth = self.__lunar.getSolar()
-        year = birth.getYear()
-        month = birth.getMonth()
-        day = birth.getDay()
-        hour = birth.getHour()
+        solar = self.__lunar.getSolar()
+        solar = solar.nextYear(self.__startYear)
+        solar = solar.nextMonth(self.__startMonth)
+        solar = solar.next(self.__startDay)
+        return solar.nextHour(self.__startHour)
 
-        year += self.__startYear
-        month += self.__startMonth
-        if month > 12:
-            year += 1
-            month -= 12
-        day += self.__startDay
-        hour += self.__startHour
-        if hour >= 24:
-            hour -= 24
-            day += 1
-        days = SolarUtil.DAYS_OF_MONTH[month - 1]
-        if day > days:
-            day -= days
-            month += 1
-        if month > 12:
-            year += 1
-            month -= 12
-        return Solar(year, month, day, hour, birth.getMinute(), birth.getSecond())
-
-    def getDaYun(self, n=10):
+    def getDaYun(self, n: int = 10):
         """
         获取大运
         :param n: 轮数

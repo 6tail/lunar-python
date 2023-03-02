@@ -114,22 +114,22 @@ for d in Solar.fromBaZi("庚子", "戊子", "己卯", "庚午"):
 date = Solar.fromYmd(2020, 1, 23)
 print("2020-01-24" == date.next(1).toString())
 # 仅工作日，跨越春节假期
-print("2020-02-03" == date.nextWorkday(1).toString())
+print("2020-02-03" == date.next(1, True).toString())
 
 date = Solar.fromYmd(2020, 2, 3)
 print("2020-01-31" == date.next(-3).toString())
 # 仅工作日，跨越春节假期
-print("2020-01-21" == date.nextWorkday(-3).toString())
+print("2020-01-21" == date.next(-3, True).toString())
 
 date = Solar.fromYmd(2020, 2, 9)
 print("2020-02-15" == date.next(6).toString())
 # 仅工作日，跨越周末
-print("2020-02-17" == date.nextWorkday(6).toString())
+print("2020-02-17" == date.next(6, True).toString())
 
 date = Solar.fromYmd(2020, 1, 17)
 print("2020-01-18" == date.next(1).toString())
 # 仅工作日，周日调休按上班算
-print("2020-01-19" == date.nextWorkday(1).toString())
+print("2020-01-19" == date.next(1, True).toString())
 
 print("2020-01-01 元旦节 2020-01-01" == HolidayUtil.getHoliday("2020-01-01").toString())
 

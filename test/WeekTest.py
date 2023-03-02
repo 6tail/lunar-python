@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-from lunar_python import SolarWeek
+from lunar_python import SolarWeek, Solar
 from lunar_python.util import SolarUtil
 
 
@@ -74,3 +74,9 @@ class WeekTest(unittest.TestCase):
     def test12(self):
         week = SolarWeek.fromYmd(2022, 3, 6, 0)
         self.assertEqual(11, week.getIndexInYear())
+
+    def test13(self):
+        self.assertEqual(1, Solar.fromYmd(1582, 10, 1).getWeek())
+
+    def test14(self):
+        self.assertEqual(5, Solar.fromYmd(1582, 10, 15).getWeek())

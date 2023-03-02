@@ -62,23 +62,5 @@ class SolarHalfYear:
         :param half_years: 推移的半年数，负数为倒推
         :return: 推移后的半年
         """
-        if 0 == half_years:
-            return SolarHalfYear.fromYm(self.__year, self.__month)
-        year = self.__year
-        month = self.__month
-        months = SolarHalfYear.MONTH_COUNT * half_years
-        if months == 0:
-            return SolarMonth.fromYm(year, month)
-        n = abs(months)
-        for i in range(1, n + 1):
-            if months < 0:
-                month -= 1
-                if month < 1:
-                    month = 12
-                    year -= 1
-            else:
-                month += 1
-                if month > 12:
-                    month = 1
-                    year += 1
-        return SolarHalfYear.fromYm(year, month)
+        m = SolarMonth.fromYm(self.__year, self.__month).next(SolarHalfYear.MONTH_COUNT * half_years)
+        return SolarHalfYear.fromYm(m.getYear(), m.getMonth())

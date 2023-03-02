@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from math import ceil
 
-from .. import ExactDate
-
 
 class SolarUtil:
     """
@@ -131,6 +129,8 @@ class SolarUtil:
 
     @staticmethod
     def getDaysOfYear(year):
+        if 1582 == year:
+            return 355
         d = 365
         if SolarUtil.isLeapYear(year):
             d = 366
@@ -157,9 +157,13 @@ class SolarUtil:
         days = 0
         for i in range(1, month):
             days += SolarUtil.getDaysOfMonth(year, i)
-        days += day
-        if 1582 == year and 10 == month and day >= 15:
-            days -= 10
+        d = day
+        if 1582 == year and 10 == month:
+            if day >= 15:
+                d -= 10
+            elif day > 4:
+                raise Exception("wrong lunar year %d  month %d day %d" % (year, month, day))
+        days += d
         return days
 
     @staticmethod
@@ -171,8 +175,23 @@ class SolarUtil:
         :param start: 星期几作为一周的开始，1234560分别代表星期一至星期天
         :return: 天数
         """
-        days = SolarUtil.getDaysOfMonth(year, month)
-        week = ExactDate.fromYmd(year, month, 1).isoweekday()
-        if week == 7:
-            week = 0
-        return int(ceil((days + week - start) * 1.0 / len(SolarUtil.WEEK)))
+        from .. import Solar
+        return int(ceil((SolarUtil.getDaysOfMonth(year, month) + Solar.fromYmd(year, month, 1).getWeek() - start) * 1.0 / len(SolarUtil.WEEK)))
+
+    @staticmethod
+    def getDaysBetween(ay: int, am: int, ad: int, by: int, bm: int, bd: int):
+        if ay == by:
+            n = SolarUtil.getDaysInYear(by, bm, bd) - SolarUtil.getDaysInYear(ay, am, ad)
+        elif ay > by:
+            days = SolarUtil.getDaysOfYear(by) - SolarUtil.getDaysInYear(by, bm, bd)
+            for i in range(by + 1, ay):
+                days += SolarUtil.getDaysOfYear(i)
+            days += SolarUtil.getDaysInYear(ay, am, ad)
+            n = -days
+        else:
+            days = SolarUtil.getDaysOfYear(ay) - SolarUtil.getDaysInYear(ay, am, ad)
+            for i in range(ay + 1, by):
+                days += SolarUtil.getDaysOfYear(i)
+            days += SolarUtil.getDaysInYear(by, bm, bd)
+            n = days
+        return n

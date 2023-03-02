@@ -62,23 +62,5 @@ class SolarSeason:
         :param seasons: 推移的季度数，负数为倒推
         :return: 推移后的季度
         """
-        if 0 == seasons:
-            return SolarSeason.fromYm(self.__year, self.__month)
-        year = self.__year
-        month = self.__month
-        months = SolarSeason.MONTH_COUNT * seasons
-        if months == 0:
-            return SolarSeason.fromYm(year, month)
-        n = abs(months)
-        for i in range(1, n + 1):
-            if months < 0:
-                month -= 1
-                if month < 1:
-                    month = 12
-                    year -= 1
-            else:
-                month += 1
-                if month > 12:
-                    month = 1
-                    year += 1
-        return SolarSeason.fromYm(year, month)
+        m = SolarMonth.fromYm(self.__year, self.__month).next(SolarSeason.MONTH_COUNT * seasons)
+        return SolarSeason.fromYm(m.getYear(), m.getMonth())

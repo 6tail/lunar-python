@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
-
-from . import ExactDate, Solar, NineStar, EightChar, JieQi, ShuJiu, Fu, LunarTime
+from . import Solar, NineStar, EightChar, JieQi, ShuJiu, Fu, LunarTime
 from .util import LunarUtil, SolarUtil
 
 
@@ -12,7 +10,7 @@ class Lunar:
     JIE_QI = ("冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪")
     JIE_QI_IN_USE = ("DA_XUE", "冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "DONG_ZHI", "XIAO_HAN", "DA_HAN", "LI_CHUN", "YU_SHUI", "JING_ZHE")
 
-    def __init__(self, lunar_year, lunar_month, lunar_day, hour, minute, second):
+    def __init__(self, lunar_year: int, lunar_month: int, lunar_day: int, hour: int, minute: int, second: int):
         from . import LunarYear
         y = LunarYear.fromYear(lunar_year)
         m = y.getMonth(lunar_month)
@@ -191,19 +189,17 @@ class Lunar:
 
     @staticmethod
     def fromDate(date):
+        return Lunar.fromSolar(Solar.fromDate(date))
+
+    @staticmethod
+    def fromSolar(solar):
         from . import LunarYear
         year = 0
         month = 0
         day = 0
-        solar = Solar.fromDate(date)
-        current_year = solar.getYear()
-        current_month = solar.getMonth()
-        current_day = solar.getDay()
-        ly = LunarYear.fromYear(current_year)
+        ly = LunarYear.fromYear(solar.getYear())
         for m in ly.getMonths():
-            # 初一
-            first_day = Solar.fromJulianDay(m.getFirstJulianDay())
-            days = ExactDate.getDaysBetween(first_day.getYear(), first_day.getMonth(), first_day.getDay(), current_year, current_month, current_day)
+            days = solar.subtract(Solar.fromJulianDay(m.getFirstJulianDay()))
             if days < m.getDayCount():
                 year = m.getYear()
                 month = m.getMonth()
@@ -887,13 +883,13 @@ class Lunar:
         solar_ni_zi_ymd = solar_ni_zi.toYmd()
         offset = 0
         if solar_shun_bai_ymd <= solar_ymd < solar_ni_zi_ymd:
-            offset = ExactDate.getDaysBetweenDate(solar_shun_bai.getCalendar(), self.__solar.getCalendar()) % 9
+            offset = self.__solar.subtract(solar_shun_bai) % 9
         elif solar_ni_zi_ymd <= solar_ymd < solar_shun_bai_ymd2:
-            offset = 8 - (ExactDate.getDaysBetweenDate(solar_ni_zi.getCalendar(), self.__solar.getCalendar()) % 9)
+            offset = 8 - (self.__solar.subtract(solar_ni_zi) % 9)
         elif solar_ymd >= solar_shun_bai_ymd2:
-            offset = ExactDate.getDaysBetweenDate(solar_shun_bai2.getCalendar(), self.__solar.getCalendar()) % 9
+            offset = self.__solar.subtract(solar_shun_bai2) % 9
         elif solar_ymd < solar_shun_bai_ymd:
-            offset = (8 + ExactDate.getDaysBetweenDate(self.__solar.getCalendar(), solar_shun_bai.getCalendar())) % 9
+            offset = (8 + solar_shun_bai.subtract(self.__solar)) % 9
         return NineStar.fromIndex(offset)
 
     def getTimeNineStar(self):
@@ -1298,16 +1294,16 @@ class Lunar:
         获取数九
         :return: 数九，如果不是数九天，返回None
         """
-        current_calendar = ExactDate.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
+        current = Solar.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
         start = self.__jieQi["DONG_ZHI"]
-        start_calendar = ExactDate.fromYmd(start.getYear(), start.getMonth(), start.getDay())
-        if current_calendar < start_calendar:
+        start = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay())
+        if current.isBefore(start):
             start = self.__jieQi["冬至"]
-            start_calendar = ExactDate.fromYmd(start.getYear(), start.getMonth(), start.getDay())
-        end_calendar = start_calendar + timedelta(days=81)
-        if current_calendar < start_calendar or current_calendar >= end_calendar:
+            start = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay())
+        end = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay()).next(81)
+        if current.isBefore(start) or not current.isBefore(end):
             return None
-        days = ExactDate.getDaysBetweenDate(start_calendar, current_calendar)
+        days = current.subtract(start)
         return ShuJiu(LunarUtil.NUMBER[int(days / 9) + 1] + "九", days % 9 + 1)
 
     def getFu(self):
@@ -1315,35 +1311,35 @@ class Lunar:
         获取三伏
         :return: 三伏，如果不是伏天，返回None
         """
-        current_calendar = ExactDate.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
+        current = Solar.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
         xia_zhi = self.__jieQi["夏至"]
         li_qiu = self.__jieQi["立秋"]
-        start_calendar = ExactDate.fromYmd(xia_zhi.getYear(), xia_zhi.getMonth(), xia_zhi.getDay())
+        start = Solar.fromYmd(xia_zhi.getYear(), xia_zhi.getMonth(), xia_zhi.getDay())
         add = 6 - xia_zhi.getLunar().getDayGanIndex()
         if add < 0:
             add += 10
         add += 20
-        start_calendar = start_calendar + timedelta(days=add)
-        if current_calendar < start_calendar:
+        start = start.next(add)
+        if current.isBefore(start):
             return None
-        days = ExactDate.getDaysBetweenDate(start_calendar, current_calendar)
+        days = current.subtract(start)
         if days < 10:
             return Fu("初伏", days + 1)
-        start_calendar = start_calendar + timedelta(days=10)
-        days = ExactDate.getDaysBetweenDate(start_calendar, current_calendar)
+        start = start.next(10)
+        days = current.subtract(start)
         if days < 10:
             return Fu("中伏", days + 1)
-        start_calendar = start_calendar + timedelta(days=10)
-        days = ExactDate.getDaysBetweenDate(start_calendar, current_calendar)
-        li_qiu_calendar = ExactDate.fromYmd(li_qiu.getYear(), li_qiu.getMonth(), li_qiu.getDay())
-        if li_qiu_calendar <= start_calendar:
+        start = start.next(10)
+        days = current.subtract(start)
+        li_qiu_solar = Solar.fromYmd(li_qiu.getYear(), li_qiu.getMonth(), li_qiu.getDay())
+        if not li_qiu_solar.isAfter(start):
             if days < 10:
                 return Fu("末伏", days + 1)
         else:
             if days < 10:
                 return Fu("中伏", days + 11)
-            start_calendar = start_calendar + timedelta(days=10)
-            days = ExactDate.getDaysBetweenDate(start_calendar, current_calendar)
+            start = start.next(10)
+            days = current.subtract(start)
             if days < 10:
                 return Fu("末伏", days + 1)
         return None
@@ -1361,25 +1357,20 @@ class Lunar:
         :return: 物候
         """
         jie_qi = self.getPrevJieQi(True)
-        name = jie_qi.getName()
         offset = 0
         for i in range(0, len(Lunar.JIE_QI)):
-            if name == Lunar.JIE_QI[i]:
+            if jie_qi.getName() == Lunar.JIE_QI[i]:
                 offset = i
                 break
-        start_solar = jie_qi.getSolar()
-        days = ExactDate.getDaysBetween(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay(), self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
-        index = int(days / 5)
+        index = int(self.__solar.subtract(jie_qi.getSolar()) / 5)
         if index > 2:
             index = 2
         return LunarUtil.WU_HOU[(offset * 3 + index) % len(LunarUtil.WU_HOU)]
 
     def getHou(self):
         jie_qi = self.getPrevJieQi(True)
-        start_solar = jie_qi.getSolar()
-        days = ExactDate.getDaysBetween(start_solar.getYear(), start_solar.getMonth(), start_solar.getDay(), self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
         size = len(LunarUtil.HOU) - 1
-        offset = int(days / 5)
+        offset = int(self.__solar.subtract(jie_qi.getSolar()) / 5)
         if offset > size:
             offset = size
         return "%s %s" % (jie_qi.getName(), LunarUtil.HOU[offset])
