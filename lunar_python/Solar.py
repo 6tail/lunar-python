@@ -93,32 +93,33 @@ class Solar:
         if offset_year < 0:
             offset_year = offset_year + 60
         start_year = today.getYear() - offset_year - 1
-        while True:
+        min_year = base_year - 2
+        while start_year >= min_year:
             years.append(start_year)
             start_year -= 60
-            if start_year < base_year:
-                years.append(base_year)
-                break
-        hour = 0
+        hours = []
         time_zhi = time_gan_zhi[1:]
-        for i in range(0, len(LunarUtil.ZHI)):
+        for i in range(1, len(LunarUtil.ZHI)):
             if LunarUtil.ZHI[i] == time_zhi:
-                hour = (i - 1) * 2
-        for y in years:
-            for x in range(0, 3):
-                loop = True
-                year = y + x
-                solar = Solar.fromYmdHms(year, 1, 1, hour, 0, 0)
-                while solar.getYear() == year:
+                hours.append((i - 1) * 2)
+        if "子" == time_zhi:
+            hours.append(23)
+        for hour in hours:
+            for y in years:
+                max_year = y + 3
+                year = y
+                month = 11
+                if year < base_year:
+                    year = base_year
+                    month = 1
+                solar = Solar.fromYmdHms(year, month, 1, hour, 0, 0)
+                while solar.getYear() <= max_year:
                     lunar = solar.getLunar()
                     dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
                     if lunar.getYearInGanZhiExact() == year_gan_zhi and lunar.getMonthInGanZhiExact() == month_gan_zhi and dgz == day_gan_zhi and lunar.getTimeInGanZhi() == time_gan_zhi:
                         solar_list.append(solar)
-                        loop = False
                         break
                     solar = solar.next(1)
-                if not loop:
-                    break
         return solar_list
 
     def isLeapYear(self):

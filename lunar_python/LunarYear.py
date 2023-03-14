@@ -75,7 +75,8 @@ class LunarYear:
         # 冬至前的初一
         w = ShouXingUtil.calcShuo(jq[0])
         if w > jq[0]:
-            w -= 29.5306
+            if current_year != 41 and current_year != 193 and current_year != 288 and current_year != 345 and current_year != 918 and current_year != 1013:
+                w -= 29.5306
         # 递推每月初一
         for i in range(0, 16):
             hs.append(ShouXingUtil.calcShuo(w + 29.5306 * i))
@@ -83,36 +84,33 @@ class LunarYear:
         for i in range(0, 15):
             day_counts.append(int(hs[i + 1] - hs[i]))
 
-        current_year_leap = -1
-        if current_year in LunarYear.__LEAP:
-            current_year_leap = LunarYear.__LEAP[current_year]
-        else:
-            if hs[13] <= jq[24]:
-                i = 1
-                while hs[i + 1] > jq[2 * i] and i < 13:
-                    i += 1
-                current_year_leap = i
-
         prev_year = current_year - 1
-        prev_year_leap = -1
-        if prev_year in LunarYear.__LEAP:
-            prev_year_leap = LunarYear.__LEAP[prev_year] - 12
+        leap_year = -1
+        leap_index = -1
+
+        if current_year in LunarYear.__LEAP:
+            leap_index = LunarYear.__LEAP[current_year]
+            leap_year = current_year
+        else:
+            if prev_year in LunarYear.__LEAP:
+                leap_index = LunarYear.__LEAP[prev_year] - 12
+                leap_year = prev_year
+            else:
+                if hs[13] <= jq[24]:
+                    i = 1
+                    while hs[i + 1] > jq[2 * i] and i < 13:
+                        i += 1
+                    leap_year = current_year
+                    leap_index = i
 
         y = prev_year
         m = 11
         for i in range(0, 15):
             cm = m
-            is_next_leap = False
-            if y == current_year and i == current_year_leap:
+            if y == leap_year and i == leap_index:
                 cm = -m
-            elif y == prev_year and i == prev_year_leap:
-                cm = -m
-            if y == current_year and i + 1 == current_year_leap:
-                is_next_leap = True
-            elif y == prev_year and i + 1 == prev_year_leap:
-                is_next_leap = True
             self.__months.append(LunarMonth(y, cm, day_counts[i], hs[i] + Solar.J2000))
-            if not is_next_leap:
+            if y != leap_year or i + 1 != leap_index:
                 m += 1
             if m == 13:
                 m = 1
@@ -145,6 +143,20 @@ class LunarYear:
     def __str__(self):
         return self.toString()
 
+    def getDayCount(self):
+        n = 0
+        for m in self.__months:
+            if m.getYear() == self.__year:
+                n += m.getDayCount()
+        return n
+
+    def getMonthsInYear(self):
+        months = []
+        for m in self.__months:
+            if m.getYear() == self.__year:
+                months.append(m)
+        return months
+
     def getMonths(self):
         return self.__months
 
@@ -156,8 +168,7 @@ class LunarYear:
         获取闰月
         :return: 闰月数字，1代表闰1月，0代表无闰月
         """
-        for i in range(0, len(self.__months)):
-            m = self.__months[i]
+        for m in self.__months:
             if m.getYear() == self.__year and m.isLeap():
                 return abs(m.getMonth())
         return 0
@@ -168,8 +179,7 @@ class LunarYear:
         :param lunar_month: 闰月数字，1代表闰1月，0代表无闰月
         :return: 农历月
         """
-        for i in range(0, len(self.__months)):
-            m = self.__months[i]
+        for m in self.__months:
             if m.getYear() == self.__year and m.getMonth() == lunar_month:
                 return m
         return None

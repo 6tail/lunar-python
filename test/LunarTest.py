@@ -241,3 +241,30 @@ class LunarTest(unittest.TestCase):
 
     def test58(self):
         self.assertEqual("1582-10-15", Lunar.fromYmd(1582, 9, 19).getSolar().toYmd())
+
+    def test59(self):
+        self.assertEqual("1518-02-10", Lunar.fromYmd(1518, 1, 1).getSolar().toYmd())
+
+    def test60(self):
+        self.assertEqual("0793-02-15", Lunar.fromYmd(793, 1, 1).getSolar().toYmd())
+
+    def test61(self):
+        self.assertEqual("2025-07-25", Lunar.fromYmd(2025, -6, 1).getSolar().toYmd())
+
+    def test62(self):
+        self.assertEqual("2025-06-25", Lunar.fromYmd(2025, 6, 1).getSolar().toYmd())
+
+    def test63(self):
+        self.assertEqual("0193-02-19", Lunar.fromYmd(193, 1, 1).getSolar().toYmd())
+
+    def test64(self):
+        self.assertEqual("0041-02-20", Lunar.fromYmd(41, 1, 1).getSolar().toYmd())
+
+    def test65(self):
+        self.assertEqual("0554-02-18", Lunar.fromYmd(554, 1, 1).getSolar().toYmd())
+
+    def test66(self):
+        self.assertEqual("1070-02-14", Lunar.fromYmd(1070, 1, 1).getSolar().toYmd())
+
+    def test67(self):
+        self.assertEqual("1537-02-10", Lunar.fromYmd(1537, 1, 1).getSolar().toYmd())

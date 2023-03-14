@@ -80,3 +80,19 @@ class YearTest(unittest.TestCase):
     def test18(self):
         year = LunarYear.fromYear(2004)
         self.assertEqual("八运", year.getYun())
+
+    def test19(self):
+        year = LunarYear.fromYear(2023)
+        self.assertEqual(384, year.getDayCount())
+
+    def test20(self):
+        year = LunarYear.fromYear(1517)
+        self.assertEqual(384, year.getDayCount())
+
+    def test21(self):
+        year = LunarYear.fromYear(1518)
+        self.assertEqual(355, year.getDayCount())
+
+    def test22(self):
+        year = LunarYear.fromYear(2021)
+        self.assertEqual(354, year.getDayCount())
