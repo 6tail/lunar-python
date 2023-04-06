@@ -15,3 +15,7 @@ class FotoTest(unittest.TestCase):
         self.assertEqual("貉", foto.getAnimal())
         self.assertEqual("东", foto.getGong())
         self.assertEqual("青龙", foto.getShou())
+
+    def test2(self):
+        foto = Foto.fromLunar(Lunar.fromYmd(2021, 3, 16))
+        self.assertListEqual(["准提菩萨圣诞"], foto.getOtherFestivals())

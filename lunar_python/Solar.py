@@ -102,6 +102,7 @@ class Solar:
         for i in range(1, len(LunarUtil.ZHI)):
             if LunarUtil.ZHI[i] == time_zhi:
                 hours.append((i - 1) * 2)
+                break
         if "子" == time_zhi:
             hours.append(23)
         for hour in hours:

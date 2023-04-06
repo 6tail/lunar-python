@@ -105,15 +105,18 @@ class LunarYear:
 
         y = prev_year
         m = 11
+        index = m
         for i in range(0, 15):
             cm = m
             if y == leap_year and i == leap_index:
                 cm = -m
-            self.__months.append(LunarMonth(y, cm, day_counts[i], hs[i] + Solar.J2000))
+            self.__months.append(LunarMonth(y, cm, day_counts[i], hs[i] + Solar.J2000, index))
             if y != leap_year or i + 1 != leap_index:
                 m += 1
+            index += 1
             if m == 13:
                 m = 1
+                index = 1
                 y += 1
 
     def getYear(self):
@@ -132,7 +135,7 @@ class LunarYear:
         return LunarUtil.ZHI[self.__zhiIndex + 1]
 
     def getGanZhi(self):
-        return self.getGan() + self.getZhi()
+        return "%s%s" % (self.getGan(), self.getZhi())
 
     def toString(self):
         return str(self.__year) + ""

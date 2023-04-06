@@ -114,8 +114,7 @@ class EightChar:
         return self.__lunar.getDayZhiIndexExact2() if 2 == self.__sect else self.__lunar.getDayZhiIndexExact()
 
     def __getDiShi(self, zhi_index):
-        offset = self.__CHANG_SHENG_OFFSET.get(self.getDayGan())
-        index = offset + (zhi_index if self.getDayGanIndex() % 2 == 0 else -zhi_index)
+        index = self.__CHANG_SHENG_OFFSET.get(self.getDayGan()) + (zhi_index if self.getDayGanIndex() % 2 == 0 else -zhi_index)
         if index >= 12:
             index -= 12
         if index < 0:

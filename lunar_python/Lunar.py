@@ -247,13 +247,13 @@ class Lunar:
         return LunarUtil.ZHI[self.__yearZhiIndexExact + 1]
 
     def getYearInGanZhi(self):
-        return self.getYearGan() + self.getYearZhi()
+        return "%s%s" % (self.getYearGan(), self.getYearZhi())
 
     def getYearInGanZhiByLiChun(self):
-        return self.getYearGanByLiChun() + self.getYearZhiByLiChun()
+        return "%s%s" % (self.getYearGanByLiChun(), self.getYearZhiByLiChun())
 
     def getYearInGanZhiExact(self):
-        return self.getYearGanExact() + self.getYearZhiExact()
+        return "%s%s" % (self.getYearGanExact(), self.getYearZhiExact())
 
     def getMonthGan(self):
         return LunarUtil.GAN[self.__monthGanIndex + 1]
@@ -268,10 +268,10 @@ class Lunar:
         return LunarUtil.ZHI[self.__monthZhiIndexExact + 1]
 
     def getMonthInGanZhi(self):
-        return self.getMonthGan() + self.getMonthZhi()
+        return "%s%s" % (self.getMonthGan(), self.getMonthZhi())
 
     def getMonthInGanZhiExact(self):
-        return self.getMonthGanExact() + self.getMonthZhiExact()
+        return "%s%s" % (self.getMonthGanExact(), self.getMonthZhiExact())
 
     def getDayGan(self):
         return LunarUtil.GAN[self.__dayGanIndex + 1]
@@ -292,13 +292,13 @@ class Lunar:
         return LunarUtil.ZHI[self.__dayZhiIndexExact2 + 1]
 
     def getDayInGanZhi(self):
-        return self.getDayGan() + self.getDayZhi()
+        return "%s%s" % (self.getDayGan(), self.getDayZhi())
 
     def getDayInGanZhiExact(self):
-        return self.getDayGanExact() + self.getDayZhiExact()
+        return "%s%s" % (self.getDayGanExact(), self.getDayZhiExact())
 
     def getDayInGanZhiExact2(self):
-        return self.getDayGanExact2() + self.getDayZhiExact2()
+        return "%s%s" % (self.getDayGanExact2(), self.getDayZhiExact2())
 
     def getTimeGan(self):
         return LunarUtil.GAN[self.__timeGanIndex + 1]
@@ -307,7 +307,7 @@ class Lunar:
         return LunarUtil.ZHI[self.__timeZhiIndex + 1]
 
     def getTimeInGanZhi(self):
-        return self.getTimeGan() + self.getTimeZhi()
+        return "%s%s" % (self.getTimeGan(), self.getTimeZhi())
 
     def getYearShengXiao(self):
         return LunarUtil.SHENGXIAO[self.__yearZhiIndex + 1]
@@ -727,12 +727,10 @@ class Lunar:
         return LunarUtil.ZHI_XING[offset + 1]
 
     def getDayTianShen(self):
-        offset = LunarUtil.ZHI_TIAN_SHEN_OFFSET[self.getMonthZhi()]
-        return LunarUtil.TIAN_SHEN[(self.__dayZhiIndex + offset) % 12 + 1]
+        return LunarUtil.TIAN_SHEN[(self.__dayZhiIndex + LunarUtil.ZHI_TIAN_SHEN_OFFSET[self.getMonthZhi()]) % 12 + 1]
 
     def getTimeTianShen(self):
-        offset = LunarUtil.ZHI_TIAN_SHEN_OFFSET[self.getDayZhiExact()]
-        return LunarUtil.TIAN_SHEN[(self.__timeZhiIndex + offset) % 12 + 1]
+        return LunarUtil.TIAN_SHEN[(self.__timeZhiIndex + LunarUtil.ZHI_TIAN_SHEN_OFFSET[self.getDayZhiExact()]) % 12 + 1]
 
     def getDayTianShenType(self):
         return LunarUtil.TIAN_SHEN_TYPE[self.getDayTianShen()]

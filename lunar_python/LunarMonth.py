@@ -8,11 +8,13 @@ class LunarMonth:
     农历月
     """
 
-    def __init__(self, lunar_year, lunar_month, day_count, first_julian_day):
+    def __init__(self, lunar_year, lunar_month, day_count, first_julian_day, index):
         self.__year = lunar_year
         self.__month = lunar_month
         self.__dayCount = day_count
         self.__firstJulianDay = first_julian_day
+        self.__index = index
+        self.__zhiIndex = (index - 1 + LunarUtil.BASE_MONTH_ZHI_INDEX) % 12
 
     @staticmethod
     def fromYm(lunar_year, lunar_month):
@@ -24,6 +26,55 @@ class LunarMonth:
 
     def getMonth(self):
         return self.__month
+
+    def getIndex(self):
+        return self.__index
+
+    def getZhiIndex(self):
+        return self.__zhiIndex
+
+    def getGanIndex(self):
+        offset = (LunarYear.fromYear(self.__year).getGanIndex() + 1) % 5 * 2
+        return (self.__index - 1 + offset) % 10
+
+    def getGan(self):
+        return LunarUtil.GAN[self.getGanIndex() + 1]
+
+    def getZhi(self):
+        return LunarUtil.ZHI[self.getZhiIndex() + 1]
+
+    def getGanZhi(self):
+        return "%s%s" % (self.getGan(), self.getZhi())
+
+    def getPositionXi(self):
+        return LunarUtil.POSITION_XI[self.getGanIndex() + 1]
+
+    def getPositionXiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionXi()]
+
+    def getPositionYangGui(self):
+        return LunarUtil.POSITION_YANG_GUI[self.getGanIndex() + 1]
+
+    def getPositionYangGuiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionYangGui()]
+
+    def getPositionYinGui(self):
+        return LunarUtil.POSITION_YIN_GUI[self.getGanIndex() + 1]
+
+    def getPositionYinGuiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionYinGui()]
+
+    def getPositionFu(self, sect=2):
+        return (LunarUtil.POSITION_FU if 1 == sect else LunarUtil.POSITION_FU_2)[self.getGanIndex() + 1]
+
+    def getPositionFuDesc(self, sect=2):
+        return LunarUtil.POSITION_DESC[self.getPositionFu(sect)]
+
+    def getPositionCai(self):
+        return LunarUtil.POSITION_CAI[self.getGanIndex() + 1]
+
+    def getPositionCaiDesc(self):
+        return LunarUtil.POSITION_DESC[self.getPositionCai()]
 
     def isLeap(self):
         return self.__month < 0

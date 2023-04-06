@@ -56,10 +56,22 @@ class Foto:
 
     def getFestivals(self):
         festivals = []
-        md = "%d-%d" % (self.getMonth(), self.getDay())
+        md = "%d-%d" % (abs(self.getMonth()), self.getDay())
         if md in FotoUtil.FESTIVAL:
             fs = FotoUtil.FESTIVAL[md]
             for f in fs:
+                festivals.append(f)
+        return festivals
+
+    def getOtherFestivals(self):
+        """
+        获取纪念日
+        :return: 非正式的节日列表，如中元节
+        """
+        festivals = []
+        key = "%d-%d" % (self.getMonth(), self.getDay())
+        if key in FotoUtil.OTHER_FESTIVAL:
+            for f in FotoUtil.OTHER_FESTIVAL[key]:
                 festivals.append(f)
         return festivals
 

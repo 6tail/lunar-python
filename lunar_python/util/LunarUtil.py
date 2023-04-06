@@ -2,7 +2,7 @@
 
 
 class LunarUtil:
-    """+
+    """
     农历工具
     """
 
@@ -101,7 +101,7 @@ class LunarUtil:
     SEASON = ("", "孟春", "仲春", "季春", "孟夏", "仲夏", "季夏", "孟秋", "仲秋", "季秋", "孟冬", "仲冬", "季冬")
     SHENGXIAO = ("", "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪")
     DAY = ("", "初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十")
-    YUE_XIANG = ("", "朔", "既朔", "蛾眉新", "蛾眉新", "蛾眉", "夕月", "上弦", "上弦", "九夜", "宵", "宵", "宵", "渐盈凸", "小望", "望", "既望", "立待", "居待", "寝待", "更待", "渐亏凸", "下弦", "下弦", "有明", "有明", "蛾眉残", "蛾眉残", "残", "晓", "晦")
+    YUE_XIANG = ("", "朔", "既朔", "蛾眉新", "蛾眉新", "蛾眉", "夕", "上弦", "上弦", "九夜", "宵", "宵", "宵", "渐盈凸", "小望", "望", "既望", "立待", "居待", "寝待", "更待", "渐亏凸", "下弦", "下弦", "有明", "有明", "蛾眉残", "蛾眉残", "残", "晓", "晦")
     FESTIVAL = {
         "1-1": "春节",
         "1-15": "元宵节",
@@ -1009,15 +1009,13 @@ class LunarUtil:
             matched = False
             months = left[:left.find(":")]
             for i in range(0, len(months), 2):
-                m = months[i:i + 2]
-                if m == month:
+                if months[i:i + 2] == month:
                     matched = True
                     break
             if matched:
                 ys = left[left.find(":") + 1:left.find(",")]
                 for i in range(0, len(ys), 2):
-                    m = ys[i:i + 2]
-                    arr.append(LunarUtil.__YI_JI[int(m, 16)])
+                    arr.append(LunarUtil.__YI_JI[int(ys[i:i + 2], 16)])
                 break
             index = right.find(day + "=")
         if len(arr) < 1:
@@ -1045,15 +1043,13 @@ class LunarUtil:
             matched = False
             months = left[:left.find(":")]
             for i in range(0, len(months), 2):
-                m = months[i:i + 2]
-                if m == month:
+                if months[i:i + 2] == month:
                     matched = True
                     break
             if matched:
                 js = left[left.find(",") + 1:]
                 for i in range(0, len(js), 2):
-                    m = js[i:i + 2]
-                    arr.append(LunarUtil.__YI_JI[int(m, 16)])
+                    arr.append(LunarUtil.__YI_JI[int(js[i:i + 2], 16)])
                 break
             index = right.find(day + "=")
         if len(arr) < 1:
@@ -1078,8 +1074,7 @@ class LunarUtil:
                 left = left[:left.find("=") - 3]
             js = left[:left.find(",")]
             for i in range(0, len(js), 2):
-                m = js[i:i + 2]
-                arr.append(LunarUtil.__SHEN_SHA[int(m, 16)])
+                arr.append(LunarUtil.__SHEN_SHA[int(js[i:i + 2], 16)])
         if len(arr) < 1:
             arr.append("无")
         return arr
@@ -1102,8 +1097,7 @@ class LunarUtil:
                 left = left[:left.find("=") - 3]
             xs = left[left.find(",") + 1:]
             for i in range(0, len(xs), 2):
-                m = xs[i:i + 2]
-                arr.append(LunarUtil.__SHEN_SHA[int(m, 16)])
+                arr.append(LunarUtil.__SHEN_SHA[int(xs[i:i + 2], 16)])
         if len(arr) < 1:
             arr.append("无")
         return arr
@@ -1126,8 +1120,7 @@ class LunarUtil:
                 left = left[:left.find("=") - 4]
             ys = left[:left.find(",")]
             for i in range(0, len(ys), 2):
-                m = ys[i:i + 2]
-                arr.append(LunarUtil.__YI_JI[int(m, 16)])
+                arr.append(LunarUtil.__YI_JI[int(ys[i:i + 2], 16)])
         if len(arr) < 1:
             arr.append("无")
         return arr
@@ -1150,8 +1143,7 @@ class LunarUtil:
                 left = left[:left.find("=") - 4]
             js = left[left.find(",") + 1:]
             for i in range(0, len(js), 2):
-                m = js[i:i + 2]
-                arr.append(LunarUtil.__YI_JI[int(m, 16)])
+                arr.append(LunarUtil.__YI_JI[int(js[i:i + 2], 16)])
         if len(arr) < 1:
             arr.append("无")
         return arr
