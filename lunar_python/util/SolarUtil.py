@@ -199,6 +199,8 @@ class SolarUtil:
         :param year: 年
         :return: True/False 闰年/非闰年
         """
+        if year < 1600:
+            return year % 4 == 0
         return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
 
     @staticmethod

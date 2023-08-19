@@ -73,6 +73,9 @@ class Solar:
         if minute > 59:
             minute -= 60
             hour += 1
+        if hour > 23:
+            hour -= 24
+            day += 1
         return Solar(year, month, day, hour, minute, second)
 
     @staticmethod
@@ -91,7 +94,7 @@ class Solar:
         today = Solar.fromDate(datetime.now())
         offset_year = LunarUtil.getJiaZiIndex(today.getLunar().getYearInGanZhiExact()) - LunarUtil.getJiaZiIndex(year_gan_zhi)
         if offset_year < 0:
-            offset_year = offset_year + 60
+            offset_year += 60
         start_year = today.getYear() - offset_year - 1
         min_year = base_year - 2
         while start_year >= min_year:

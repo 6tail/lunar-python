@@ -268,3 +268,12 @@ class LunarTest(unittest.TestCase):
 
     def test67(self):
         self.assertEqual("1537-02-10", Lunar.fromYmd(1537, 1, 1).getSolar().toYmd())
+
+    def test68(self):
+        self.assertEqual("九一七年闰十月十四", Solar.fromYmd(917, 12, 1).getLunar().toString())
+
+    def test69(self):
+        self.assertEqual("九一七年冬月十五", Solar.fromYmd(917, 12, 31).getLunar().toString())
+
+    def test70(self):
+        self.assertEqual("九一七年冬月十六", Solar.fromYmd(918, 1, 1).getLunar().toString())

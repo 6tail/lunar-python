@@ -55,7 +55,7 @@ class SolarTest(unittest.TestCase):
         self.assertEqual("2020-01-19", date.next(1, True).toString())
 
     def test10(self):
-        self.assertEqual(False, SolarUtil.isLeapYear(1500))
+        self.assertEqual(True, SolarUtil.isLeapYear(1500))
 
     def test11(self):
         solar = Solar.fromYmd(2022, 3, 28)
@@ -72,3 +72,12 @@ class SolarTest(unittest.TestCase):
 
     def test15(self):
         self.assertEqual("1582-09-29", Solar.fromYmd(1582, 10, 15).next(-6).toYmd())
+
+    def test16(self):
+        self.assertEqual(2, SolarUtil.getDaysBetween(100, 2, 28, 100, 3, 1))
+
+    def test17(self):
+        self.assertEqual(59, SolarUtil.getDaysInYear(100, 2, 28))
+
+    def test18(self):
+        self.assertEqual(61, SolarUtil.getDaysInYear(100, 3, 1))
