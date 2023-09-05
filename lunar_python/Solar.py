@@ -420,13 +420,13 @@ class Solar:
         y = self.__year + years
         m = self.__month
         d = self.__day
-        if 2 == m:
-            if d > 28:
-                if not SolarUtil.isLeapYear(y):
-                    d = 28
         if 1582 == y and 10 == m:
             if 4 < d < 15:
                 d += 10
+        elif 2 == m:
+            if d > 28:
+                if not SolarUtil.isLeapYear(y):
+                    d = 28
         return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second)
 
     def nextMonth(self, months):
@@ -435,13 +435,13 @@ class Solar:
         y = month.getYear()
         m = month.getMonth()
         d = self.__day
-        if 2 == m:
-            if d > 28:
-                if not SolarUtil.isLeapYear(y):
-                    d = 28
         if 1582 == y and 10 == m:
             if 4 < d < 15:
                 d += 10
+        else:
+            days = SolarUtil.getDaysOfMonth(y, m)
+            if d > days:
+                d = days
         return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second)
 
     def nextHour(self, hours):

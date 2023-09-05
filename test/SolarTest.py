@@ -81,3 +81,15 @@ class SolarTest(unittest.TestCase):
 
     def test18(self):
         self.assertEqual(61, SolarUtil.getDaysInYear(100, 3, 1))
+
+    def test19(self):
+        self.assertEqual("2023-09-30", Solar.fromYmd(2023, 8, 31).nextMonth(1).toYmd())
+
+    def test20(self):
+        self.assertEqual("2023-10-31", Solar.fromYmd(2023, 8, 31).nextMonth(2).toYmd())
+
+    def test21(self):
+        self.assertEqual("2024-02-29", Solar.fromYmd(2023, 8, 31).nextMonth(6).toYmd())
+
+    def test22(self):
+        self.assertEqual("2025-08-31", Solar.fromYmd(2023, 8, 31).nextYear(2).toYmd())
