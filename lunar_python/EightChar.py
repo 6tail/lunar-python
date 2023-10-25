@@ -97,7 +97,7 @@ class EightChar:
         hide_gan = LunarUtil.ZHI_HIDE_GAN.get(zhi)
         arr = []
         for gan in hide_gan:
-            arr.append(LunarUtil.SHI_SHEN_ZHI.get(self.getDayGan() + zhi + gan))
+            arr.append(LunarUtil.SHI_SHEN_ZHI.get(self.getDayGan() + gan))
         return arr
 
     def getYearShiShenZhi(self):
