@@ -91,13 +91,13 @@ class EightChar:
         获取年柱天干十神
         :return: 十神
         """
-        return LunarUtil.SHI_SHEN_GAN.get(self.getDayGan() + self.getYearGan())
+        return LunarUtil.SHI_SHEN.get(self.getDayGan() + self.getYearGan())
 
     def __getShiShenZhi(self, zhi):
         hide_gan = LunarUtil.ZHI_HIDE_GAN.get(zhi)
         arr = []
         for gan in hide_gan:
-            arr.append(LunarUtil.SHI_SHEN_ZHI.get(self.getDayGan() + gan))
+            arr.append(LunarUtil.SHI_SHEN.get(self.getDayGan() + gan))
         return arr
 
     def getYearShiShenZhi(self):
@@ -175,7 +175,7 @@ class EightChar:
         获取月柱天干十神
         :return: 十神
         """
-        return LunarUtil.SHI_SHEN_GAN.get(self.getDayGan() + self.getMonthGan())
+        return LunarUtil.SHI_SHEN.get(self.getDayGan() + self.getMonthGan())
 
     def getMonthShiShenZhi(self):
         """
@@ -301,7 +301,7 @@ class EightChar:
         获取时柱天干十神
         :return: 十神
         """
-        return LunarUtil.SHI_SHEN_GAN.get(self.getDayGan() + self.getTimeGan())
+        return LunarUtil.SHI_SHEN.get(self.getDayGan() + self.getTimeGan())
 
     def getTimeShiShenZhi(self):
         """

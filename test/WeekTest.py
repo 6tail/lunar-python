@@ -80,3 +80,34 @@ class WeekTest(unittest.TestCase):
 
     def test14(self):
         self.assertEqual(5, Solar.fromYmd(1582, 10, 15).getWeek())
+
+    def test15(self):
+        self.assertEqual(0, Solar.fromYmd(1129, 11, 17).getWeek())
+
+    def test16(self):
+        self.assertEqual(5, Solar.fromYmd(1129, 11, 1).getWeek())
+
+    def test17(self):
+        self.assertEqual(4, Solar.fromYmd(8, 11, 1).getWeek())
+
+    def test18(self):
+        self.assertEqual(0, Solar.fromYmd(1582, 9, 30).getWeek())
+
+    def test19(self):
+        self.assertEqual(1, Solar.fromYmd(1582, 1, 1).getWeek())
+
+    def test20(self):
+        self.assertEqual(6, Solar.fromYmd(1500, 2, 29).getWeek())
+
+    def test21(self):
+        self.assertEqual(3, Solar.fromYmd(9865, 7, 26).getWeek())
+
+    def test22(self):
+        self.assertEqual(6, Solar.fromYmd(1961, 9, 30).getWeek())
+        self.assertEqual(6, Solar.fromYmdHms(1961, 9, 30, 0, 0, 0).getWeek())
+        self.assertEqual(6, Solar.fromYmdHms(1961, 9, 30, 23, 59, 59).getWeek())
+
+    def test23(self):
+        self.assertEqual(3, Solar.fromYmd(2021, 9, 15).getWeek())
+        self.assertEqual(3, Solar.fromYmdHms(2021, 9, 15, 0, 0, 0).getWeek())
+        self.assertEqual(3, Solar.fromYmdHms(2021, 9, 15, 23, 59, 59).getWeek())

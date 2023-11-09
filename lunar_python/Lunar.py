@@ -1330,16 +1330,13 @@ class Lunar:
         start = start.next(10)
         days = current.subtract(start)
         li_qiu_solar = Solar.fromYmd(li_qiu.getYear(), li_qiu.getMonth(), li_qiu.getDay())
-        if not li_qiu_solar.isAfter(start):
-            if days < 10:
-                return Fu("末伏", days + 1)
-        else:
+        if li_qiu_solar.isAfter(start):
             if days < 10:
                 return Fu("中伏", days + 11)
             start = start.next(10)
             days = current.subtract(start)
-            if days < 10:
-                return Fu("末伏", days + 1)
+        if days < 10:
+            return Fu("末伏", days + 1)
         return None
 
     def getLiuYao(self):

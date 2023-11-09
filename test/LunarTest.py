@@ -214,7 +214,7 @@ class LunarTest(unittest.TestCase):
     def test52(self):
         solar = Solar.fromYmd(2011, 11, 12)
         lunar = solar.getLunar()
-        self.assertEqual("厕灶厨 外西南", lunar.getDayPositionTai())
+        self.assertEqual("厨灶厕 外西南", lunar.getDayPositionTai())
 
     def test53(self):
         solar = Solar.fromYmd(1722, 9, 25)
