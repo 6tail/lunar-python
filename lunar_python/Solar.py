@@ -92,7 +92,7 @@ class Solar:
         solar_list = []
         years = []
         today = Solar.fromDate(datetime.now())
-        offset_year = LunarUtil.getJiaZiIndex(today.getLunar().getYearInGanZhiExact()) - LunarUtil.getJiaZiIndex(year_gan_zhi)
+        offset_year = (today.getYear() - 4) % 60 - LunarUtil.getJiaZiIndex(year_gan_zhi)
         if offset_year < 0:
             offset_year += 60
         start_year = today.getYear() - offset_year - 1
