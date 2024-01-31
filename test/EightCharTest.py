@@ -22,7 +22,7 @@ class EightCharTest(unittest.TestCase):
 
     def test_shen_gong1(self):
         lunar = Solar.fromYmdHms(1994, 12, 6, 2, 0, 0).getLunar()
-        self.assertEqual("丁丑", lunar.getEightChar().getShenGong())
+        self.assertEqual("乙丑", lunar.getEightChar().getShenGong())
 
     def test_shen_gong2(self):
         lunar = Solar.fromYmdHms(1990, 12, 11, 6, 0, 0).getLunar()
