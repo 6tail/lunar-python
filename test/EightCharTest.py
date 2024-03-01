@@ -102,7 +102,7 @@ class EightCharTest(unittest.TestCase):
         actual = []
         for solar in solar_list:
             actual.append(solar.toYmdHms())
-        expected = ["1999-07-21 16:00:00", "1939-08-05 16:00:00"]
+        expected = ["1939-08-05 16:00:00", "1999-07-21 16:00:00"]
         self.assertListEqual(expected, actual)
 
     def test15(self):
@@ -110,7 +110,7 @@ class EightCharTest(unittest.TestCase):
         actual = []
         for solar in solar_list:
             actual.append(solar.toYmdHms())
-        expected = ["1960-12-17 12:00:00", "1901-01-01 12:00:00"]
+        expected = ["1901-01-01 12:00:00", "1960-12-17 12:00:00"]
         self.assertListEqual(expected, actual)
 
     def test16(self):
@@ -118,7 +118,7 @@ class EightCharTest(unittest.TestCase):
         actual = []
         for solar in solar_list:
             actual.append(solar.toYmdHms())
-        expected = ["2023-02-24 23:00:00", "1843-02-08 23:00:00"]
+        expected = ["1843-02-08 23:00:00", "2023-02-24 23:00:00"]
         self.assertListEqual(expected, actual)
 
     def test17(self):
@@ -126,7 +126,7 @@ class EightCharTest(unittest.TestCase):
         actual = []
         for solar in solar_list:
             actual.append(solar.toYmdHms())
-        expected = ["1960-01-15 16:00:00", "1900-01-29 16:00:00"]
+        expected = ["1900-01-29 16:00:00", "1960-01-15 16:00:00"]
         self.assertListEqual(expected, actual)
 
     def test18(self):

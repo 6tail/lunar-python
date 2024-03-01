@@ -88,42 +88,63 @@ class Solar:
 
     @staticmethod
     def fromBaZi(year_gan_zhi, month_gan_zhi, day_gan_zhi, time_gan_zhi, sect=2, base_year=1900):
+        from . import Lunar
         sect = 1 if 1 == sect else 2
         solar_list = []
-        years = []
-        today = Solar.fromDate(datetime.now())
-        offset_year = (today.getYear() - 4) % 60 - LunarUtil.getJiaZiIndex(year_gan_zhi)
-        if offset_year < 0:
-            offset_year += 60
-        start_year = today.getYear() - offset_year - 1
-        min_year = base_year - 2
-        while start_year >= min_year:
-            years.append(start_year)
-            start_year -= 60
-        hours = []
-        time_zhi = time_gan_zhi[1:]
-        for i in range(1, len(LunarUtil.ZHI)):
-            if LunarUtil.ZHI[i] == time_zhi:
-                hours.append((i - 1) * 2)
-                break
-        if "子" == time_zhi:
+        # 月地支距寅月的偏移值
+        m = LunarUtil.find(month_gan_zhi[1:], LunarUtil.ZHI, -1) - 2
+        if m < 0:
+            m += 12
+        # 月天干要一致
+        if ((LunarUtil.find(year_gan_zhi[:1], LunarUtil.GAN, -1) + 1) * 2 + m) % 10 != LunarUtil.find(month_gan_zhi[:1], LunarUtil.GAN, -1):
+            return solar_list
+        # 1年的立春是辛酉，序号57
+        y = LunarUtil.getJiaZiIndex(year_gan_zhi) - 57
+        if y < 0:
+            y += 60
+        y += 1
+        # 节令偏移值
+        m *= 2
+        # 时辰地支转时刻，子时按零点算
+        h = LunarUtil.find(time_gan_zhi[1:], LunarUtil.ZHI, -1) * 2
+        hours = [h]
+        if 0 == h and 2 == sect:
             hours.append(23)
-        for hour in hours:
-            for y in years:
-                max_year = y + 3
-                year = y
-                month = 11
-                if year < base_year:
-                    year = base_year
-                    month = 1
-                solar = Solar.fromYmdHms(year, month, 1, hour, 0, 0)
-                while solar.getYear() <= max_year:
-                    lunar = solar.getLunar()
+        start_year = base_year - 1
+
+        # 结束年
+        end_year = datetime.now().year
+
+        while y <= end_year:
+            if y >= start_year:
+                # 立春为寅月的开始
+                jie_qi_table = Lunar.fromYmd(y, 1, 1).getJieQiTable()
+                # 节令推移，年干支和月干支就都匹配上了
+                solar_time = jie_qi_table[Lunar.JIE_QI_IN_USE[4 + m]]
+                if solar_time.getYear() >= base_year:
+                    # 日干支和节令干支的偏移值
+                    lunar = solar_time.getLunar()
                     dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
-                    if lunar.getYearInGanZhiExact() == year_gan_zhi and lunar.getMonthInGanZhiExact() == month_gan_zhi and dgz == day_gan_zhi and lunar.getTimeInGanZhi() == time_gan_zhi:
-                        solar_list.append(solar)
-                        break
-                    solar = solar.next(1)
+                    d = LunarUtil.getJiaZiIndex(day_gan_zhi) - LunarUtil.getJiaZiIndex(dgz)
+                    if d < 0:
+                        d += 60
+                    if d > 0:
+                        # 从节令推移天数
+                        solar_time = solar_time.next(d)
+                    for hour in hours:
+                        mi = 0
+                        s = 0
+                        if d == 0 and hour == solar_time.getHour():
+                            # 如果正好是节令当天，且小时和节令的小时数相等的极端情况，把分钟和秒钟带上
+                            mi = solar_time.getMinute()
+                            s = solar_time.getSecond()
+                        # 验证一下
+                        solar = Solar.fromYmdHms(solar_time.getYear(), solar_time.getMonth(), solar_time.getDay(), hour, mi, s)
+                        lunar = solar.getLunar()
+                        dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
+                        if lunar.getYearInGanZhiExact() == year_gan_zhi and lunar.getMonthInGanZhiExact() == month_gan_zhi and dgz == day_gan_zhi and lunar.getTimeInGanZhi() == time_gan_zhi:
+                            solar_list.append(solar)
+            y += 60
         return solar_list
 
     def isLeapYear(self):

@@ -1049,7 +1049,7 @@ class Lunar:
             solar = self.__jieQi[key]
             day = solar.toYmd() if whole_day else solar.toYmdHms()
             if forward:
-                if day < today:
+                if day <= today:
                     continue
                 if near is None:
                     name = jq
