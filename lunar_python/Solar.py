@@ -123,9 +123,7 @@ class Solar:
                 solar_time = jie_qi_table[Lunar.JIE_QI_IN_USE[4 + m]]
                 if solar_time.getYear() >= base_year:
                     # 日干支和节令干支的偏移值
-                    lunar = solar_time.getLunar()
-                    dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
-                    d = LunarUtil.getJiaZiIndex(day_gan_zhi) - LunarUtil.getJiaZiIndex(dgz)
+                    d = LunarUtil.getJiaZiIndex(day_gan_zhi) - LunarUtil.getJiaZiIndex(solar_time.getLunar().getDayInGanZhiExact2())
                     if d < 0:
                         d += 60
                     if d > 0:

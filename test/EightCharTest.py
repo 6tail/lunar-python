@@ -136,3 +136,11 @@ class EightCharTest(unittest.TestCase):
             actual.append(solar.toYmdHms())
         expected = ["1959-12-17 16:00:00"]
         self.assertListEqual(expected, actual)
+
+    def test19(self):
+        solar_list = Solar.fromBaZi("丁卯", "丁未", "甲申", "乙丑", 1, 1900)
+        actual = []
+        for solar in solar_list:
+            actual.append(solar.toYmdHms())
+        expected = ["1987-08-03 02:00:00"]
+        self.assertListEqual(expected, actual)
