@@ -33,7 +33,7 @@ class XiaoYun:
         add = self.__index + 1
         if self.__daYun.getIndex() > 0:
             add += self.__daYun.getStartAge() - 1
-        offset += add if self.__forward else add
+        offset += add if self.__forward else -add
         size = len(LunarUtil.JIA_ZI)
         while offset < 0:
             offset += size
