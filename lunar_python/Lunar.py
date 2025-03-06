@@ -753,7 +753,7 @@ class Lunar:
             return ""
         return LunarUtil.POSITION_TAI_MONTH[m - 1]
 
-    def getDayYi(self, sect=2):
+    def getDayYi(self, sect=1):
         """
         获取每日宜
         :return: 宜
@@ -764,7 +764,7 @@ class Lunar:
             month_gan_zhi = self.getMonthInGanZhi()
         return LunarUtil.getDayYi(month_gan_zhi, self.getDayInGanZhi())
 
-    def getDayJi(self, sect=2):
+    def getDayJi(self, sect=1):
         """
         获取每日忌
         :return: 忌
