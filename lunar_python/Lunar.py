@@ -450,11 +450,11 @@ class Lunar:
         return LunarUtil.POSITION_DESC[self.getMonthPositionTaiSui(sect)]
 
     def __getDayPositionTaiSui(self, day_in_gan_zhi, year_zhi_index):
-        if day_in_gan_zhi in "甲子,乙丑,丙寅,丁卯,戊辰,已巳":
+        if day_in_gan_zhi in "甲子,乙丑,丙寅,丁卯,戊辰,己巳":
             p = "震"
-        elif day_in_gan_zhi in "丙子,丁丑,戊寅,已卯,庚辰,辛巳":
+        elif day_in_gan_zhi in "丙子,丁丑,戊寅,己卯,庚辰,辛巳":
             p = "离"
-        elif day_in_gan_zhi in "戊子,已丑,庚寅,辛卯,壬辰,癸巳":
+        elif day_in_gan_zhi in "戊子,己丑,庚寅,辛卯,壬辰,癸巳":
             p = "中"
         elif day_in_gan_zhi in "庚子,辛丑,壬寅,癸卯,甲辰,乙巳":
             p = "兑"
