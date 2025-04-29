@@ -408,11 +408,13 @@ class EightChar:
             if time_zhi == zhi:
                 time_zhi_index = i
                 break
-        offset = (month_zhi_index + time_zhi_index - 1) % 12
+        offset = month_zhi_index + time_zhi_index
+        if offset > 12:
+            offset -= 12
         gan_index = (self.__lunar.getYearGanIndexExact() + 1) * 2 + offset
         while gan_index > 10:
             gan_index -= 10
-        return LunarUtil.GAN[gan_index + 1] + EightChar.MONTH_ZHI[offset + 1]
+        return LunarUtil.GAN[gan_index] + EightChar.MONTH_ZHI[offset]
 
     def getShenGongNaYin(self):
         """
