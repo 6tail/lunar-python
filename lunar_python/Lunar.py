@@ -1139,7 +1139,7 @@ class Lunar:
         s += " " + self.getYearInGanZhi() + "(" + self.getYearShengXiao() + ")年"
         s += " " + self.getMonthInGanZhi() + "(" + self.getMonthShengXiao() + ")月"
         s += " " + self.getDayInGanZhi() + "(" + self.getDayShengXiao() + ")日"
-        s += " " + self.getTimeZhi() + "(" + self.getTimeShengXiao() + ")时"
+        s += " " + self.getTimeInGanZhi() + "(" + self.getTimeShengXiao() + ")时"
         s += " 纳音[" + self.getYearNaYin() + " " + self.getMonthNaYin() + " " + self.getDayNaYin() + " " + self.getTimeNaYin() + "]"
         s += " 星期" + self.getWeekInChinese()
         for f in self.getFestivals():
