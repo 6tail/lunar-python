@@ -138,6 +138,8 @@ class Solar:
                             s = solar_time.getSecond()
                         # 验证一下
                         solar = Solar.fromYmdHms(solar_time.getYear(), solar_time.getMonth(), solar_time.getDay(), hour, mi, s)
+                        if d == 30:
+                            solar = solar.nextHour(-1)
                         lunar = solar.getLunar()
                         dgz = lunar.getDayInGanZhiExact2() if 2 == sect else lunar.getDayInGanZhiExact()
                         if lunar.getYearInGanZhiExact() == year_gan_zhi and lunar.getMonthInGanZhiExact() == month_gan_zhi and dgz == day_gan_zhi and lunar.getTimeInGanZhi() == time_gan_zhi:
