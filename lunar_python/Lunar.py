@@ -794,14 +794,14 @@ class Lunar:
         获取日吉神（宜趋）
         :return: 日吉神
         """
-        return LunarUtil.getDayJiShen(self.getMonth(), self.getDayInGanZhi())
+        return LunarUtil.getDayJiShen(self.getMonthZhiIndex(), self.getDayInGanZhi())
 
     def getDayXiongSha(self):
         """
         获取日凶煞（宜忌）
         :return: 日凶煞
         """
-        return LunarUtil.getDayXiongSha(self.getMonth(), self.getDayInGanZhi())
+        return LunarUtil.getDayXiongSha(self.getMonthZhiIndex(), self.getDayInGanZhi())
 
     def getYueXiang(self):
         """
