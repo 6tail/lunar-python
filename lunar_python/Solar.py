@@ -2,6 +2,7 @@
 from datetime import datetime
 from math import ceil
 
+from .exceptions import SolarDateException
 from .util import SolarUtil, LunarUtil, HolidayUtil
 
 
@@ -16,17 +17,17 @@ class Solar:
     def __init__(self, year, month, day, hour, minute, second):
         if year == 1582 and month == 10:
             if 4 < day < 15:
-                raise Exception("wrong solar year %d month %d day %d" % (year, month, day))
+                raise SolarDateException("wrong solar year %d month %d day %d" % (year, month, day))
         if month < 1 or month > 12:
-            raise Exception("wrong month %d" % month)
+            raise SolarDateException("wrong month %d" % month)
         if day < 1 or month > 31:
-            raise Exception("wrong day %d" % day)
+            raise SolarDateException("wrong day %d" % day)
         if hour < 0 or hour > 23:
-            raise Exception("wrong hour %d" % hour)
+            raise SolarDateException("wrong hour %d" % hour)
         if minute < 0 or minute > 59:
-            raise Exception("wrong minute %d" % minute)
+            raise SolarDateException("wrong minute %d" % minute)
         if second < 0 or second > 59:
-            raise Exception("wrong second %d" % second)
+            raise SolarDateException("wrong second %d" % second)
         self.__year = year
         self.__month = month
         self.__day = day

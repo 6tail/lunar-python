@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import Solar, NineStar, EightChar, JieQi, ShuJiu, Fu, LunarTime
+from .exceptions import LunarDateException
 from .util import LunarUtil, SolarUtil
 
 
@@ -15,12 +16,12 @@ class Lunar:
         y = LunarYear.fromYear(lunar_year)
         m = y.getMonth(lunar_month)
         if m is None:
-            raise Exception("wrong lunar year %d  month %d" % (lunar_year, lunar_month))
+            raise LunarDateException("wrong lunar year %d  month %d" % (lunar_year, lunar_month))
         if lunar_day < 1:
-            raise Exception("lunar day must bigger than 0")
+            raise LunarDateException("lunar day must bigger than 0")
         days = m.getDayCount()
         if lunar_day > days:
-            raise Exception("only %d days in lunar year %d month %d" % (days, lunar_year, lunar_month))
+            raise LunarDateException("only %d days in lunar year %d month %d" % (days, lunar_year, lunar_month))
         self.__year = lunar_year
         self.__month = lunar_month
         self.__day = lunar_day
