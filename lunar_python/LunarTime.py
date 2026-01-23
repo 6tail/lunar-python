@@ -6,17 +6,43 @@ from .util import LunarUtil
 class LunarTime:
     """
     时辰
+    
+    支持时区/夏令时处理。默认时区为 Asia/Shanghai（包含1986-1991中国夏令时历史）。
     """
 
-    def __init__(self, lunar_year, lunar_month, lunar_day, hour, minute, second):
+    def __init__(self, lunar_year, lunar_month, lunar_day, hour, minute, second, tz=None):
+        """
+        构造时辰
+        
+        :param lunar_year: 农历年
+        :param lunar_month: 农历月（负数表示闰月）
+        :param lunar_day: 农历日
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        :param tz: 时区，默认为 Asia/Shanghai
+        """
         from . import Lunar
-        self.__lunar = Lunar.fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second)
+        self.__lunar = Lunar.fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second, tz)
+        self.__tz = tz
         self.__zhiIndex = LunarUtil.getTimeZhiIndex("%02d:%02d" % (hour, minute))
         self.__ganIndex = (self.__lunar.getDayGanIndexExact() % 5 * 2 + self.__zhiIndex) % 10
 
     @staticmethod
-    def fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second):
-        return LunarTime(lunar_year, lunar_month, lunar_day, hour, minute, second)
+    def fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second, tz=None):
+        """
+        从农历年月日时分秒创建时辰
+        
+        :param lunar_year: 农历年
+        :param lunar_month: 农历月（负数表示闰月）
+        :param lunar_day: 农历日
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        :param tz: 时区，默认为 Asia/Shanghai
+        :return: LunarTime 对象
+        """
+        return LunarTime(lunar_year, lunar_month, lunar_day, hour, minute, second, tz)
 
     def getGan(self):
         return LunarUtil.GAN[self.__ganIndex + 1]
@@ -133,6 +159,14 @@ class LunarTime:
 
     def getZhiIndex(self):
         return self.__zhiIndex
+    
+    def getTimezone(self):
+        """
+        获取时区
+        
+        :return: 时区（None 表示默认 Asia/Shanghai）
+        """
+        return self.__tz
 
     def __str__(self):
         return self.toString()

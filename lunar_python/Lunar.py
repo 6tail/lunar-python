@@ -7,11 +7,24 @@ from .util import LunarUtil, SolarUtil
 class Lunar:
     """
     阴历日期
+    
+    支持时区/夏令时处理。默认时区为 Asia/Shanghai（包含1986-1991中国夏令时历史）。
     """
     JIE_QI = ("冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪")
     JIE_QI_IN_USE = ("DA_XUE", "冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "DONG_ZHI", "XIAO_HAN", "DA_HAN", "LI_CHUN", "YU_SHUI", "JING_ZHE")
 
-    def __init__(self, lunar_year: int, lunar_month: int, lunar_day: int, hour: int, minute: int, second: int):
+    def __init__(self, lunar_year: int, lunar_month: int, lunar_day: int, hour: int, minute: int, second: int, tz=None):
+        """
+        构造阴历日期
+        
+        :param lunar_year: 农历年
+        :param lunar_month: 农历月（负数表示闰月）
+        :param lunar_day: 农历日
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        :param tz: 时区，可以是 IANA 字符串或 tzinfo 对象，默认为 Asia/Shanghai
+        """
         from . import LunarYear
         y = LunarYear.fromYear(lunar_year)
         m = y.getMonth(lunar_month)
@@ -28,11 +41,12 @@ class Lunar:
         self.__hour = hour
         self.__minute = minute
         self.__second = second
+        self.__tz = tz
         self.__jieQi = {}
         self.__jieQiList = []
         self.__eightChar = None
-        noon = Solar.fromJulianDay(m.getFirstJulianDay() + lunar_day - 1)
-        self.__solar = Solar.fromYmdHms(noon.getYear(), noon.getMonth(), noon.getDay(), hour, minute, second)
+        noon = Solar.fromJulianDay(m.getFirstJulianDay() + lunar_day - 1, tz)
+        self.__solar = Solar.fromYmdHms(noon.getYear(), noon.getMonth(), noon.getDay(), hour, minute, second, tz)
         if noon.getYear() != lunar_year:
             y = LunarYear.fromYear(noon.getYear())
         self.__compute(y)
@@ -49,7 +63,7 @@ class Lunar:
         julian_days = y.getJieQiJulianDays()
         for i in range(0, len(Lunar.JIE_QI_IN_USE)):
             name = Lunar.JIE_QI_IN_USE[i]
-            self.__jieQi[name] = Solar.fromJulianDay(julian_days[i])
+            self.__jieQi[name] = Solar.fromJulianDay(julian_days[i], self.__tz)
             self.__jieQiList.append(name)
 
     def __computeYear(self):
@@ -145,7 +159,7 @@ class Lunar:
         self.__monthZhiIndexExact = ((index + 12 if index < 0 else index) + LunarUtil.BASE_MONTH_ZHI_INDEX) % 12
 
     def __computeDay(self):
-        noon = Solar.fromYmdHms(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay(), 12, 0, 0)
+        noon = Solar.fromYmdHms(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay(), 12, 0, 0, self.__tz)
         offset = int(noon.getJulianDay()) - 11
         day_gan_index = offset % 10
         day_zhi_index = offset % 12
@@ -181,32 +195,67 @@ class Lunar:
         self.__weekIndex = self.__solar.getWeek()
 
     @staticmethod
-    def fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second):
-        return Lunar(lunar_year, lunar_month, lunar_day, hour, minute, second)
+    def fromYmdHms(lunar_year, lunar_month, lunar_day, hour, minute, second, tz=None):
+        """
+        从农历年月日时分秒创建农历日期
+        
+        :param lunar_year: 农历年
+        :param lunar_month: 农历月（负数表示闰月）
+        :param lunar_day: 农历日
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        :param tz: 时区，默认为 Asia/Shanghai
+        :return: Lunar 对象
+        """
+        return Lunar(lunar_year, lunar_month, lunar_day, hour, minute, second, tz)
 
     @staticmethod
-    def fromYmd(lunar_year, lunar_month, lunar_day):
-        return Lunar(lunar_year, lunar_month, lunar_day, 0, 0, 0)
+    def fromYmd(lunar_year, lunar_month, lunar_day, tz=None):
+        """
+        从农历年月日创建农历日期（时间为 00:00:00）
+        
+        :param lunar_year: 农历年
+        :param lunar_month: 农历月（负数表示闰月）
+        :param lunar_day: 农历日
+        :param tz: 时区，默认为 Asia/Shanghai
+        :return: Lunar 对象
+        """
+        return Lunar(lunar_year, lunar_month, lunar_day, 0, 0, 0, tz)
 
     @staticmethod
-    def fromDate(date):
-        return Lunar.fromSolar(Solar.fromDate(date))
+    def fromDate(date, tz=None):
+        """
+        从 datetime 对象创建农历日期
+        
+        :param date: datetime 对象
+        :param tz: 时区，默认为 Asia/Shanghai
+        :return: Lunar 对象
+        """
+        return Lunar.fromSolar(Solar.fromDate(date, tz))
 
     @staticmethod
     def fromSolar(solar):
+        """
+        从阳历日期创建农历日期
+        
+        :param solar: Solar 对象
+        :return: Lunar 对象
+        """
         from . import LunarYear
         year = 0
         month = 0
         day = 0
+        tz = solar.getTimezone()
         ly = LunarYear.fromYear(solar.getYear())
         for m in ly.getMonths():
-            days = solar.subtract(Solar.fromJulianDay(m.getFirstJulianDay()))
+            days = solar.subtract(Solar.fromJulianDay(m.getFirstJulianDay(), tz))
             if days < m.getDayCount():
                 year = m.getYear()
                 month = m.getMonth()
                 day = days + 1
                 break
-        return Lunar(year, month, day, solar.getHour(), solar.getMinute(), solar.getSecond())
+        return Lunar(year, month, day, solar.getHour(), solar.getMinute(), solar.getSecond(), tz)
 
     def getYear(self):
         return self.__year
@@ -228,6 +277,14 @@ class Lunar:
 
     def getSolar(self):
         return self.__solar
+    
+    def getTimezone(self):
+        """
+        获取时区
+        
+        :return: 时区（None 表示默认 Asia/Shanghai）
+        """
+        return self.__tz
 
     def getYearGan(self):
         return LunarUtil.GAN[self.__yearGanIndex + 1]
@@ -1293,13 +1350,13 @@ class Lunar:
         获取数九
         :return: 数九，如果不是数九天，返回None
         """
-        current = Solar.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
+        current = Solar.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay(), self.__tz)
         start = self.__jieQi["DONG_ZHI"]
-        start = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay())
+        start = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay(), self.__tz)
         if current.isBefore(start):
             start = self.__jieQi["冬至"]
-            start = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay())
-        end = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay()).next(81)
+            start = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay(), self.__tz)
+        end = Solar.fromYmd(start.getYear(), start.getMonth(), start.getDay(), self.__tz).next(81)
         if current.isBefore(start) or not current.isBefore(end):
             return None
         days = current.subtract(start)
@@ -1310,10 +1367,10 @@ class Lunar:
         获取三伏
         :return: 三伏，如果不是伏天，返回None
         """
-        current = Solar.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay())
+        current = Solar.fromYmd(self.__solar.getYear(), self.__solar.getMonth(), self.__solar.getDay(), self.__tz)
         xia_zhi = self.__jieQi["夏至"]
         li_qiu = self.__jieQi["立秋"]
-        start = Solar.fromYmd(xia_zhi.getYear(), xia_zhi.getMonth(), xia_zhi.getDay())
+        start = Solar.fromYmd(xia_zhi.getYear(), xia_zhi.getMonth(), xia_zhi.getDay(), self.__tz)
         add = 6 - xia_zhi.getLunar().getDayGanIndex()
         if add < 0:
             add += 10
@@ -1330,7 +1387,7 @@ class Lunar:
             return Fu("中伏", days + 1)
         start = start.next(10)
         days = current.subtract(start)
-        li_qiu_solar = Solar.fromYmd(li_qiu.getYear(), li_qiu.getMonth(), li_qiu.getDay())
+        li_qiu_solar = Solar.fromYmd(li_qiu.getYear(), li_qiu.getMonth(), li_qiu.getDay(), self.__tz)
         if li_qiu_solar.isAfter(start):
             if days < 10:
                 return Fu("中伏", days + 11)
@@ -1390,16 +1447,16 @@ class Lunar:
         获取时辰
         :return: 时辰
         """
-        return LunarTime.fromYmdHms(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
+        return LunarTime.fromYmdHms(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second, self.__tz)
 
     def getTimes(self):
         """
         获取当天的时辰列表
         :return: 时辰列表
         """
-        times = [LunarTime.fromYmdHms(self.__year, self.__month, self.__day, 0, 0, 0)]
+        times = [LunarTime.fromYmdHms(self.__year, self.__month, self.__day, 0, 0, 0, self.__tz)]
         for i in range(0, 12):
-            times.append(LunarTime.fromYmdHms(self.__year, self.__month, self.__day, (i+1) * 2-1, 0, 0))
+            times.append(LunarTime.fromYmdHms(self.__year, self.__month, self.__day, (i+1) * 2-1, 0, 0, self.__tz))
         return times
 
     def getFoto(self):

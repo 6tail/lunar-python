@@ -1,20 +1,43 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from math import ceil
 
 from .exceptions import SolarDateException
-from .util import SolarUtil, LunarUtil, HolidayUtil
+from .util import SolarUtil, LunarUtil, HolidayUtil, TimeZoneUtil
 
 
 class Solar:
     """
     阳历日期
+    
+    支持时区/夏令时处理。默认时区为 Asia/Shanghai（包含1986-1991中国夏令时历史）。
+    
+    时区支持说明：
+    - 所有时间输入默认按 Asia/Shanghai 时区解释（包含历史DST规则）
+    - 可通过 tz 参数指定其他时区（IANA字符串或tzinfo对象）
+    - 内部存储为指定时区的本地时间，同时保存时区信息用于UTC转换
+    
+    中国夏令时历史（1986-1991）：
+    - 这些年份的夏令时期间，北京时间为 UTC+9
+    - 1991年9月15日后，中国不再实行夏令时，统一使用 UTC+8
     """
 
     # 2000年儒略日数(2000-1-1 12:00:00 UTC)
     J2000 = 2451545
 
-    def __init__(self, year, month, day, hour, minute, second):
+    def __init__(self, year, month, day, hour, minute, second, tz=None):
+        """
+        构造阳历日期
+        
+        :param year: 年
+        :param month: 月
+        :param day: 日
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        :param tz: 时区，可以是 IANA 字符串（如 "Asia/Shanghai"）或 tzinfo 对象，
+                   默认为 None 表示使用 Asia/Shanghai
+        """
         if year == 1582 and month == 10:
             if 4 < day < 15:
                 raise SolarDateException("wrong solar year %d month %d day %d" % (year, month, day))
@@ -34,13 +57,42 @@ class Solar:
         self.__hour = hour
         self.__minute = minute
         self.__second = second
+        self.__tz = tz  # 存储时区（None 表示默认 Asia/Shanghai）
 
     @staticmethod
-    def fromDate(date):
-        return Solar(date.year, date.month, date.day, date.hour, date.minute, date.second)
+    def fromDate(date, tz=None):
+        """
+        从 datetime 对象创建阳历日期
+        
+        :param date: datetime 对象（naive 或 aware）
+        :param tz: 目标时区。如果 date 是 aware 的，会先转换到此时区；
+                   如果 date 是 naive 的，按此时区解释。
+                   默认为 Asia/Shanghai。
+        :return: Solar 对象
+        """
+        if date.tzinfo is not None:
+            # aware datetime: 转换到目标时区后提取时间分量
+            target_tz = TimeZoneUtil.get_timezone(tz)
+            local_dt = date.astimezone(target_tz)
+            return Solar(local_dt.year, local_dt.month, local_dt.day,
+                        local_dt.hour, local_dt.minute, local_dt.second, tz)
+        else:
+            # naive datetime: 直接按指定时区解释
+            return Solar(date.year, date.month, date.day,
+                        date.hour, date.minute, date.second, tz)
 
     @staticmethod
-    def fromJulianDay(julian_day):
+    def fromJulianDay(julian_day, tz=None):
+        """
+        从儒略日创建阳历日期
+        
+        注意：儒略日基于 UTC，此方法会根据指定时区转换为本地时间。
+        
+        :param julian_day: 儒略日（UTC）
+        :param tz: 目标时区，默认为 Asia/Shanghai
+        :return: Solar 对象
+        """
+        # 儒略日转 UTC 时间
         d = int(julian_day + 0.5)
         f = julian_day + 0.5 - d
         if d >= 2299161:
@@ -77,15 +129,43 @@ class Solar:
         if hour > 23:
             hour -= 24
             day += 1
-        return Solar(year, month, day, hour, minute, second)
+        
+        # UTC 时间转目标时区
+        utc_dt = datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
+        target_tz = TimeZoneUtil.get_timezone(tz)
+        local_dt = utc_dt.astimezone(target_tz)
+        
+        return Solar(local_dt.year, local_dt.month, local_dt.day,
+                    local_dt.hour, local_dt.minute, local_dt.second, tz)
 
     @staticmethod
-    def fromYmdHms(year, month, day, hour, minute, second):
-        return Solar(year, month, day, hour, minute, second)
+    def fromYmdHms(year, month, day, hour, minute, second, tz=None):
+        """
+        从年月日时分秒创建阳历日期
+        
+        :param year: 年
+        :param month: 月
+        :param day: 日
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        :param tz: 时区，默认为 Asia/Shanghai
+        :return: Solar 对象
+        """
+        return Solar(year, month, day, hour, minute, second, tz)
 
     @staticmethod
-    def fromYmd(year, month, day):
-        return Solar(year, month, day, 0, 0, 0)
+    def fromYmd(year, month, day, tz=None):
+        """
+        从年月日创建阳历日期（时间为 00:00:00）
+        
+        :param year: 年
+        :param month: 月
+        :param day: 日
+        :param tz: 时区，默认为 Asia/Shanghai
+        :return: Solar 对象
+        """
+        return Solar(year, month, day, 0, 0, 0, tz)
 
     @staticmethod
     def fromBaZi(year_gan_zhi, month_gan_zhi, day_gan_zhi, time_gan_zhi, sect=2, base_year=1900):
@@ -233,7 +313,33 @@ class Solar:
 
     def getJulianDay(self):
         """
-        获取儒略日
+        获取儒略日（UTC）
+        
+        此方法会将本地时间转换为 UTC 后计算儒略日。
+        
+        :return: 儒略日
+        """
+        # 获取 UTC 时间
+        utc_dt = self.toUTC()
+        y = utc_dt.year
+        m = utc_dt.month
+        d = utc_dt.day + ((utc_dt.second / 60.0 + utc_dt.minute) / 60 + utc_dt.hour) / 24
+        n = 0
+        g = False
+        if y * 372 + m * 31 + int(d) >= 588829:
+            g = True
+        if m <= 2:
+            m += 12
+            y -= 1
+        if g:
+            n = int(y / 100)
+            n = 2 - n + int(n / 4)
+        return int(365.25 * (y + 4716)) + int(30.6001 * (m + 1)) + d + n - 1524.5
+    
+    def getJulianDayLocal(self):
+        """
+        获取基于本地时间的儒略日（不转换时区，兼容旧版本行为）
+        
         :return: 儒略日
         """
         y = self.__year
@@ -287,7 +393,7 @@ class Solar:
         if 1582 == y and 10 == m:
             if d > 4:
                 d += 10
-        return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second)
+        return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second, self.__tz)
 
     def next(self, days, only_work_day=False):
         """
@@ -298,7 +404,7 @@ class Solar:
         """
         if not only_work_day:
             return self.nextDay(days)
-        solar = Solar.fromYmdHms(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second)
+        solar = Solar.fromYmdHms(self.__year, self.__month, self.__day, self.__hour, self.__minute, self.__second, self.__tz)
         if days != 0:
             rest = abs(days)
             add = 1
@@ -335,6 +441,79 @@ class Solar:
 
     def getSecond(self):
         return self.__second
+    
+    def getTimezone(self):
+        """
+        获取时区
+        
+        :return: 时区（None 表示默认 Asia/Shanghai）
+        """
+        return self.__tz
+    
+    def getTimezoneInfo(self):
+        """
+        获取时区信息对象
+        
+        :return: tzinfo 对象
+        """
+        return TimeZoneUtil.get_timezone(self.__tz)
+    
+    def toUTC(self):
+        """
+        转换为 UTC 时间
+        
+        :return: UTC 时间的 datetime 对象（aware）
+        """
+        local_dt = datetime(self.__year, self.__month, self.__day,
+                           self.__hour, self.__minute, self.__second)
+        return TimeZoneUtil.to_utc(local_dt, self.__tz)
+    
+    def toDatetime(self):
+        """
+        转换为带时区的 datetime 对象
+        
+        :return: datetime 对象（aware）
+        """
+        dt = datetime(self.__year, self.__month, self.__day,
+                     self.__hour, self.__minute, self.__second)
+        return TimeZoneUtil.ymdhms_to_datetime(
+            self.__year, self.__month, self.__day,
+            self.__hour, self.__minute, self.__second, self.__tz)
+    
+    def toTimezone(self, tz):
+        """
+        转换到另一个时区
+        
+        :param tz: 目标时区（IANA 字符串或 tzinfo 对象）
+        :return: 新的 Solar 对象
+        """
+        utc_dt = self.toUTC()
+        target_tz = TimeZoneUtil.get_timezone(tz)
+        local_dt = utc_dt.astimezone(target_tz)
+        return Solar(local_dt.year, local_dt.month, local_dt.day,
+                    local_dt.hour, local_dt.minute, local_dt.second, tz)
+    
+    def getUTCOffset(self):
+        """
+        获取当前时间点的 UTC 偏移小时数
+        
+        会考虑夏令时规则。
+        
+        :return: UTC 偏移小时数（如 +8, +9, -5 等）
+        """
+        dt = datetime(self.__year, self.__month, self.__day,
+                     self.__hour, self.__minute, self.__second)
+        return TimeZoneUtil.get_utc_offset_hours(dt, self.__tz)
+    
+    def isDST(self):
+        """
+        检查当前时间是否处于夏令时
+        
+        :return: True 如果处于夏令时，否则 False
+        """
+        dt = datetime(self.__year, self.__month, self.__day,
+                     self.__hour, self.__minute, self.__second)
+        return TimeZoneUtil.is_dst(dt, self.__tz)
 
     def toYmd(self):
         return "%04d-%02d-%02d" % (self.__year, self.__month, self.__day)
@@ -434,7 +613,7 @@ class Solar:
             if d > 28:
                 if not SolarUtil.isLeapYear(y):
                     d = 28
-        return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second)
+        return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second, self.__tz)
 
     def nextMonth(self, months):
         from . import SolarMonth
@@ -449,7 +628,7 @@ class Solar:
             days = SolarUtil.getDaysOfMonth(y, m)
             if d > days:
                 d = days
-        return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second)
+        return Solar.fromYmdHms(y, m, d, self.__hour, self.__minute, self.__second, self.__tz)
 
     def nextHour(self, hours):
         h = self.__hour + hours
@@ -463,4 +642,4 @@ class Solar:
             hour += 24
             days -= 1
         solar = self.next(days)
-        return Solar.fromYmdHms(solar.getYear(), solar.getMonth(), solar.getDay(), hour, solar.getMinute(), solar.getSecond())
+        return Solar.fromYmdHms(solar.getYear(), solar.getMonth(), solar.getDay(), hour, solar.getMinute(), solar.getSecond(), self.__tz)
