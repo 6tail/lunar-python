@@ -285,6 +285,50 @@ class Lunar:
         :return: 时区（None 表示默认 Asia/Shanghai）
         """
         return self.__tz
+    
+    def toTrueSolarTime(self, longitude):
+        """
+        获取基于真太阳时的农历对象
+        
+        真太阳时（True Solar Time）是基于太阳实际位置计算的时间，
+        对于精确的八字排盘非常重要。
+        
+        :param longitude: 当地经度，可以是：
+            - float/int: 经度值（东经为正，西经为负）
+            - str: 城市名称（如 "北京", "上海", "New York"）
+        :return: 新的 Lunar 对象（基于真太阳时）
+        """
+        true_solar = self.__solar.toTrueSolarTime(longitude)
+        return Lunar.fromSolar(true_solar)
+    
+    def getTrueSolarTimeInfo(self, longitude):
+        """
+        获取真太阳时详细信息
+        
+        :param longitude: 当地经度（城市名或经度值）
+        :return: dict 包含真太阳时的详细信息
+        """
+        return self.__solar.getTrueSolarTimeInfo(longitude)
+    
+    @staticmethod
+    def fromTrueSolarTime(year, month, day, hour, minute, second, longitude, tz=None):
+        """
+        从真太阳时创建农历对象
+        
+        当用户提供的是真太阳时，使用此方法可以正确转换。
+        
+        :param year: 阳历年
+        :param month: 阳历月
+        :param day: 阳历日
+        :param hour: 时（真太阳时）
+        :param minute: 分（真太阳时）
+        :param second: 秒（真太阳时）
+        :param longitude: 当地经度（城市名或经度值）
+        :param tz: 时区
+        :return: Lunar 对象
+        """
+        solar = Solar.fromTrueSolarTime(year, month, day, hour, minute, second, longitude, tz)
+        return Lunar.fromSolar(solar)
 
     def getYearGan(self):
         return LunarUtil.GAN[self.__yearGanIndex + 1]

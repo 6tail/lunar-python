@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-时区工具类 - 支持全球时区/夏令时历史规则
+时区工具类 - 支持全球时区/夏令时历史规则和真太阳时
 
 支持 IANA 时区名称（如 "Asia/Shanghai", "America/New_York"）和 tzinfo 对象。
 默认时区为 Asia/Shanghai，包含中国1986-1991年夏令时历史规则。
+
+真太阳时（True Solar Time）支持：
+- 根据出生地经度计算真实的太阳时间
+- 考虑时差方程（Equation of Time）修正
 """
 
 import sys
+import math
 from datetime import datetime, timezone, timedelta
 
 # 尝试导入 zoneinfo (Python 3.9+) 或 backports
@@ -267,3 +272,276 @@ class TimeZoneUtil:
         :return: True 如果有 zoneinfo 或 pytz 支持
         """
         return ZoneInfo is not None or HAS_PYTZ
+    
+    # ==================== 真太阳时计算 ====================
+    
+    # 常用城市经度（东经为正，西经为负）
+    CITY_LONGITUDES = {
+        # 中国主要城市
+        "北京": 116.4,
+        "上海": 121.5,
+        "广州": 113.3,
+        "深圳": 114.1,
+        "成都": 104.1,
+        "重庆": 106.5,
+        "武汉": 114.3,
+        "西安": 108.9,
+        "杭州": 120.2,
+        "南京": 118.8,
+        "天津": 117.2,
+        "沈阳": 123.4,
+        "哈尔滨": 126.6,
+        "乌鲁木齐": 87.6,
+        "拉萨": 91.1,
+        "香港": 114.2,
+        "台北": 121.5,
+        "澳门": 113.5,
+        
+        # 国际主要城市
+        "Tokyo": 139.7,       # 东京
+        "Seoul": 127.0,       # 首尔
+        "Singapore": 103.8,   # 新加坡
+        "London": -0.1,       # 伦敦
+        "Paris": 2.3,         # 巴黎
+        "Berlin": 13.4,       # 柏林
+        "Moscow": 37.6,       # 莫斯科
+        "New York": -74.0,    # 纽约
+        "Los Angeles": -118.2, # 洛杉矶
+        "Chicago": -87.6,     # 芝加哥
+        "Sydney": 151.2,      # 悉尼
+        "Melbourne": 145.0,   # 墨尔本
+        "Vancouver": -123.1,  # 温哥华
+        "Toronto": -79.4,     # 多伦多
+        "Dubai": 55.3,        # 迪拜
+    }
+    
+    # 时区标准子午线经度
+    TIMEZONE_MERIDIANS = {
+        "Asia/Shanghai": 120,      # 东八区，120°E
+        "Asia/Tokyo": 135,         # 东九区，135°E
+        "Asia/Seoul": 135,         # 韩国标准时间，135°E
+        "Asia/Singapore": 105,     # 新加坡（实际用UTC+8但地理上接近UTC+7）
+        "Asia/Hong_Kong": 120,     # 香港，120°E
+        "Asia/Taipei": 120,        # 台北，120°E
+        "Europe/London": 0,        # 格林威治，0°
+        "Europe/Paris": 15,        # 中欧时间，15°E
+        "Europe/Berlin": 15,       # 中欧时间，15°E
+        "Europe/Moscow": 45,       # 莫斯科时间，45°E
+        "America/New_York": -75,   # 美东时间，75°W
+        "America/Chicago": -90,    # 美中时间，90°W
+        "America/Denver": -105,    # 山地时间，105°W
+        "America/Los_Angeles": -120, # 美西时间，120°W
+        "Australia/Sydney": 150,   # 澳东时间，150°E
+        "Pacific/Auckland": 180,   # 新西兰时间，180°
+    }
+    
+    @staticmethod
+    def get_day_of_year(year, month, day):
+        """
+        计算一年中的第几天
+        
+        :param year: 年
+        :param month: 月
+        :param day: 日
+        :return: 一年中的第几天 (1-366)
+        """
+        days_in_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        
+        # 闰年判断
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+            days_in_month[2] = 29
+        
+        day_of_year = sum(days_in_month[:month]) + day
+        return day_of_year
+    
+    @staticmethod
+    def equation_of_time(day_of_year):
+        """
+        计算时差方程（Equation of Time）
+        
+        时差方程描述了真太阳时与平太阳时之间的差异，
+        主要由地球轨道的椭圆形和地轴倾斜引起。
+        
+        :param day_of_year: 一年中的第几天
+        :return: 时差（分钟），正值表示真太阳时快于平太阳时
+        """
+        # B = 360/365 * (d - 81)，其中d是一年中的天数
+        B = math.radians(360.0 / 365.0 * (day_of_year - 81))
+        
+        # 时差方程近似公式（单位：分钟）
+        # EoT = 9.87 * sin(2B) - 7.53 * cos(B) - 1.5 * sin(B)
+        eot = 9.87 * math.sin(2 * B) - 7.53 * math.cos(B) - 1.5 * math.sin(B)
+        
+        return eot
+    
+    @staticmethod
+    def get_longitude(location):
+        """
+        获取地点的经度
+        
+        :param location: 地点名称或经度值
+            - str: 城市名称（如 "北京", "上海", "New York"）
+            - float/int: 经度值（东经为正，西经为负）
+        :return: 经度值
+        :raises ValueError: 未知的城市名称
+        """
+        if isinstance(location, (int, float)):
+            return float(location)
+        
+        if location in TimeZoneUtil.CITY_LONGITUDES:
+            return TimeZoneUtil.CITY_LONGITUDES[location]
+        
+        raise ValueError(f"未知的城市名称: {location}. 请直接提供经度值（东经为正，西经为负）")
+    
+    @staticmethod
+    def get_standard_meridian(tz=None):
+        """
+        获取时区的标准子午线经度
+        
+        :param tz: 时区名称
+        :return: 标准子午线经度
+        """
+        if tz is None:
+            tz = TimeZoneUtil.DEFAULT_TIMEZONE
+        
+        if isinstance(tz, str) and tz in TimeZoneUtil.TIMEZONE_MERIDIANS:
+            return TimeZoneUtil.TIMEZONE_MERIDIANS[tz]
+        
+        # 根据UTC偏移估算标准子午线
+        try:
+            tzinfo = TimeZoneUtil.get_timezone(tz)
+            # 使用一个非DST时间点来获取标准偏移
+            test_dt = datetime(2020, 1, 1, 12, 0, 0)
+            if HAS_PYTZ and hasattr(tzinfo, 'localize'):
+                aware_dt = tzinfo.localize(test_dt)
+            else:
+                aware_dt = test_dt.replace(tzinfo=tzinfo)
+            offset_hours = aware_dt.utcoffset().total_seconds() / 3600
+            return offset_hours * 15  # 每小时对应15度经度
+        except:
+            return 120  # 默认北京时间标准子午线
+    
+    @staticmethod
+    def local_mean_time_offset(longitude, tz=None):
+        """
+        计算地方平时与标准时间的偏移
+        
+        :param longitude: 当地经度（东经为正，西经为负）
+        :param tz: 时区
+        :return: 偏移分钟数（正值表示当地时间快于标准时间）
+        """
+        standard_meridian = TimeZoneUtil.get_standard_meridian(tz)
+        
+        # 每度经度差对应4分钟时差
+        offset_minutes = (longitude - standard_meridian) * 4
+        
+        return offset_minutes
+    
+    @staticmethod
+    def true_solar_time_offset(year, month, day, longitude, tz=None):
+        """
+        计算真太阳时与标准时间的总偏移
+        
+        真太阳时 = 标准时间 + 地方平时偏移 + 时差方程
+        
+        :param year: 年
+        :param month: 月
+        :param day: 日
+        :param longitude: 当地经度
+        :param tz: 时区
+        :return: 偏移分钟数
+        """
+        # 地方平时偏移
+        lmt_offset = TimeZoneUtil.local_mean_time_offset(longitude, tz)
+        
+        # 时差方程
+        day_of_year = TimeZoneUtil.get_day_of_year(year, month, day)
+        eot = TimeZoneUtil.equation_of_time(day_of_year)
+        
+        # 总偏移 = 地方平时偏移 + 时差方程
+        total_offset = lmt_offset + eot
+        
+        return total_offset
+    
+    @staticmethod
+    def to_true_solar_time(dt, longitude, tz=None):
+        """
+        将标准时间转换为真太阳时
+        
+        :param dt: datetime 对象（标准时间）
+        :param longitude: 当地经度（可以是城市名或经度值）
+        :param tz: 时区
+        :return: 真太阳时的 datetime 对象
+        """
+        # 获取经度
+        lon = TimeZoneUtil.get_longitude(longitude)
+        
+        # 计算偏移
+        offset_minutes = TimeZoneUtil.true_solar_time_offset(
+            dt.year, dt.month, dt.day, lon, tz
+        )
+        
+        # 应用偏移
+        true_solar_dt = dt + timedelta(minutes=offset_minutes)
+        
+        return true_solar_dt
+    
+    @staticmethod
+    def from_true_solar_time(dt, longitude, tz=None):
+        """
+        将真太阳时转换为标准时间
+        
+        :param dt: datetime 对象（真太阳时）
+        :param longitude: 当地经度（可以是城市名或经度值）
+        :param tz: 时区
+        :return: 标准时间的 datetime 对象
+        """
+        # 获取经度
+        lon = TimeZoneUtil.get_longitude(longitude)
+        
+        # 计算偏移（反向）
+        offset_minutes = TimeZoneUtil.true_solar_time_offset(
+            dt.year, dt.month, dt.day, lon, tz
+        )
+        
+        # 反向应用偏移
+        standard_dt = dt - timedelta(minutes=offset_minutes)
+        
+        return standard_dt
+    
+    @staticmethod
+    def get_true_solar_time_info(year, month, day, hour, minute, longitude, tz=None):
+        """
+        获取真太阳时详细信息
+        
+        :param year: 年
+        :param month: 月
+        :param day: 日
+        :param hour: 时
+        :param minute: 分
+        :param longitude: 当地经度
+        :param tz: 时区
+        :return: dict 包含详细信息
+        """
+        lon = TimeZoneUtil.get_longitude(longitude)
+        standard_meridian = TimeZoneUtil.get_standard_meridian(tz)
+        day_of_year = TimeZoneUtil.get_day_of_year(year, month, day)
+        
+        lmt_offset = TimeZoneUtil.local_mean_time_offset(lon, tz)
+        eot = TimeZoneUtil.equation_of_time(day_of_year)
+        total_offset = lmt_offset + eot
+        
+        # 计算真太阳时
+        standard_dt = datetime(year, month, day, hour, minute, 0)
+        true_solar_dt = standard_dt + timedelta(minutes=total_offset)
+        
+        return {
+            "standard_time": standard_dt,
+            "true_solar_time": true_solar_dt,
+            "longitude": lon,
+            "standard_meridian": standard_meridian,
+            "longitude_offset_minutes": lmt_offset,
+            "equation_of_time_minutes": round(eot, 2),
+            "total_offset_minutes": round(total_offset, 2),
+            "day_of_year": day_of_year,
+        }

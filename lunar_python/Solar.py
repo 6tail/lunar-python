@@ -514,6 +514,77 @@ class Solar:
         dt = datetime(self.__year, self.__month, self.__day,
                      self.__hour, self.__minute, self.__second)
         return TimeZoneUtil.is_dst(dt, self.__tz)
+    
+    def toTrueSolarTime(self, longitude):
+        """
+        转换为真太阳时
+        
+        真太阳时（True Solar Time）是基于太阳实际位置计算的时间，
+        考虑了：
+        1. 当地经度与时区标准子午线的差异
+        2. 时差方程（地球轨道椭圆和地轴倾斜导致的修正）
+        
+        这对于精确的八字排盘非常重要，因为传统命理学基于太阳位置。
+        
+        :param longitude: 当地经度，可以是：
+            - float/int: 经度值（东经为正，西经为负）
+            - str: 城市名称（如 "北京", "上海", "New York"）
+        :return: 新的 Solar 对象（真太阳时）
+        
+        示例：
+            # 北京标准时间转换为北京真太阳时（经度 116.4°）
+            solar = Solar.fromYmdHms(2020, 6, 15, 12, 0, 0)
+            true_solar = solar.toTrueSolarTime(116.4)
+            # 或使用城市名
+            true_solar = solar.toTrueSolarTime("北京")
+        """
+        dt = datetime(self.__year, self.__month, self.__day,
+                     self.__hour, self.__minute, self.__second)
+        true_dt = TimeZoneUtil.to_true_solar_time(dt, longitude, self.__tz)
+        return Solar(true_dt.year, true_dt.month, true_dt.day,
+                    true_dt.hour, true_dt.minute, true_dt.second, self.__tz)
+    
+    def getTrueSolarTimeInfo(self, longitude):
+        """
+        获取真太阳时详细信息
+        
+        :param longitude: 当地经度（城市名或经度值）
+        :return: dict 包含：
+            - standard_time: 标准时间
+            - true_solar_time: 真太阳时
+            - longitude: 经度
+            - standard_meridian: 时区标准子午线经度
+            - longitude_offset_minutes: 经度偏移（分钟）
+            - equation_of_time_minutes: 时差方程（分钟）
+            - total_offset_minutes: 总偏移（分钟）
+        """
+        return TimeZoneUtil.get_true_solar_time_info(
+            self.__year, self.__month, self.__day,
+            self.__hour, self.__minute, longitude, self.__tz
+        )
+    
+    @staticmethod
+    def fromTrueSolarTime(year, month, day, hour, minute, second, longitude, tz=None):
+        """
+        从真太阳时创建 Solar 对象（转换为标准时间存储）
+        
+        当用户提供的是真太阳时（如根据日晷读取的时间），
+        使用此方法可以正确转换为标准时间。
+        
+        :param year: 年
+        :param month: 月
+        :param day: 日
+        :param hour: 时
+        :param minute: 分
+        :param second: 秒
+        :param longitude: 当地经度（城市名或经度值）
+        :param tz: 时区
+        :return: Solar 对象（标准时间）
+        """
+        dt = datetime(year, month, day, hour, minute, second)
+        standard_dt = TimeZoneUtil.from_true_solar_time(dt, longitude, tz)
+        return Solar(standard_dt.year, standard_dt.month, standard_dt.day,
+                    standard_dt.hour, standard_dt.minute, standard_dt.second, tz)
 
     def toYmd(self):
         return "%04d-%02d-%02d" % (self.__year, self.__month, self.__day)

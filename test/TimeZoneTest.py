@@ -213,5 +213,121 @@ class BackwardCompatibilityTest(unittest.TestCase):
         self.assertIsNotNone(jd)
 
 
+class TrueSolarTimeTest(unittest.TestCase):
+    """真太阳时测试"""
+    
+    def test_equation_of_time(self):
+        """测试时差方程计算"""
+        # 时差方程在不同日期有不同的值
+        # 大约在2月和11月达到极值（±15分钟）
+        
+        # 2月11日左右，时差方程约为 -14 分钟
+        eot_feb = TimeZoneUtil.equation_of_time(42)  # 约2月11日
+        self.assertLess(eot_feb, 0)  # 负值
+        self.assertGreater(eot_feb, -16)  # 不超过-16分钟
+        
+        # 11月3日左右，时差方程约为 +16 分钟
+        eot_nov = TimeZoneUtil.equation_of_time(307)  # 约11月3日
+        self.assertGreater(eot_nov, 0)  # 正值
+        self.assertLess(eot_nov, 18)  # 不超过18分钟
+    
+    def test_longitude_offset(self):
+        """测试经度偏移计算"""
+        # 北京（116.4°E）相对于东八区标准子午线（120°E）
+        # 偏移 = (116.4 - 120) * 4 = -14.4 分钟
+        offset = TimeZoneUtil.local_mean_time_offset(116.4, "Asia/Shanghai")
+        self.assertAlmostEqual(offset, -14.4, places=1)
+        
+        # 乌鲁木齐（87.6°E）相对于东八区
+        # 偏移 = (87.6 - 120) * 4 = -129.6 分钟 ≈ -2小时10分
+        offset_urumqi = TimeZoneUtil.local_mean_time_offset(87.6, "Asia/Shanghai")
+        self.assertAlmostEqual(offset_urumqi, -129.6, places=1)
+    
+    def test_city_longitude(self):
+        """测试城市经度查询"""
+        self.assertAlmostEqual(TimeZoneUtil.get_longitude("北京"), 116.4, places=1)
+        self.assertAlmostEqual(TimeZoneUtil.get_longitude("上海"), 121.5, places=1)
+        self.assertAlmostEqual(TimeZoneUtil.get_longitude("乌鲁木齐"), 87.6, places=1)
+        self.assertAlmostEqual(TimeZoneUtil.get_longitude("New York"), -74.0, places=1)
+    
+    def test_true_solar_time_conversion(self):
+        """测试真太阳时转换"""
+        # 北京 2020-06-15 12:00 标准时间
+        solar = Solar.fromYmdHms(2020, 6, 15, 12, 0, 0)
+        
+        # 转换为真太阳时
+        true_solar = solar.toTrueSolarTime("北京")
+        
+        # 真太阳时应该和标准时间有差异
+        # 6月15日，北京（116.4°E）相对于120°E：
+        # - 经度偏移: -14.4 分钟
+        # - 时差方程: 约 0 分钟（6月中旬接近0）
+        # 总偏移约 -14 分钟
+        
+        self.assertIsNotNone(true_solar)
+        # 真太阳时应该比标准时间早一些
+        info = solar.getTrueSolarTimeInfo("北京")
+        self.assertLess(info["total_offset_minutes"], 0)
+    
+    def test_true_solar_time_info(self):
+        """测试真太阳时详细信息"""
+        solar = Solar.fromYmdHms(2020, 6, 15, 12, 0, 0)
+        info = solar.getTrueSolarTimeInfo(116.4)
+        
+        self.assertIn("standard_time", info)
+        self.assertIn("true_solar_time", info)
+        self.assertIn("longitude", info)
+        self.assertIn("longitude_offset_minutes", info)
+        self.assertIn("equation_of_time_minutes", info)
+        self.assertIn("total_offset_minutes", info)
+    
+    def test_urumqi_vs_beijing(self):
+        """测试乌鲁木齐和北京的真太阳时差异"""
+        # 同一标准时间（北京时间12:00）
+        solar = Solar.fromYmdHms(2020, 6, 15, 12, 0, 0)
+        
+        # 北京真太阳时
+        beijing_true = solar.toTrueSolarTime("北京")
+        
+        # 乌鲁木齐真太阳时
+        urumqi_true = solar.toTrueSolarTime("乌鲁木齐")
+        
+        # 乌鲁木齐真太阳时应该比北京早约2小时
+        beijing_minutes = beijing_true.getHour() * 60 + beijing_true.getMinute()
+        urumqi_minutes = urumqi_true.getHour() * 60 + urumqi_true.getMinute()
+        
+        diff = beijing_minutes - urumqi_minutes
+        # 经度差 116.4 - 87.6 = 28.8度，约 115 分钟
+        self.assertGreater(diff, 100)
+        self.assertLess(diff, 130)
+    
+    def test_bazi_with_true_solar_time(self):
+        """测试使用真太阳时排盘"""
+        # 北京时间 2020-06-15 12:00
+        solar = Solar.fromYmdHms(2020, 6, 15, 12, 0, 0)
+        lunar_standard = solar.getLunar()
+        
+        # 使用北京真太阳时
+        lunar_true = lunar_standard.toTrueSolarTime("北京")
+        
+        # 两者的八字可能相同也可能不同，取决于是否跨越时辰边界
+        bazi_standard = lunar_standard.getBaZi()
+        bazi_true = lunar_true.getBaZi()
+        
+        # 验证都能正确获取八字
+        self.assertEqual(len(bazi_standard), 4)
+        self.assertEqual(len(bazi_true), 4)
+    
+    def test_from_true_solar_time(self):
+        """测试从真太阳时创建对象"""
+        # 假设用户提供的是真太阳时 12:00
+        solar = Solar.fromTrueSolarTime(2020, 6, 15, 12, 0, 0, "北京")
+        
+        # 标准时间应该比真太阳时晚一些（因为北京在120°E以西）
+        self.assertIsNotNone(solar)
+        # 标准时间应该是 12:00 + 14分钟 ≈ 12:14
+        self.assertEqual(12, solar.getHour())
+
+
 if __name__ == '__main__':
     unittest.main()
