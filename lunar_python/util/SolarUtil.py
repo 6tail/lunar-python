@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from math import ceil
 
+from ..exceptions import SolarDateException
+
 
 class SolarUtil:
     """
@@ -238,7 +240,7 @@ class SolarUtil:
             if day >= 15:
                 d -= 10
             elif day > 4:
-                raise Exception("wrong solar year %d  month %d day %d" % (year, month, day))
+                raise SolarDateException("wrong solar year %d  month %d day %d" % (year, month, day))
         days += d
         return days
 

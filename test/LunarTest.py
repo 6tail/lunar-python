@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-from lunar_python import Lunar, Solar
+from lunar_python import Lunar, Solar, LunarDateException, LunarException, DateException
 
 
 class LunarTest(unittest.TestCase):
@@ -277,3 +277,20 @@ class LunarTest(unittest.TestCase):
 
     def test70(self):
         self.assertEqual("九一七年冬月十六", Solar.fromYmd(918, 1, 1).getLunar().toString())
+
+    def test_custom_exception_type(self):
+        """测试自定义异常类型"""
+        # 测试 LunarDateException 是否被正确抛出
+        with self.assertRaises(LunarDateException):
+            Lunar.fromYmd(2020, 13, 1)  # 不存在的农历月
+
+    def test_custom_exception_inheritance(self):
+        """测试异常继承关系"""
+        # LunarDateException 应该是 DateException 和 LunarException 的子类
+        try:
+            Lunar.fromYmd(2020, 13, 1)
+        except DateException as e:
+            self.assertIsInstance(e, LunarDateException)
+            self.assertIsInstance(e, LunarException)
+        except Exception:
+            self.fail("应该抛出 DateException")

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from lunar_python import Solar
+from lunar_python import Solar, SolarDateException
 from lunar_python.util import SolarUtil
 
 
@@ -93,3 +93,21 @@ class SolarTest(unittest.TestCase):
 
     def test22(self):
         self.assertEqual("2025-08-31", Solar.fromYmd(2023, 8, 31).nextYear(2).toYmd())
+
+    def test_custom_exception_type(self):
+        """测试自定义异常类型"""
+        # 测试 SolarDateException 是否被正确抛出
+        with self.assertRaises(SolarDateException):
+            Solar.fromYmd(2020, 13, 1)  # 无效月份
+
+    def test_custom_exception_inheritance(self):
+        """测试异常继承关系"""
+        from lunar_python import LunarException, DateException
+        # SolarDateException 应该是 DateException 和 LunarException 的子类
+        try:
+            Solar.fromYmd(2020, 13, 1)
+        except DateException as e:
+            self.assertIsInstance(e, SolarDateException)
+            self.assertIsInstance(e, LunarException)
+        except Exception:
+            self.fail("应该抛出 DateException")
