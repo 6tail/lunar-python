@@ -25,6 +25,25 @@ class DaYun:
             self.__startAge = self.__startYear - birth_year + 1
             self.__endYear = self.__startYear + 9
             self.__endAge = self.__startAge + 9
+        # 预计算干支
+        if self.__index < 1:
+            self.__ganZhi = ""
+        else:
+            offset = LunarUtil.getJiaZiIndex(self.__lunar.getMonthInGanZhiExact())
+            offset += self.__index if self.__yun.isForward() else -self.__index
+            size = len(LunarUtil.JIA_ZI)
+            if offset >= size:
+                offset -= size
+            if offset < 0:
+                offset += size
+            self.__ganZhi = LunarUtil.JIA_ZI[offset]
+        # 预计算流年基准偏移量（只查一次节气表）
+        self.__liuNianBaseOffset = LunarUtil.getJiaZiIndex(
+            self.__lunar.getJieQiTable()["立春"].getLunar().getYearInGanZhiExact()
+        )
+        # 缓存
+        self.__liuNian = None
+        self.__xiaoYun = None
 
     def getStartYear(self):
         return self.__startYear
@@ -44,35 +63,30 @@ class DaYun:
     def getLunar(self):
         return self.__lunar
 
+    def getLiuNianBaseOffset(self):
+        """获取流年基准偏移量（供 LiuNian 使用）"""
+        return self.__liuNianBaseOffset
+
     def getGanZhi(self):
         """
         获取干支
         :return: 干支
         """
-        if self.__index < 1:
-            return ""
-        offset = LunarUtil.getJiaZiIndex(self.__lunar.getMonthInGanZhiExact())
-        offset += self.__index if self.__yun.isForward() else -self.__index
-        size = len(LunarUtil.JIA_ZI)
-        if offset >= size:
-            offset -= size
-        if offset < 0:
-            offset += size
-        return LunarUtil.JIA_ZI[offset]
+        return self.__ganZhi
 
     def getXun(self):
         """
         获取所在旬
         :return: 旬
         """
-        return LunarUtil.getXun(self.getGanZhi())
+        return LunarUtil.getXun(self.__ganZhi)
 
     def getXunKong(self):
         """
         获取旬空(空亡)
         :return: 旬空(空亡)
         """
-        return LunarUtil.getXunKong(self.getGanZhi())
+        return LunarUtil.getXunKong(self.__ganZhi)
 
     def getLiuNian(self, n=10):
         """
@@ -82,10 +96,9 @@ class DaYun:
         """
         if self.__index < 1:
             n = self.__endYear - self.__startYear + 1
-        liu_nian = []
-        for i in range(0, n):
-            liu_nian.append(LiuNian(self, i))
-        return liu_nian
+        if self.__liuNian is None or len(self.__liuNian) != n:
+            self.__liuNian = [LiuNian(self, i) for i in range(n)]
+        return self.__liuNian
 
     def getXiaoYun(self, n=10):
         """
@@ -95,7 +108,6 @@ class DaYun:
         """
         if self.__index < 1:
             n = self.__endYear - self.__startYear + 1
-        xiao_yun = []
-        for i in range(0, n):
-            xiao_yun.append(XiaoYun(self, i, self.__yun.isForward()))
-        return xiao_yun
+        if self.__xiaoYun is None or len(self.__xiaoYun) != n:
+            self.__xiaoYun = [XiaoYun(self, i, self.__yun.isForward()) for i in range(n)]
+        return self.__xiaoYun

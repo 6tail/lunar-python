@@ -10,10 +10,16 @@ class LiuNian:
 
     def __init__(self, da_yun, index):
         self.__daYun = da_yun
-        self.__lunar = da_yun.getLunar()
         self.__index = index
         self.__year = da_yun.getStartYear() + index
         self.__age = da_yun.getStartAge() + index
+        # 使用 DaYun 预计算的基准偏移量，避免重复查节气表
+        offset = da_yun.getLiuNianBaseOffset() + self.__index
+        if da_yun.getIndex() > 0:
+            offset += da_yun.getStartAge() - 1
+        offset %= len(LunarUtil.JIA_ZI)
+        self.__ganZhi = LunarUtil.JIA_ZI[offset]
+        self.__liuYue = None
 
     def getIndex(self):
         return self.__index
@@ -29,33 +35,27 @@ class LiuNian:
         获取干支
         :return: 干支
         """
-        offset = LunarUtil.getJiaZiIndex(self.__lunar.getJieQiTable()["立春"].getLunar().getYearInGanZhiExact()) + self.__index
-        if self.__daYun.getIndex() > 0:
-            offset += self.__daYun.getStartAge() - 1
-        offset %= len(LunarUtil.JIA_ZI)
-        return LunarUtil.JIA_ZI[offset]
+        return self.__ganZhi
 
     def getXun(self):
         """
         获取所在旬
         :return: 旬
         """
-        return LunarUtil.getXun(self.getGanZhi())
+        return LunarUtil.getXun(self.__ganZhi)
 
     def getXunKong(self):
         """
         获取旬空(空亡)
         :return: 旬空(空亡)
         """
-        return LunarUtil.getXunKong(self.getGanZhi())
+        return LunarUtil.getXunKong(self.__ganZhi)
 
     def getLiuYue(self):
         """
         获取流月
         :return: 流月
         """
-        n = 12
-        liu_yue = []
-        for i in range(0, n):
-            liu_yue.append(LiuYue(self, i))
-        return liu_yue
+        if self.__liuYue is None:
+            self.__liuYue = [LiuYue(self, i) for i in range(12)]
+        return self.__liuYue
