@@ -252,7 +252,10 @@ class SolarUtil:
         :return: 天数
         """
         from .. import Solar
-        return int(ceil((SolarUtil.getDaysOfMonth(year, month) + Solar.fromYmd(year, month, 1).getWeek() - start) * 1.0 / len(SolarUtil.WEEK)))
+        offset = Solar.fromYmd(year, month, 1).getWeek() - start
+        if offset < 0:
+            offset += len(SolarUtil.WEEK)
+        return int(ceil((SolarUtil.getDaysOfMonth(year, month) + offset) * 1.0 / len(SolarUtil.WEEK)))
 
     @staticmethod
     def getDaysBetween(ay: int, am: int, ad: int, by: int, bm: int, bd: int):

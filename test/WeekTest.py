@@ -1,10 +1,35 @@
 # -*- coding: utf-8 -*-
+import calendar
 import unittest
 from lunar_python import SolarWeek, Solar
 from lunar_python.util import SolarUtil
 
 
 class WeekTest(unittest.TestCase):
+    def test_weeks_of_month_with_wrapped_start(self):
+        self.assertEqual(6, SolarUtil.getWeeksOfMonth(2021, 8, 1))
+        self.assertEqual(5, SolarUtil.getWeeksOfMonth(2015, 2, 1))
+
+    def test_weeks_of_month_matches_calendar(self):
+        for year in (2020, 2021):
+            for month in range(1, 13):
+                for start in range(7):
+                    with self.subTest(year=year, month=month, start=start):
+                        expected = len(calendar.Calendar(
+                            firstweekday=(start - 1) % 7
+                        ).monthdayscalendar(year, month))
+                        self.assertEqual(expected, SolarUtil.getWeeksOfMonth(
+                            year, month, start
+                        ))
+
+    def test_previous_week_keeps_partial_month_end(self):
+        week = SolarWeek.fromYmd(2021, 9, 1, 1).next(-1, True)
+        self.assertEqual("2021.8.6", week.toString())
+        self.assertEqual(
+            ["2021-08-30", "2021-08-31"],
+            [day.toYmd() for day in week.getDaysInMonth()],
+        )
+
     def test(self):
         # 一周的开始从星期一开始计
         start = 1
